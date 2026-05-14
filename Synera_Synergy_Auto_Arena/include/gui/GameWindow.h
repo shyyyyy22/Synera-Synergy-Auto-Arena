@@ -3,9 +3,6 @@
 
 #include <QMainWindow>
 
-
-QT_END_NAMESPACE
-
 class GameWindow : public QMainWindow
 {
     Q_OBJECT
@@ -13,6 +10,5 @@ class GameWindow : public QMainWindow
 public:
     explicit GameWindow(QWidget *parent = nullptr);
     ~GameWindow() override;
-
 };
 #endif // GAMEWINDOW_H

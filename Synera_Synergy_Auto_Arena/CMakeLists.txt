@@ -12,17 +12,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
-set(PROJECT_SOURCES
-        main.cpp
-        GameWindow.cpp
-        GameWindow.h
-        gamewindow.ui
+file(GLOB_RECURSE SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cxx"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
 )
+
+file(GLOB_RECURSE HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hxx"
+)
+
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Synera_Synergy_Auto_Arena
         MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
+        ${SOURCES} ${HEADERS}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Synera_Synergy_Auto_Arena APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -31,19 +37,22 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else()
     if(ANDROID)
         add_library(Synera_Synergy_Auto_Arena SHARED
-            ${PROJECT_SOURCES}
+            ${SOURCES} ${HEADERS}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(Synera_Synergy_Auto_Arena
-            ${PROJECT_SOURCES}
-        )
+        add_executable(Synera_Synergy_Auto_Arenar ${SOURCES} ${HEADERS})
+
     endif()
 endif()
 
 target_link_libraries(Synera_Synergy_Auto_Arena PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-
+target_include_directories(Synera_Synergy_Auto_Arena PRIVATE
+    include/gui
+    include/entity
+    include/core
+)
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
