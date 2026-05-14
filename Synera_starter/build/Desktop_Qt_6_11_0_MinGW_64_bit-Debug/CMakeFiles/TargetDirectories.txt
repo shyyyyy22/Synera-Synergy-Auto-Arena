@@ -1,0 +1,5 @@
+D:/freshman_2/c++/PA/Synera_starter/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Synera_Starter.dir
+D:/freshman_2/c++/PA/Synera_starter/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+D:/freshman_2/c++/PA/Synera_starter/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+D:/freshman_2/c++/PA/Synera_starter/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Synera_Starter_autogen_timestamp_deps.dir
+D:/freshman_2/c++/PA/Synera_starter/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Synera_Starter_autogen.dir

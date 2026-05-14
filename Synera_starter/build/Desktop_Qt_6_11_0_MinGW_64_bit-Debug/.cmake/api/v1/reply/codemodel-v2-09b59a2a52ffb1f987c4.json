@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Synera_Starter",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Synera_Starter::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Synera_Starter-Debug-aa10118dd643e419133d.json",
+					"name" : "Synera_Starter",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Synera_Starter_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Synera_Starter_autogen-Debug-f9136bc24e9eb45ad7b2.json",
+					"name" : "Synera_Starter_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Synera_Starter_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Synera_Starter_autogen_timestamp_deps-Debug-3b5db31ed3a1094c5c93.json",
+					"name" : "Synera_Starter_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/freshman_2/c++/PA/Synera_starter/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug",
+		"source" : "D:/freshman_2/c++/PA/Synera_starter"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
