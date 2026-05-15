@@ -1,0 +1,262 @@
+<!DOCTYPE html><html><head>
+      <title>README</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\lenovo\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.25\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.markdown-preview a.tag,.markdown-preview a.tag:active,.markdown-preview a.tag:link,.markdown-preview a.tag:visited,.markdown-preview span.tag{display:inline-block;background-color:var(--vscode-badge-background,rgba(127,127,127,.18));color:var(--vscode-badge-foreground,currentColor);border-radius:2em;font-size:.85em;font-weight:500;padding:.05em .55em;line-height:1.5;white-space:nowrap;text-decoration:none;text-shadow:none;box-shadow:none;transition:background-color .12s ease,opacity .12s ease}.markdown-preview a.tag{cursor:pointer}.markdown-preview a.tag:focus,.markdown-preview a.tag:hover{background-color:var(--vscode-badge-background,rgba(127,127,127,.32));color:var(--vscode-badge-foreground,currentColor);opacity:.85;text-decoration:none;outline:0}.markdown-preview .wikilink-embed-content{border-left:3px solid var(--vscode-textBlockQuote-border,rgba(128,128,128,.3));background:var(--vscode-textBlockQuote-background,rgba(128,128,128,.05));margin:.5em 0;padding:.5em .75em;border-radius:0 3px 3px 0}.markdown-preview .wikilink-embed-content.wikilink-embed-error{border-left-color:var(--vscode-errorForeground,#cf222e);color:var(--vscode-errorForeground,#cf222e);font-style:italic;opacity:.8}.markdown-preview .wikilink-embed-content h1:first-child,.markdown-preview .wikilink-embed-content h2:first-child,.markdown-preview .wikilink-embed-content h3:first-child,.markdown-preview .wikilink-embed-content h4:first-child,.markdown-preview .wikilink-embed-content h5:first-child,.markdown-preview .wikilink-embed-content h6:first-child{margin-top:.25em}.markdown-preview .wikilink-embed-content .wikilink-embed-content{margin:.25em 0;padding:.25em .5em}.markdown-preview .block-id{display:none}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="synera-starter">Synera Starter </h1>
+<p>一个基于 Qt6 与 C++17 的极简自走棋原型（Starter Code），用于课程PA快速起步。<br>
+作为起步demo，主要通过"棋盘渲染" + "单位拖拽"来帮助大家快速理解/上手QT。</p>
+<h2 id="1-项目说明">1. 项目说明 </h2>
+<ul>
+<li>本demo只用于帮助大家快速上手QT，并不代表你必须使用这部分内容，部分设计实现与PA说明文档中的要求可能并不一致；</li>
+<li>你可以选择自己从0开始另起框架，按照你自己的思路设计，甚至可以使用其他图形库完成PA；</li>
+<li>使用此demo进行后续实现时，请务必按照PA说明文档的要求对不一致的部分做出修改(这也意味着你应该至少check一次此demo的代码)；</li>
+<li>本README.md只对本demo的部分核心内容做简要说明，详情请阅读源码；</li>
+<li>如有QT/C++语法使用问题，请查阅相关文档/求助AI；</li>
+<li>完成PA要求时，<strong>一切以PA说明文档为主</strong>!!!</li>
+</ul>
+<h2 id="2-当前架构">2. 当前架构 </h2>
+<h3 id="逻辑层core--entity">逻辑层（core / entity） </h3>
+<ul>
+<li><code>Board</code>：8x8 棋盘数据与占位规则</li>
+<li><code>Unit</code>：最小单位数据（<code>id/name/position/...</code>，<strong>与PA文档并不一致，需重新设计类并实现多态</strong>）</li>
+<li><code>Game</code>：协调逻辑、拖拽规则、场景构建与同步</li>
+</ul>
+<h3 id="渲染层gui">渲染层（gui） </h3>
+<ul>
+<li><code>QGraphicsScene</code>：承载所有图元</li>
+<li><code>GridItem</code>：单个六边形格子（含 hover/drop 高亮）</li>
+<li><code>UnitItem</code>：单位图元（优先渲染 PNG，失败时回退占位图）</li>
+<li><code>GameWindow</code>：主窗口（<code>QGraphicsView + Reset</code>）</li>
+</ul>
+<h2 id="3-目录结构">3. 目录结构 </h2>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>Synera_Starter/
+|- CMakeLists.txt
+|- README.md
+|- assets/                  # 部分人物的美术资源（PNG/序列帧等,来自craftpix.net）
+`- src/
+   |- main.cpp
+   |- core/
+   |  |- board.h
+   |  |- board.cpp
+   |  |- game.h
+   |  `- game.cpp
+   |- entity/
+   |  |- unit.h
+   |  `- unit.cpp
+   `- gui/
+      |- gamewindow.h
+      |- gamewindow.cpp
+      |- griditem.h
+      |- griditem.cpp
+      |- unititem.h
+      `- unititem.cpp
+</code></pre><h2 id="4-qt-基本用法在本项目中对应的部分">4. Qt 基本用法（在本项目中对应的部分） </h2>
+<h3 id="40-qt-workflow从启动到交互">4.0 Qt Workflow（从启动到交互） </h3>
+<p>本项目的 QT 工作流可以简化为：</p>
+<ol>
+<li><code>main.cpp</code> 创建 <code>QApplication</code></li>
+<li>创建并显示 <code>GameWindow</code>（继承 <code>QMainWindow</code>）</li>
+<li><code>GameWindow</code> 内部创建 <code>QGraphicsView</code> 并挂载 <code>Game::scene()</code></li>
+<li><code>Game</code> 构建 <code>QGraphicsScene</code>，向场景添加 <code>GridItem/UnitItem</code>（均继承 <code>QGraphicsObject</code>）</li>
+<li><code>UnitItem</code> 通过鼠标事件发出拖拽信号，<code>Game</code> 接收后做规则校验并更新 <code>Board</code></li>
+<li><code>syncFromBoard()</code> 将最新数据同步回图元位置</li>
+</ol>
+<p>这条链路本质上是：事件输入 -&gt; 信号分发 -&gt; 逻辑更新 -&gt; 渲染同步。</p>
+<h3 id="41-应用入口">4.1 应用入口 </h3>
+<ul>
+<li><code>main.cpp</code>
+<ul>
+<li>创建 <code>QApplication</code></li>
+<li>创建并显示 <code>GameWindow</code></li>
+<li>进入事件循环 <code>app.exec()</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="42-主窗口与视图">4.2 主窗口与视图 </h3>
+<ul>
+<li><code>GameWindow</code>
+<ul>
+<li>使用 <code>QGraphicsView</code> 显示 <code>Game::scene()</code></li>
+<li>设置基础深色样式</li>
+<li>提供 <code>Reset</code> 按钮并连接到 <code>Game::reset()</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="43-自定义图元qgraphicsobject">4.3 自定义图元（QGraphicsObject） </h3>
+<ul>
+<li><code>GridItem</code> 和 <code>UnitItem</code> 继承 <code>QGraphicsObject</code></li>
+<li>核心重载：
+<ul>
+<li><code>boundingRect()</code>：声明图元占用区域（用于重绘、裁剪、拾取）</li>
+<li><code>paint()</code>：自定义绘制</li>
+</ul>
+</li>
+<li>交互方式：
+<ul>
+<li><code>UnitItem</code> 在鼠标按下/移动/释放时发出拖拽信号</li>
+<li><code>Game</code> 接收并执行规则校验与数据更新</li>
+</ul>
+</li>
+</ul>
+<h3 id="44-信号槽">4.4 信号槽 </h3>
+<ul>
+<li><code>UnitItem::dragStarted/dragMoved/dragDropped</code><br>
+-&gt; 直接连接到 <code>Game::handleDragStarted/handleDragMoved/handleDropCommand</code></li>
+</ul>
+<h3 id="45-connect--signal-slot-机制">4.5 connect / signal-slot 机制 </h3>
+<ul>
+<li><code>connect(sender, signal, receiver, slot)</code> 用于把事件发送方与处理方解耦。</li>
+<li>signal 只负责“通知发生了什么”，slot 负责“接下来怎么处理”。</li>
+<li>本项目中，<code>UnitItem</code> 不直接改棋盘数据，而是发信号给 <code>Game</code>，由 <code>Game</code> 统一处理。</li>
+<li>这样做的好处：
+<ul>
+<li>输入层（鼠标事件）和业务层（落子规则）分离</li>
+<li>便于后续替换输入方式（键盘、网络命令等）</li>
+<li>便于调试和扩展（逻辑入口集中在 <code>Game</code>）</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-ui-与交互规则">5. UI 与交互规则 </h2>
+<h3 id="51-棋盘">5.1 棋盘 </h3>
+<ul>
+<li>六边形网格，8x8</li>
+<li>偶数行水平偏移（错列排布）</li>
+</ul>
+<h3 id="52-单位显示">5.2 单位显示 </h3>
+<ul>
+<li>优先加载 PNG sprite（按单位名映射资源路径）</li>
+<li>资源不存在时，回退到占位绘制，保证 demo 可运行</li>
+</ul>
+<h3 id="53-拖拽规则">5.3 拖拽规则 </h3>
+<p>只有满足以下条件才允许移动：</p>
+<ol>
+<li>源格与目标格都在棋盘内</li>
+<li>源格与目标格都在玩家半场（<code>y &gt;= ROWS / 2</code>）</li>
+<li>目标格为空</li>
+<li>不是原地移动</li>
+<li>源格确实是该单位</li>
+</ol>
+<h3 id="54-ui-拖拽实现">5.4 UI 拖拽实现 </h3>
+<ul>
+<li><code>UnitItem::mousePressEvent</code> -&gt; 发 <code>dragStarted</code></li>
+<li><code>UnitItem::mouseMoveEvent</code> -&gt; 发 <code>dragMoved</code></li>
+<li><code>UnitItem::mouseReleaseEvent</code> -&gt; 发 <code>dragDropped</code></li>
+<li><code>Game</code> 在 <code>handleDragMoved(...)</code> 中计算候选目标格并更新 hover/drop 高亮</li>
+<li><code>Game</code> 在 <code>handleDropCommand(...)</code> 中执行合法性检查，成功后调用 <code>applyDrop(...)</code></li>
+<li>最后通过 <code>syncFromBoard()</code> 统一同步 UI</li>
+</ul>
+<h3 id="55-z-值作用原理">5.5 Z 值作用原理 </h3>
+<ul>
+<li>在 <code>QGraphicsScene</code> 中，图元按 <code>zValue</code> 决定遮挡关系，值越大显示越靠上。</li>
+<li>本 starter code 当前采用固定三层（在后续拖拽时你也可以选择做 2.5D 行深度设计）：
+<ul>
+<li><code>GridItem</code>：<code>z = 0</code></li>
+<li>普通 <code>UnitItem</code>：<code>z = 1</code></li>
+<li>拖拽中的 <code>UnitItem</code>：<code>z = 2</code></li>
+</ul>
+</li>
+<li>作用：
+<ul>
+<li>保证单位始终在格子上层</li>
+<li>拖拽过程中当前单位不会被其它格子/单位遮挡</li>
+</ul>
+</li>
+</ul>
+<h2 id="6-核心函数说明">6. 核心函数说明 </h2>
+<h3 id="coregamecpp"><code>core/game.cpp</code> </h3>
+<ul>
+<li><code>initialize()</code>：初始化单位，构建场景，执行首次 reset</li>
+<li><code>reset()</code>：清空棋盘并放回初始单位位置</li>
+<li><code>buildScene()</code>：创建所有 <code>GridItem/UnitItem</code> 并建立信号连接</li>
+<li><code>syncFromBoard()</code>：根据 <code>Board</code> 同步图元位置、可见性与 z 值</li>
+<li><code>handleDragStarted(...)</code>：记录拖拽上下文并提升当前单位 z 值</li>
+<li><code>handleDragMoved(...)</code>：计算目标格并更新高亮反馈</li>
+<li><code>handleDropCommand(...)</code>：执行规则校验，成功后落子并同步渲染</li>
+<li><code>canApplyDrop(...)</code>：拖拽合法性检查</li>
+<li><code>applyDrop(...)</code>：真正更新 <code>Board</code> 数据</li>
+<li><code>gridToWorld(...) / worldToGrid(...) / cellHexPolygon(...)</code>：六边形坐标变换与几何生成</li>
+</ul>
+<h3 id="coreboardcpp"><code>core/board.cpp</code> </h3>
+<ul>
+<li><code>addUnit(...) / removeUnit(...)</code>：更新占位与单位位置</li>
+<li><code>getUnitAt(...) / hasUnitAt(...)</code>：查询格子占用</li>
+<li><code>isValidPosition(...) / isPlayerHalf(...)</code>：规则辅助检查</li>
+<li><code>clear()</code>：清空棋盘</li>
+</ul>
+<h3 id="guiunititemcpp"><code>gui/unititem.cpp</code> </h3>
+<ul>
+<li><code>paint(...)</code>：绘制 sprite 或回退占位图</li>
+<li><code>ensureSpriteLoaded()</code>：懒加载资源，避免重复读取</li>
+<li><code>mousePressEvent/mouseMoveEvent/mouseReleaseEvent</code>：处理拖拽输入并发信号</li>
+</ul>
+<h3 id="guigriditemcpp"><code>gui/griditem.cpp</code> </h3>
+<ul>
+<li><code>paint(...)</code>：绘制六边形格子和交互高亮</li>
+<li><code>setHoverActive(...) / setDropActive(...)</code>：高亮状态切换</li>
+</ul>
+<h2 id="7-构建与运行">7. 构建与运行 </h2>
+<p>本项目支持两种常见方式：</p>
+<ol>
+<li>使用 Qt Creator IDE 打开并构建</li>
+<li>使用 CMake 在命令行自行配置与构建</li>
+</ol>
+<h3 id="71-使用-qt-creator">7.1 使用 Qt Creator </h3>
+<ol>
+<li>安装 Qt6 与 Qt Creator（官方下载安装：<code>https://www.qt.io/</code>）</li>
+<li>打开 Qt Creator，选择 <code>File -&gt; Open File or Project</code></li>
+<li>点击 Configure 后执行 Build / Run</li>
+</ol>
+<h3 id="72-使用-cmake-命令行">7.2 使用 CMake 命令行 </h3>
+<h4 id="linux--macos">Linux / macOS </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> build
+<span class="token builtin class-name">cd</span> build
+cmake <span class="token punctuation">..</span>
+cmake <span class="token parameter variable">--build</span> <span class="token builtin class-name">.</span>
+./Synera_Starter
+</code></pre><h4 id="windowspowershell">Windows（PowerShell） </h4>
+<pre data-role="codeBlock" data-info="powershell" class="language-powershell powershell"><code>mkdir build
+cd build
+cmake <span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token operator">-</span>G <span class="token string">"Visual Studio 17 2022"</span>
+cmake <span class="token operator">--</span>build <span class="token punctuation">.</span> <span class="token operator">--</span>config Release
+<span class="token punctuation">.</span>\Release\Synera_Starter<span class="token punctuation">.</span>exe
+</code></pre><h2 id="8-资源assets说明">8. 资源（assets）说明 </h2>
+<ul>
+<li><strong>在本PA中UI并不重要，你甚至只需要用QT painter画一些占位符即可</strong></li>
+<li>当前demo中优先使用 PNG 静态首帧，在<code>assets/</code>下主要提供一些<code>2D character sprites</code>供大家参考</li>
+</ul>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

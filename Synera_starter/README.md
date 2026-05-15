@@ -27,7 +27,7 @@
 - `GameWindow`：主窗口（`QGraphicsView + Reset`）
 
 ## 3. 目录结构
-
+  
 ```text
 Synera_Starter/
 |- CMakeLists.txt

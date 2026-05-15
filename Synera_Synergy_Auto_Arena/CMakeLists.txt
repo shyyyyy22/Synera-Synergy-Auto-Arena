@@ -19,9 +19,9 @@ file(GLOB_RECURSE SOURCES
 )
 
 file(GLOB_RECURSE HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hxx"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*/*.hxx"
 )
 
 
