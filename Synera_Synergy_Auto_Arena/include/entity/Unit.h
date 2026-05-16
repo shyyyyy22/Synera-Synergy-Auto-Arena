@@ -19,6 +19,7 @@ public:
     int getAtk()const;
     int getRange()const;
     int getMana()const;
+    QString getName()const;
     QPoint getPos()const;
     Owner getOwner()const;
 

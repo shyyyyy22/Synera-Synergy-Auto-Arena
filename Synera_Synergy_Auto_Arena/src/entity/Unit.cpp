@@ -30,6 +30,9 @@ int Unit::getRange()const{
 int Unit::getMana()const{
     return m_mana;
 }
+QString Unit::getName()const{
+    return m_name;
+}
 QPoint Unit::getPos()const{
     return m_pos;
 }
