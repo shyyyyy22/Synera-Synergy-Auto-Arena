@@ -1,9 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include<QVector>
 #include<QPoint>
-#include"Unit.h";
+#include"Unit.h"
 
 class Board
 {
@@ -29,7 +28,7 @@ private:
 
     int m_rows;
     int m_cols;
-    QVector<Unit*> m_cells;
+    std::vector<Unit*> m_cells;
 };
 
 #endif // BOARD_H
