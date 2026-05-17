@@ -1,9 +1,10 @@
 #include "Board.h"
-
-Board::Board(int rows,int cols)
+#include"Game.h"
+Board::Board(int rows,int cols,bool isBoard)
     :m_rows(rows)
     ,m_cols(cols)
     ,m_cells(rows * cols,nullptr)
+    ,m_isBoard(isBoard)
 {}
 
 //基础功能
@@ -37,12 +38,12 @@ Unit* Board::getUnitAt(const QPoint &pos)const{
     return idx<0?nullptr:m_cells[idx];
 }
 bool Board::hasUnitAt(const QPoint &pos)const{
-    int idx=indexOf(pos);
-    return (idx>0||m_cells[idx]!=nullptr);
+    return getUnitAt(pos)!=nullptr;
 }
 //工具函数
 bool Board::isValidPosition(const QPoint &pos)const{
-    return pos.x()>=0 && pos.x()<m_cols && pos.y()>=0 && pos.y()<m_rows;
+    if(m_isBoard)return pos.x()>=0 && pos.x()<m_cols && pos.y()>=0 && pos.y()<m_rows;
+    else return pos.x()>=0 && pos.x()<m_cols && pos.y()==8;
 }
 bool Board::isPlayerHalf(const QPoint &pos)const{
     if(!isValidPosition(pos)){
@@ -59,5 +60,6 @@ int Board::indexOf(const QPoint &pos)const{
     if(!isValidPosition(pos)){
         return -1;
     }
-    return pos.y() * m_cols + pos.x();
+    if(m_isBoard)return pos.y() * m_cols + pos.x();
+    else return pos.x();
 }

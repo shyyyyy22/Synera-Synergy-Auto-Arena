@@ -7,7 +7,7 @@
 class Board
 {
 public:
-    Board(int rows,int cols);
+    Board(int rows,int cols,bool isBoard);
     ~Board()=default;
 
     //基础功能
@@ -29,6 +29,7 @@ private:
     int m_rows;
     int m_cols;
     std::vector<Unit*> m_cells;
+    bool m_isBoard;
 };
 
 #endif // BOARD_H

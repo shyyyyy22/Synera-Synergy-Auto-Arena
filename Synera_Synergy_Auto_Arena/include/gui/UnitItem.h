@@ -17,11 +17,24 @@ public:
     Unit* getUnit()const;
     void setGridPos(const QPoint &gridPos);
     bool getIsBoard ()const;
+    void setIsBoard(bool stage);
+
+signals:
+    void dragStarted(int unitId,const QPoint &gridPos,const QPointF &worldPos);
+    void dragMoved(int unitId,const QPoint &gridPos,const QPointF &worldPos);
+    void dragDropped(int unitId,const QPoint &gridPos,const QPointF &worldPos);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
 private:
     Unit* m_unit;
     QPoint m_gridPos;
     bool m_isBoard;
     QColor m_color;
+    bool m_dragging;
 };
 
 #endif // UNITITEM_H

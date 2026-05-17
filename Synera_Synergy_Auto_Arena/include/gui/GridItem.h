@@ -16,8 +16,16 @@ public:
     //基础功能
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-    void setBaseColor(const QColor& color);
 
+    //属性相关
+    void setBaseColor(const QColor& color);
+    void setHoverActive(bool active);
+    void setDropActive(bool active);
+    QPoint getPos()const;
+
+protected:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 private:
     int m_rows;
     int m_cols;
@@ -26,6 +34,9 @@ private:
     QPolygonF m_poly;
     QRectF m_bounds;
     GridShape m_shape;
+    bool m_dropActive;
+    bool m_hoverActive;
+    bool m_pointerHover;
 };
 
 #endif // GRIDITEM_H

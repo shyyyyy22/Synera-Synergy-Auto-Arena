@@ -7,7 +7,7 @@ Player::Player()
     ,m_maxUnit(3)
     ,m_majorStage(1)
     ,m_minorStage(1)
-    ,m_bench(1,8)
+    ,m_bench(1,8,false)
 {}
 
 //基础功能

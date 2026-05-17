@@ -10,10 +10,19 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_rows(rows)
     ,m_cols(cols)
     ,m_radius(46.0)
-    ,m_board(rows,cols)
-    ,m_bench(1,cols)
+    ,m_board(rows,cols,true)
+    ,m_bench(1,cols,false)
     ,m_scene(new QGraphicsScene(this))
-{}
+    ,m_dragActive(false)
+    ,m_activeUnitId(-1)
+    ,m_sourcePos(QPoint(-1,-1))
+{
+
+}
+Game::~Game(){
+    qDeleteAll(m_units);
+    m_units.clear();
+}
 
 //初始化相关
 void Game::initialize(){
@@ -26,10 +35,10 @@ void Game::reset(){
     m_bench.clear();
 
     const QPoint initialPositions[]{
-        QPoint (0,0),
-        QPoint (1,0),
-        QPoint (2,0),
-        QPoint (3,0)
+        QPoint (0,m_rows),
+        QPoint (1,m_rows),
+        QPoint (2,m_rows),
+        QPoint (3,m_rows)
     };
 
     for(int i=0;i<m_units.size();++i){
@@ -43,6 +52,41 @@ void Game::reset(){
 QGraphicsScene* Game::getScene()const{
     return m_scene;
 }
+
+Unit *Game::getUnitById(int unitId) const
+{
+    for(Unit* unit:m_units){
+        if(unit && unit->getId()==unitId){
+            return unit;
+        }
+    }
+    return nullptr;
+}
+
+UnitItem *Game::getUnitItem(int unitId) const
+{
+    auto it=m_unitItemById.find(unitId);
+    if(it==m_unitItemById.end()){
+        return nullptr;
+    }
+    return it->second;
+}
+
+GridItem *Game::getGridItem(const QPoint &gridPos)
+{
+    for(GridItem* item:m_gridItems){
+        if(item && item->getPos()==gridPos){
+            return item;
+        }
+    }
+    for(GridItem* item:m_benchItems){
+        if(item && item->getPos()==gridPos){
+            return item;
+        }
+    }
+    return nullptr;
+}
+
 
 //画棋盘
 void Game::buildScene(){
@@ -60,7 +104,7 @@ void Game::buildScene(){
             GridItem* gridItem=new GridItem(i,j,m_radius,GridShape::Hexagon);
             gridItem->setZValue(kZGrid);
             gridItem->setBaseColor(i < m_rows / 2 ? QColor(80, 60, 60) : QColor(60, 60, 80));
-            gridItem->setPos(gridToWorld(i,j));
+            gridItem->setPos(gridToWorld(i,j,true));
 
             m_scene->addItem(gridItem);
             m_gridItems.push_back(gridItem);
@@ -76,8 +120,8 @@ void Game::buildScene(){
         GridItem *benchItem=new GridItem(m_rows,j,m_radius,GridShape::Square);
         benchItem->setZValue(kZGrid);
         benchItem->setBaseColor(QColor(50, 50, 50));
-        QPointF pos=gridToWorld(m_rows,j);
-        benchItem->setPos(pos.x()-0.4*m_radius,pos.y()+40);
+        QPointF pos=gridToWorld(m_rows,j,false);
+        benchItem->setPos(pos);
 
         m_scene->addItem(benchItem);
         m_benchItems.push_back(benchItem);
@@ -93,11 +137,19 @@ void Game::buildScene(){
         item->setZValue(kZUnit);
         m_scene->addItem(item);
         m_unitItems.push_back(item);
+        m_unitItemById[unit->getId()]=item;
+
+        connect(item,&UnitItem::dragStarted,this,&Game::onDragStarted);
+        connect(item,&UnitItem::dragMoved,this,&Game::onDragMoved);
+        connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
     }
 
     m_scene->setSceneRect(totalBounds.adjusted(-40, -40, 40, 40));
 }
 void Game::syncFromBoardAndBench(){
+
+    clearGridHighLights();
+
     for(UnitItem* item:m_unitItems){
         if(!item || !item->getUnit()){
             continue;
@@ -118,18 +170,117 @@ void Game::syncFromBoardAndBench(){
         }
 
         item->setVisible(true);
-        item->setGridPos(pos);
         item->setZValue(kZUnit);
-        QPointF worldPos=item->getIsBoard()?gridToWorld(pos.y(),pos.x()):gridToWorld(pos.y()+m_rows,pos.x());
+        QPointF worldPos=item->getIsBoard()?gridToWorld(pos.y(),pos.x(),true):gridToWorld(pos.y(),pos.x(),false);
         if(!item->getIsBoard()){
-            item->setPos(worldPos.x()-0.4*m_radius+40,worldPos.y()+80);
+            item->setPos(worldPos);
+            item->setGridPos(QPoint(pos.x(),pos.y()));
         }
         else{
             item->setPos(worldPos);
+            item->setGridPos(pos);
         }
     }
 }
-QPointF Game::gridToWorld(int row, int col) const{
+
+void Game::clearGridHighLights()
+{
+    for(GridItem* item:m_gridItems){
+        if(!item){
+            continue;
+        }
+        item->setHoverActive(false);
+        item->setDropActive(false);
+    }
+    for(GridItem* item:m_benchItems){
+        if(!item){
+            continue;
+        }
+        item->setHoverActive(false);
+        item->setDropActive(false);
+    }
+}
+
+bool Game::canApplyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
+{
+    Unit* unit=getUnitById(unitId);
+    if(!unit){
+        return false;
+    }
+
+    if(sourcePos.y()==m_rows){
+        if(target.y()==m_rows){
+            if(sourcePos.x()<0 || sourcePos.x()>=m_cols || target.x()<0 || target.x()>=m_cols){
+                return false;
+            }
+            if(sourcePos==target || m_bench.hasUnitAt(target)){
+                return false;
+            }
+        }
+        else {
+            if(sourcePos.x()<0 || sourcePos.x()>=m_cols || !m_board.isValidPosition(target)){
+                return false;
+            }
+            if(!m_board.isPlayerHalf(target) || m_board.hasUnitAt(target)){
+                return false;
+            }
+        }
+    }
+    else {
+        if(target.y()==m_rows){
+            if(!m_board.isValidPosition(sourcePos) || target.x()<0 || target.x()>=m_cols){
+                return false;
+            }
+            if(!m_board.isPlayerHalf(sourcePos) || m_bench.hasUnitAt(target)){
+                return false;
+            }
+        }
+        else {
+            if(!m_board.isValidPosition(sourcePos) || !m_board.isValidPosition(target)){
+                return false;
+            }
+            if(!m_board.isPlayerHalf(sourcePos) || !m_board.isPlayerHalf(target)){
+                return false;
+            }
+            if(sourcePos==target || m_board.hasUnitAt(target)){
+                return false;
+            }
+        }
+    }
+
+    return true;
+
+}
+
+void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
+{
+    Unit* unit=getUnitById(unitId);
+    UnitItem* item=getUnitItem(unitId);
+    if(!unit){
+        return;
+    }
+    if(sourcePos.y()==m_rows){
+        if(target.y()==m_rows){
+            m_bench.moveUnit(unit,target);
+        }
+        else {
+            m_bench.removeUnit(unit);
+            m_board.addUnit(unit,target);
+            item->setIsBoard(true);
+        }
+    }
+    else {
+        if(target.y()==m_rows){
+            m_board.removeUnit(unit);
+            m_bench.addUnit(unit,target);
+            item->setIsBoard(false);
+        }
+        else {
+            m_board.moveUnit(unit,target);
+        }
+    }
+}
+QPointF Game::gridToWorld(int row, int col,bool isBoard) const{
     qreal w = m_radius * qSqrt(3.0);
 
     qreal x = col * w;
@@ -139,7 +290,28 @@ QPointF Game::gridToWorld(int row, int col) const{
 
     qreal y = row * (m_radius * 1.5);
 
-    return QPointF(x, y);
+    return isBoard?QPointF(x, y):QPointF(x-0.4*m_radius+40,y+80);
+}
+
+QPoint Game::worldToGrid(QPointF worldPos) const
+{
+    QPoint best(-1,-1);
+    qreal distance=1e18;
+
+    for(int row=0;row<=m_rows;++row){
+        for(int col=0;col<m_cols;++col){
+            QPointF center=gridToWorld(row,col,row==m_rows?false:true);
+            qreal dx=worldPos.x()-center.x();
+            qreal dy=worldPos.y()-center.y();
+            qreal d=dx*dx+dy*dy;
+            if(d<distance){
+                distance=d;
+                best=QPoint(col,row);
+            }
+        }
+    }
+
+    return best;
 }
 
 //测试使用
@@ -151,4 +323,61 @@ void Game::initialUnitForTest(){
     m_units.push_back(new Unit("射手",100,5,3,100,Owner::PlayerCtrl));
     m_units.push_back(new Unit("法师",100,8,3,80,Owner::PlayerCtrl));
     m_units.push_back(new Unit("召唤师",80,10,5,100,Owner::PlayerCtrl));
+}
+
+//拖拽
+void Game::onDragStarted(int unitId, const QPoint &sourcePos, const QPointF &worldPos)
+{
+    m_dragActive=true;
+    m_activeUnitId=unitId;
+    m_sourcePos=sourcePos;
+
+    UnitItem * item=getUnitItem(unitId);
+    if(item){
+        item->setZValue(kZDraggingUnit);
+    }
+}
+
+void Game::onDragMoved(int unitId, const QPoint &sourcePos, const QPointF &worldPos)
+{
+    if(!m_dragActive){
+        return;
+    }
+
+    clearGridHighLights();
+
+    const QPoint target=worldToGrid(worldPos);
+    GridItem* targetItem=getGridItem(target);
+    //qDebug() << "Target item found:" << targetItem<<111;
+    if(!targetItem){
+        return;
+    }
+    targetItem->setHoverActive(true);
+    if(canApplyDrop(unitId,m_sourcePos,target)){
+        targetItem->setDropActive(true);
+    }
+}
+
+void Game::onDragDropped(int unitId, const QPoint &sourcePos, const QPointF &worldPos)
+{
+    if(!m_dragActive){
+        return;
+    }
+    QPoint target=worldToGrid(worldPos);
+    clearGridHighLights();
+    if(canApplyDrop(unitId,m_sourcePos,target)){
+        applyDrop(unitId,m_sourcePos,target);
+    }
+
+    UnitItem* item=getUnitItem(unitId);
+    if(item){
+        item->setZValue(kZUnit);
+    }
+
+    m_dragActive=false;
+    m_activeUnitId=-1;
+    m_sourcePos=QPoint(-1,-1);
+
+
+    syncFromBoardAndBench();
 }
