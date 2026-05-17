@@ -21,6 +21,11 @@ int Unit::getId()const{
 int Unit::getHp()const{
     return m_hp;
 }
+
+int Unit::getMaxHp() const
+{
+    return m_maxHp;
+}
 int Unit::getAtk()const{
     return m_atk;
 }
@@ -29,6 +34,11 @@ int Unit::getRange()const{
 }
 int Unit::getMana()const{
     return m_mana;
+}
+
+int Unit::getMaxMana() const
+{
+    return m_maxMana;
 }
 QString Unit::getName()const{
     return m_name;

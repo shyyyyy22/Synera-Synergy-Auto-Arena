@@ -158,12 +158,14 @@ void Game::syncFromBoardAndBench(){
         //qDebug() << "Unit:" << item->getUnit()->getName() << "at pos:" << pos;
         if(item->getIsBoard()){
             if(!m_board.isValidPosition(pos) || m_board.getUnitAt(pos)!=item->getUnit()){
+
                 item->setVisible(false);
                 continue;
             }
         }
         else {
             if(!m_bench.isValidPosition(pos) || m_bench.getUnitAt(pos)!=item->getUnit()){
+                qDebug() << "Debug消失:" << item->getUnit()->getName() << "应该在备战区(" << pos << ")，但备战区没它！";
                 item->setVisible(false);
                 continue;
             }
@@ -213,7 +215,7 @@ bool Game::canApplyDrop(int unitId, const QPoint &sourcePos, const QPoint &targe
             if(sourcePos.x()<0 || sourcePos.x()>=m_cols || target.x()<0 || target.x()>=m_cols){
                 return false;
             }
-            if(sourcePos==target || m_bench.hasUnitAt(target)){
+            if(sourcePos==target){
                 return false;
             }
         }
@@ -221,7 +223,7 @@ bool Game::canApplyDrop(int unitId, const QPoint &sourcePos, const QPoint &targe
             if(sourcePos.x()<0 || sourcePos.x()>=m_cols || !m_board.isValidPosition(target)){
                 return false;
             }
-            if(!m_board.isPlayerHalf(target) || m_board.hasUnitAt(target)){
+            if(!m_board.isPlayerHalf(target)){
                 return false;
             }
         }
@@ -231,7 +233,7 @@ bool Game::canApplyDrop(int unitId, const QPoint &sourcePos, const QPoint &targe
             if(!m_board.isValidPosition(sourcePos) || target.x()<0 || target.x()>=m_cols){
                 return false;
             }
-            if(!m_board.isPlayerHalf(sourcePos) || m_bench.hasUnitAt(target)){
+            if(!m_board.isPlayerHalf(sourcePos)){
                 return false;
             }
         }
@@ -242,7 +244,7 @@ bool Game::canApplyDrop(int unitId, const QPoint &sourcePos, const QPoint &targe
             if(!m_board.isPlayerHalf(sourcePos) || !m_board.isPlayerHalf(target)){
                 return false;
             }
-            if(sourcePos==target || m_board.hasUnitAt(target)){
+            if(sourcePos==target){
                 return false;
             }
         }
@@ -256,27 +258,73 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
 {
     Unit* unit=getUnitById(unitId);
     UnitItem* item=getUnitItem(unitId);
-    if(!unit){
+    if(!unit || !item){
         return;
     }
     if(sourcePos.y()==m_rows){
         if(target.y()==m_rows){
-            m_bench.moveUnit(unit,target);
+            Unit* targetUnit=m_bench.getUnitAt(target);
+            UnitItem* targetItem=nullptr;
+            if(targetUnit){
+                targetItem=getUnitItem(targetUnit->getId());
+                m_bench.removeUnit(targetUnit);
+                m_bench.removeUnit(unit);
+                m_bench.addUnit(targetUnit,sourcePos);
+                m_bench.addUnit(unit,target);
+            }
+            else {m_bench.moveUnit(unit,target);}
         }
         else {
-            m_bench.removeUnit(unit);
-            m_board.addUnit(unit,target);
-            item->setIsBoard(true);
+            Unit* targetUnit=m_board.getUnitAt(target);
+            UnitItem* targetItem=nullptr;
+            if(targetUnit){
+                targetItem=getUnitItem(targetUnit->getId());
+                m_board.removeUnit(targetUnit);
+                m_bench.removeUnit(unit);
+                m_board.addUnit(unit,target);
+                item->setIsBoard(true);
+                m_bench.addUnit(targetUnit,sourcePos);
+                targetItem->setIsBoard(false);
+            }
+            else{
+                m_bench.removeUnit(unit);
+                m_board.addUnit(unit,target);
+                item->setIsBoard(true);
+            }
         }
     }
     else {
         if(target.y()==m_rows){
-            m_board.removeUnit(unit);
-            m_bench.addUnit(unit,target);
-            item->setIsBoard(false);
+            Unit* targetUnit=m_bench.getUnitAt(target);
+            UnitItem* targetItem=nullptr;
+            if(targetUnit){
+                targetItem=getUnitItem(targetUnit->getId());
+                m_bench.removeUnit(targetUnit);
+                m_board.removeUnit(unit);
+                m_bench.addUnit(unit,target);
+                item->setIsBoard(false);
+                m_board.addUnit(targetUnit,sourcePos);
+                targetItem->setIsBoard(true);
+            }
+            else{
+                m_board.removeUnit(unit);
+                m_bench.addUnit(unit,target);
+                item->setIsBoard(false);
+            }
         }
         else {
-            m_board.moveUnit(unit,target);
+            Unit* targetUnit=m_board.getUnitAt(target);
+            UnitItem* targetItem=nullptr;
+            if(targetUnit){
+                targetItem=getUnitItem(targetUnit->getId());
+                m_board.removeUnit(targetUnit);
+                m_board.removeUnit(unit);
+                m_board.addUnit(targetUnit,sourcePos);
+                m_board.addUnit(unit,target);
+            }
+            else{
+                m_board.moveUnit(unit,target);
+            }
         }
     }
 }

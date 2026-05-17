@@ -41,6 +41,20 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         painter->setFont(font);
         painter->drawText(QRectF(-13, -13, 26, 26), Qt::AlignCenter, m_unit->getName().left(1));
 
+        //血条
+        qreal hpPercent=qreal(m_unit->getHp())/m_unit->getMaxHp();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QColor(100, 0, 0));
+        painter->drawRect(-15,-25,30,5);
+        painter->setBrush(Qt::green);
+        painter->drawRect(-15,-25,30*hpPercent,5);
+        //蓝条
+        qreal manaPercent=qreal(m_unit->getMana())/m_unit->getMaxMana();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QColor(100, 0, 0));
+        painter->drawRect(-15,20,30,5);
+        painter->setBrush(QColor(80,130,200));
+        painter->drawRect(-15,20,30*manaPercent,5);
     }
 }
 
@@ -81,6 +95,7 @@ void UnitItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
+    setPos(event->scenePos());
     emit dragMoved(getUnit()->getId(),m_gridPos,event->scenePos());
     event->accept();
 }

@@ -16,9 +16,11 @@ public:
     //属性相关
     int getId()const;
     int getHp()const;
+    int getMaxHp()const;
     int getAtk()const;
     int getRange()const;
     int getMana()const;
+    int getMaxMana()const;
     QString getName()const;
     QPoint getPos()const;
     Owner getOwner()const;
