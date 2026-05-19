@@ -24,6 +24,7 @@ public:
     QString getName()const;
     QPoint getPos()const;
     Owner getOwner()const;
+    int getStar()const;
 
     void setHp(int newHp);
     void setAtk(int newAtk);
@@ -47,6 +48,7 @@ private:
     QString m_name;
     QPoint m_pos;
     Owner m_owner;
+    int m_star;
 };
 
 #endif // UNIT_H

@@ -12,6 +12,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_name(name)
     ,m_pos(-1,-1)
     ,m_owner(owner)
+    ,m_star(1)
 {}
 
 //属性相关
@@ -48,6 +49,11 @@ QPoint Unit::getPos()const{
 }
 Owner Unit::getOwner()const{
     return m_owner;
+}
+
+int Unit::getStar() const
+{
+    return m_star;
 }
 
 void Unit::setHp(int newHp){

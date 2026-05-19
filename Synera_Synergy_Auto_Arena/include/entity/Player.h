@@ -1,8 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include"Board.h"
-
 class Player
 {
 public:
@@ -22,7 +20,6 @@ private:
     unsigned short m_maxUnit;
     unsigned short m_majorStage;
     unsigned short m_minorStage;
-    Board m_bench;
 };
 
 #endif // PLAYER_H

@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     GameWindow window;
     window.setWindowTitle("Synera: Synergy Auto-Arena");
-    window.resize(900,800);
+    window.resize(1200,900);
     window.show();
 
     return app.exec();

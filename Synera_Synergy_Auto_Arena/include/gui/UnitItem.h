@@ -18,8 +18,11 @@ public:
     void setGridPos(const QPoint &gridPos);
     bool getIsBoard ()const;
     void setIsBoard(bool stage);
+    void setIsSelected(bool selected);
+    bool getIsSelected()const;
 
 signals:
+    void clicked(Unit* unit);
     void dragStarted(int unitId,const QPoint &gridPos,const QPointF &worldPos);
     void dragMoved(int unitId,const QPoint &gridPos,const QPointF &worldPos);
     void dragDropped(int unitId,const QPoint &gridPos,const QPointF &worldPos);
@@ -35,6 +38,7 @@ private:
     bool m_isBoard;
     QColor m_color;
     bool m_dragging;
+    bool m_isSelected;
 };
 
 #endif // UNITITEM_H

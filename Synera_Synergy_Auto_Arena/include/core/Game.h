@@ -6,6 +6,7 @@
 #include<QGraphicsScene>
 #include"GridItem.h"
 #include"UnitItem.h"
+#include"Player.h"
 
 class Game : public QObject
 {
@@ -22,13 +23,18 @@ public:
     QGraphicsScene* getScene()const;
     Unit* getUnitById(int unitId)const;
     UnitItem* getUnitItem(int unitId)const;
-    GridItem* getGridItem(const QPoint &gridPos);;
+    GridItem* getGridItem(const QPoint &gridPos)const;
+    Player* getPlayer()const;
 
     //测试使用
     void initialUnitForTest();
 
-    //拖拽
+
 public slots:
+    //属性面板
+    void onClicked(Unit* unit);
+    void clearAllSelected();
+    //拖拽
     void onDragStarted(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragMoved(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragDropped(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
@@ -49,6 +55,8 @@ private:
     Board m_board;
     Board m_bench;
 
+    Player* m_player;
+
     QGraphicsScene *m_scene;
 
     std::vector<Unit*> m_units;
@@ -62,6 +70,8 @@ private:
     QPoint m_sourcePos;
 
     friend bool Board::isValidPosition(const QPoint &pos)const;
+signals:
+    void unitSelected(Unit* unit);
 };
 
 #endif // GAME_H

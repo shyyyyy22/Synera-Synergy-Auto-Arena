@@ -16,12 +16,14 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_dragActive(false)
     ,m_activeUnitId(-1)
     ,m_sourcePos(QPoint(-1,-1))
+    ,m_player(new Player)
 {
 
 }
 Game::~Game(){
     qDeleteAll(m_units);
     m_units.clear();
+    delete m_player;
 }
 
 //初始化相关
@@ -72,7 +74,12 @@ UnitItem *Game::getUnitItem(int unitId) const
     return it->second;
 }
 
-GridItem *Game::getGridItem(const QPoint &gridPos)
+Player *Game::getPlayer() const
+{
+    return m_player;
+}
+
+GridItem *Game::getGridItem(const QPoint &gridPos)const
 {
     for(GridItem* item:m_gridItems){
         if(item && item->getPos()==gridPos){
@@ -142,6 +149,7 @@ void Game::buildScene(){
         connect(item,&UnitItem::dragStarted,this,&Game::onDragStarted);
         connect(item,&UnitItem::dragMoved,this,&Game::onDragMoved);
         connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
+        connect(item,&UnitItem::clicked,this,&Game::onClicked);
     }
 
     m_scene->setSceneRect(totalBounds.adjusted(-40, -40, 40, 40));
@@ -165,7 +173,7 @@ void Game::syncFromBoardAndBench(){
         }
         else {
             if(!m_bench.isValidPosition(pos) || m_bench.getUnitAt(pos)!=item->getUnit()){
-                qDebug() << "Debug消失:" << item->getUnit()->getName() << "应该在备战区(" << pos << ")，但备战区没它！";
+                //qDebug() << "Debug消失:" << item->getUnit()->getName() << "应该在备战区(" << pos << ")，但备战区没它！";
                 item->setVisible(false);
                 continue;
             }
@@ -371,6 +379,30 @@ void Game::initialUnitForTest(){
     m_units.push_back(new Unit("射手",100,5,3,100,Owner::PlayerCtrl));
     m_units.push_back(new Unit("法师",100,8,3,80,Owner::PlayerCtrl));
     m_units.push_back(new Unit("召唤师",80,10,5,100,Owner::PlayerCtrl));
+}
+
+//属性面板
+void Game::onClicked(Unit *unit)
+{
+
+    UnitItem* item=getUnitItem(unit->getId());
+    bool flag=item->getIsSelected();
+    clearAllSelected();
+    item->setIsSelected(flag);
+    if(item->getIsSelected()){
+        emit unitSelected(unit);
+    }
+    else {
+        emit unitSelected(nullptr);
+    }
+}
+
+void Game::clearAllSelected()
+{
+    for(UnitItem* item:m_unitItems){
+        item->setIsSelected(false);
+    }
+    m_scene->update();
 }
 
 //拖拽

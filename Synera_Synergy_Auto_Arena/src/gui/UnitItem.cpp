@@ -7,6 +7,7 @@ UnitItem::UnitItem(Unit* unit, bool isBoard,QGraphicsItem* parent)
     ,m_unit(unit)
     ,m_isBoard(isBoard)
     ,m_dragging(false)
+    ,m_isSelected(false)
 {
     m_color=m_unit->getOwner()==Owner::PlayerCtrl?QColor(100, 150, 200):QColor(200,150,100);
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -55,6 +56,12 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         painter->drawRect(-15,20,30,5);
         painter->setBrush(QColor(80,130,200));
         painter->drawRect(-15,20,30*manaPercent,5);
+        //高亮
+        if (m_isSelected) {
+            painter->setPen(QPen(Qt::yellow, 4));
+            painter->setBrush(Qt::NoBrush);
+            painter->drawEllipse(QPoint(m_gridPos.x()-3,m_gridPos.y()-10),30,35);
+        }
     }
 }
 
@@ -74,6 +81,16 @@ void UnitItem::setIsBoard(bool stage)
     m_isBoard=stage;
 }
 
+void UnitItem::setIsSelected(bool selected)
+{
+    m_isSelected=selected;
+}
+
+bool UnitItem::getIsSelected() const
+{
+    return m_isSelected;
+}
+
 
 //拖拽
 void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -82,6 +99,9 @@ void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsObject::mousePressEvent(event);
         return;
     }
+
+    m_isSelected=!m_isSelected;
+    emit clicked(m_unit);
 
     m_dragging=true;
     emit dragStarted(getUnit()->getId(),m_gridPos,event->scenePos());
@@ -95,8 +115,10 @@ void UnitItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
+    m_isSelected=true;
     setPos(event->scenePos());
     emit dragMoved(getUnit()->getId(),m_gridPos,event->scenePos());
+    emit clicked(m_unit);
     event->accept();
 }
 
