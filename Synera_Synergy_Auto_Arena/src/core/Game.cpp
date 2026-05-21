@@ -23,12 +23,14 @@ Game::Game(int rows,int cols,QObject *parent)
 Game::~Game(){
     qDeleteAll(m_units);
     m_units.clear();
+    m_scene->clear();
     delete m_player;
 }
 
 //初始化相关
 void Game::initialize(){
     initialUnitForTest();
+    generateEnemy();
     buildScene();
     reset();
 }
@@ -36,6 +38,7 @@ void Game::reset(){
     m_board.clear();
     m_bench.clear();
 
+    int playerPos=0,enemyPos=0;
     const QPoint initialPositions[]{
         QPoint (0,m_rows),
         QPoint (1,m_rows),
@@ -43,9 +46,23 @@ void Game::reset(){
         QPoint (3,m_rows)
     };
 
+    const QPoint initialPositionsForEnemys[]{
+        QPoint (0,3),
+        QPoint (1,3),
+        QPoint (2,3),
+        QPoint (3,3)
+    };
+
+
     for(int i=0;i<m_units.size();++i){
-        m_bench.addUnit(m_units[i],initialPositions[i]);
+        if(m_units[i]->getOwner()==Owner::PlayerCtrl){
+            m_bench.addUnit(m_units[i],initialPositions[playerPos++]);
+        }
+        else {
+            m_board.addUnit(m_units[i],initialPositionsForEnemys[enemyPos++]);
+        }
     }
+
 
     syncFromBoardAndBench();
 }
@@ -140,15 +157,23 @@ void Game::buildScene(){
 
     //单位
     for(Unit *unit:m_units){
-        UnitItem* item=new UnitItem(unit,false);
+        UnitItem* item=nullptr;
+        if(unit->getOwner()==Owner::PlayerCtrl){
+            item=new UnitItem(unit,false);
+        }
+        else {
+            item=new UnitItem(unit,true);
+        }
         item->setZValue(kZUnit);
         m_scene->addItem(item);
         m_unitItems.push_back(item);
         m_unitItemById[unit->getId()]=item;
 
-        connect(item,&UnitItem::dragStarted,this,&Game::onDragStarted);
-        connect(item,&UnitItem::dragMoved,this,&Game::onDragMoved);
-        connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
+        if(unit->getOwner()==Owner::PlayerCtrl){
+            connect(item,&UnitItem::dragStarted,this,&Game::onDragStarted);
+            connect(item,&UnitItem::dragMoved,this,&Game::onDragMoved);
+            connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
+        }
         connect(item,&UnitItem::clicked,this,&Game::onClicked);
     }
 
@@ -166,7 +191,7 @@ void Game::syncFromBoardAndBench(){
         //qDebug() << "Unit:" << item->getUnit()->getName() << "at pos:" << pos;
         if(item->getIsBoard()){
             if(!m_board.isValidPosition(pos) || m_board.getUnitAt(pos)!=item->getUnit()){
-
+                //qDebug() << "Debug消失:" << item->getUnit()->getName() << "应该在棋盘(" << pos << ")，但棋盘没它！";
                 item->setVisible(false);
                 continue;
             }
@@ -368,6 +393,16 @@ QPoint Game::worldToGrid(QPointF worldPos) const
     }
 
     return best;
+}
+
+void Game::generateEnemy()
+{
+    m_units.push_back(new Unit("敌人战士",150,5,1,100,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("敌人射手",100,5,3,100,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("敌人法师",100,8,3,80,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("敌人召唤师",80,10,5,100,Owner::EnemyCtrl));
+
+
 }
 
 //测试使用

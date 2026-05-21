@@ -95,6 +95,7 @@ bool UnitItem::getIsSelected() const
 //拖拽
 void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+
     if(event->button()!=Qt::LeftButton){
         QGraphicsObject::mousePressEvent(event);
         return;
@@ -102,10 +103,11 @@ void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     m_isSelected=!m_isSelected;
     emit clicked(m_unit);
-
-    m_dragging=true;
-    emit dragStarted(getUnit()->getId(),m_gridPos,event->scenePos());
-    event->accept();
+    if(m_unit->getOwner()==Owner::PlayerCtrl){
+        m_dragging=true;
+        emit dragStarted(getUnit()->getId(),m_gridPos,event->scenePos());
+        event->accept();
+    }
 }
 
 void UnitItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

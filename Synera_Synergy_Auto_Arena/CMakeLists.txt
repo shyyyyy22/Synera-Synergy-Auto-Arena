@@ -42,10 +42,12 @@ else()
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(Synera_Synergy_Auto_Arenar ${SOURCES} ${HEADERS})
+        add_executable(Synera_Synergy_Auto_Arena ${SOURCES} ${HEADERS})
 
     endif()
 endif()
+
+
 
 target_link_libraries(Synera_Synergy_Auto_Arena PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_include_directories(Synera_Synergy_Auto_Arena PRIVATE
@@ -77,3 +79,4 @@ install(TARGETS Synera_Synergy_Auto_Arena
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(Synera_Synergy_Auto_Arena)
 endif()
+

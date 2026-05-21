@@ -48,6 +48,9 @@ private:
     QPointF gridToWorld(int row, int col,bool isBoard) const;
     QPoint worldToGrid(QPointF worldPos)const;
 
+    //敌人生成
+    void generateEnemy();
+
     int m_rows;
     int m_cols;
     qreal m_radius;
