@@ -118,7 +118,6 @@ void UnitItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
 
     m_isSelected=true;
-    setPos(event->scenePos());
     emit dragMoved(getUnit()->getId(),m_gridPos,event->scenePos());
     emit clicked(m_unit);
     event->accept();

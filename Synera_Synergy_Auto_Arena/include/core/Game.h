@@ -7,6 +7,9 @@
 #include"GridItem.h"
 #include"UnitItem.h"
 #include"Player.h"
+#include<QTimer>
+#include<QPushButton>
+enum class GamePhase{Prep,Combat,Over};
 
 class Game : public QObject
 {
@@ -39,6 +42,10 @@ public slots:
     void onDragMoved(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragDropped(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
 
+    //游戏逻辑
+    void gameTick();
+    void onClickStartBtn();
+
 private:
     void buildScene();
     void syncFromBoardAndBench();
@@ -51,6 +58,7 @@ private:
     //敌人生成
     void generateEnemy();
 
+    //游戏数据
     int m_rows;
     int m_cols;
     qreal m_radius;
@@ -60,17 +68,21 @@ private:
 
     Player* m_player;
 
-    QGraphicsScene *m_scene;
-
     std::vector<Unit*> m_units;
     std::vector<GridItem*> m_gridItems;
     std::vector<GridItem*> m_benchItems;
     std::vector<UnitItem*> m_unitItems;
     std::unordered_map<int ,UnitItem*>m_unitItemById;
 
+    //gui层面
+    QGraphicsScene *m_scene;
     bool m_dragActive;
     int m_activeUnitId;
     QPoint m_sourcePos;
+
+    //逻辑控制层
+    QTimer* m_timer;
+    GamePhase m_phase;
 
     friend bool Board::isValidPosition(const QPoint &pos)const;
 signals:

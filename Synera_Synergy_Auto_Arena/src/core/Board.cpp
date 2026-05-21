@@ -43,7 +43,7 @@ bool Board::hasUnitAt(const QPoint &pos)const{
 //工具函数
 bool Board::isValidPosition(const QPoint &pos)const{
     if(m_isBoard)return pos.x()>=0 && pos.x()<m_cols && pos.y()>=0 && pos.y()<m_rows;
-    else return pos.x()>=0 && pos.x()<m_cols && pos.y()==8;
+    else return pos.x()>=0 && pos.x()<m_cols && pos.y()==Board::ROWS;
 }
 bool Board::isPlayerHalf(const QPoint &pos)const{
     if(!isValidPosition(pos)){

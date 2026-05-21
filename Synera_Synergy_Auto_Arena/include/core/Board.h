@@ -7,6 +7,9 @@
 class Board
 {
 public:
+    static constexpr int ROWS = 8;
+    static constexpr int COLS = 8;
+
     Board(int rows,int cols,bool isBoard);
     ~Board()=default;
 

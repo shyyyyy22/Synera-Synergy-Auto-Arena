@@ -4,6 +4,7 @@ constexpr qreal kZGrid = 0.0;
 constexpr qreal kZUnit = 1.0;
 constexpr qreal kZDraggingUnit = 2.0;
 }
+const int FPS=1000/60;
 
 Game::Game(int rows,int cols,QObject *parent)
     :QObject{parent}
@@ -17,6 +18,8 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_activeUnitId(-1)
     ,m_sourcePos(QPoint(-1,-1))
     ,m_player(new Player)
+    ,m_timer(new QTimer(this))
+    ,m_phase(GamePhase::Prep)
 {
 
 }
@@ -33,6 +36,9 @@ void Game::initialize(){
     generateEnemy();
     buildScene();
     reset();
+
+    //设置定时器
+    connect(m_timer,&QTimer::timeout,this,&Game::gameTick);
 }
 void Game::reset(){
     m_board.clear();
@@ -62,7 +68,6 @@ void Game::reset(){
             m_board.addUnit(m_units[i],initialPositionsForEnemys[enemyPos++]);
         }
     }
-
 
     syncFromBoardAndBench();
 }
@@ -181,12 +186,18 @@ void Game::buildScene(){
 }
 void Game::syncFromBoardAndBench(){
 
-    clearGridHighLights();
 
     for(UnitItem* item:m_unitItems){
         if(!item || !item->getUnit()){
             continue;
         }
+
+        //处理拖拽闪烁
+        if(m_dragActive && item->getUnit()->getId()==m_activeUnitId){
+            item->setZValue(kZDraggingUnit);
+            continue;
+        }
+
         QPoint pos=item->getUnit()->getPos();
         //qDebug() << "Unit:" << item->getUnit()->getName() << "at pos:" << pos;
         if(item->getIsBoard()){
@@ -216,6 +227,7 @@ void Game::syncFromBoardAndBench(){
             item->setGridPos(pos);
         }
     }
+    m_scene->update();
 }
 
 void Game::clearGridHighLights()
@@ -297,9 +309,7 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
     if(sourcePos.y()==m_rows){
         if(target.y()==m_rows){
             Unit* targetUnit=m_bench.getUnitAt(target);
-            UnitItem* targetItem=nullptr;
             if(targetUnit){
-                targetItem=getUnitItem(targetUnit->getId());
                 m_bench.removeUnit(targetUnit);
                 m_bench.removeUnit(unit);
                 m_bench.addUnit(targetUnit,sourcePos);
@@ -347,9 +357,7 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
         }
         else {
             Unit* targetUnit=m_board.getUnitAt(target);
-            UnitItem* targetItem=nullptr;
             if(targetUnit){
-                targetItem=getUnitItem(targetUnit->getId());
                 m_board.removeUnit(targetUnit);
                 m_board.removeUnit(unit);
                 m_board.addUnit(targetUnit,sourcePos);
@@ -443,6 +451,9 @@ void Game::clearAllSelected()
 //拖拽
 void Game::onDragStarted(int unitId, const QPoint &sourcePos, const QPointF &worldPos)
 {
+    if(m_phase!=GamePhase::Prep){
+        return;
+    }
     m_dragActive=true;
     m_activeUnitId=unitId;
     m_sourcePos=sourcePos;
@@ -458,7 +469,13 @@ void Game::onDragMoved(int unitId, const QPoint &sourcePos, const QPointF &world
     if(!m_dragActive){
         return;
     }
-
+    if(m_phase!=GamePhase::Prep){
+        return;
+    }
+    UnitItem* item=getUnitItem(unitId);
+    if(item){
+        item->setPos(worldPos);
+    }
     clearGridHighLights();
 
     const QPoint target=worldToGrid(worldPos);
@@ -495,4 +512,33 @@ void Game::onDragDropped(int unitId, const QPoint &sourcePos, const QPointF &wor
 
 
     syncFromBoardAndBench();
+}
+
+//游戏逻辑
+void Game::gameTick()
+{
+    if(m_phase!=GamePhase::Combat)return;
+    for (Unit* unit : m_units) {
+        if (!unit) continue;
+
+        // 普攻回蓝测试：每秒加 10 点蓝
+        int currentMana = unit->getMana();
+        int maxMana = unit->getMaxMana();
+
+        if (currentMana < maxMana) {
+            // 涨蓝，但不能超过上限
+            unit->setMana(qMin(currentMana + 10, maxMana));
+        }
+        unit->updateUnit(m_board,m_units);
+    }
+
+    syncFromBoardAndBench();
+}
+
+void Game::onClickStartBtn()
+{
+    if(m_phase==GamePhase::Prep){
+        m_phase=GamePhase::Combat;
+        m_timer->start(FPS);
+    }
 }

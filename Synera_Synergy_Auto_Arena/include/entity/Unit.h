@@ -3,9 +3,11 @@
 #include<QObject>
 #include<QString>
 #include<QPoint>
+class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
 enum class Traits{};
+enum class State{Idle,Moving,Attacking,Casting,Dead};
 class Unit:public QObject
 {
     Q_OBJECT
@@ -25,6 +27,8 @@ public:
     QPoint getPos()const;
     Owner getOwner()const;
     int getStar()const;
+    State getState()const;
+    QPointF getWorldPos(const QPoint& gridPos)const;
 
     void setHp(int newHp);
     void setAtk(int newAtk);
@@ -32,9 +36,16 @@ public:
     void setMana(int newMana);
     void setPos(QPoint newPos);
 
+    //状态机
+    void updateUnit(Board& board,const std::vector<Unit*> allUnits);
+    void handleIdle(Board& board,const std::vector<Unit*> allUnits);
+    void handleMoving(Board& board,const std::vector<Unit*> allUnits);
+
     //技能虚函数
     //virtual void skill()=0;
 
+signals:
+    void isDead(State state);
 private:
     static int m_nxtUnitId;
 
@@ -49,6 +60,8 @@ private:
     QPoint m_pos;
     Owner m_owner;
     int m_star;
+    State m_state;
+    Unit* m_target;
 };
 
 #endif // UNIT_H

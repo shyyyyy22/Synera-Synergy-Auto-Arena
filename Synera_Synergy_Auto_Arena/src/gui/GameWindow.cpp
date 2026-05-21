@@ -7,8 +7,9 @@ GameWindow::GameWindow(QWidget *parent)
     ,m_centralWidget(new QWidget(this))
     ,m_mainLayout(new QVBoxLayout())
     ,m_view(new QGraphicsView(this))
-    ,m_game(new Game(8,8,this))
+    ,m_game(new Game(Board::ROWS,Board::COLS,this))
     ,m_infoPanel(new InfoPanel(this))
+    ,m_startBtn(new QPushButton("开始对战",this))
 {
     setUI();
     m_game->initialize();
@@ -28,6 +29,20 @@ void GameWindow::setUI(){
             background-color: #2b2b2b;
             color: #f2f2f2;
         }
+        QPushButton {
+            background-color: #2f2f2f;
+            color: #f2f2f2;
+            border: 1px solid #565656;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 13px;
+        }
+        QPushButton:hover {
+            background-color: #3a3a3a;
+        }
+        QPushButton:pressed {
+            background-color: #242424;
+        }
     )");
 
     //设置view
@@ -39,12 +54,13 @@ void GameWindow::setUI(){
     m_view->setResizeAnchor(QGraphicsView::AnchorViewCenter);
     m_view->setMouseTracking(true);
     m_view->viewport()->setMouseTracking(true);
+    m_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
-    //设置主布局
+    //设置主布局：垂直
     m_mainLayout->setContentsMargins(0,0,0,0);
     m_mainLayout->setSpacing(0);
 
-    //玩家状态栏
+    //上层：玩家状态栏
     QWidget* topBar=new QWidget(this);
     topBar->setFixedHeight(40);
     topBar->setStyleSheet("background-color: rgba(20, 20, 20, 200); border-bottom: 2px solid #444; color: white; font-weight: bold; padding: 5px;");
@@ -68,7 +84,7 @@ void GameWindow::setUI(){
 
     m_mainLayout->addWidget(topBar);
 
-    //单位信息栏
+    //中层：游戏区：主界面-单位信息栏
     QWidget* gameContainer = new QWidget(this);
     QHBoxLayout* gameLayout = new QHBoxLayout(gameContainer);
     gameLayout->setContentsMargins(0, 0, 0, 0);
@@ -77,9 +93,24 @@ void GameWindow::setUI(){
 
     m_mainLayout->addWidget(gameContainer,1);
 
+    //下层：控制层
+    QWidget* controlBar=new QWidget(this);
+    controlBar->setFixedHeight(50);
+    controlBar->setStyleSheet("background-color: #202020; border-top: 1px solid #444;");
+    m_startBtn->setStyleSheet("background-color: #2e7d32; color: white; font-weight: bold; font-size: 14px; padding: 6px 15px; border-radius: 4px;");
+    QHBoxLayout* controlLayout=new QHBoxLayout(controlBar);
+    controlLayout->setContentsMargins(20,0,20,0);
+    controlLayout->addStretch();
+    controlLayout->addWidget(m_startBtn);
+
+    m_mainLayout->addWidget(controlBar,1);
+
+    //连接主界面
     m_view->setScene(m_game->getScene());
 
+    //信号区域
     connect(m_game,&Game::unitSelected,m_infoPanel,&InfoPanel::updateUnitInfo);
+    connect(m_startBtn,&QPushButton::clicked,m_game,&Game::onClickStartBtn);
 }
 
 void GameWindow::mousePressEvent(QMouseEvent *event) {

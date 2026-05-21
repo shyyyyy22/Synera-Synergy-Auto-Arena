@@ -6,7 +6,7 @@
 #include<QVBoxLayout>
 #include"InfoPanel.h"
 #include<QLabel.h>
-
+#include<QPushButton>
 class QGraphicsView;
 class Game;
 
@@ -20,7 +20,7 @@ public:
 
 private:
     void setUI();
-    void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event)override;
 
     void updatePlayerInfo();
 
@@ -29,6 +29,7 @@ private:
     Game* m_game;
     QVBoxLayout* m_mainLayout;
     InfoPanel* m_infoPanel;
+    QPushButton* m_startBtn;
 
     QLabel *m_pHpLabel;
     QLabel *m_pGoldLabel;
