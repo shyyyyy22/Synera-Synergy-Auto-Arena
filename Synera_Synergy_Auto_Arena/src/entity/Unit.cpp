@@ -1,6 +1,8 @@
 #include "Unit.h"
 #include"Board.h"
 #include<QDebug>
+#include<QHash>
+#include<queue>
 int Unit::m_nxtUnitId=0;
 Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,QObject *parent)
     :QObject(parent)
@@ -17,6 +19,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_star(1)
     ,m_state(State::Idle)
     ,m_target(nullptr)
+    ,m_moveCoolDown(0)
 {}
 
 //属性相关
@@ -104,7 +107,7 @@ void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 
         switch(m_state){
             case State::Idle:
-            handleIdle(board,allUnits);
+                handleIdle(board,allUnits);
                 break;
             case State::Moving:
                 handleMoving(board,allUnits);
@@ -162,4 +165,53 @@ void Unit::handleIdle(Board &board,const std::vector<Unit*> allUnits)
 void Unit::handleMoving(Board &board, const std::vector<Unit *> allUnits)
 {
 
+    if(m_moveCoolDown==0){
+        std::vector<QPoint> path=breadFirstSearch(board);
+        if(path.size()==0){
+            m_state=State::Idle;
+        }
+        board.removeUnit(this);
+        board.addUnit(this,path[0]);
+        m_moveCoolDown=20;
+    }
+    if(m_moveCoolDown>0){
+        m_moveCoolDown--;
+    }
+}
+
+std::vector<QPoint> Unit::breadFirstSearch(Board &board)
+{
+    QPoint state(-1,-1);
+    QPoint step=m_target->getPos();
+    QHash<QPoint,QPoint> parentMap;
+    std::queue<QPoint> frontier;
+    std::vector<QPoint> path;
+    std::vector<QPoint> visited;
+    frontier.push(m_pos);
+    visited.push_back(m_pos);
+
+    while(frontier.empty()==false){
+        state=frontier.front();
+        frontier.pop();
+        if(state==m_target->getPos()){
+            while(step!=m_pos){
+                path.push_back(step);
+                step=parentMap[step];
+            }
+            std::reverse(path.begin(),path.end());
+            return path;
+        }
+        for(QPoint nxtState:board.getNeighborGrid(state)){
+            if(board.hasUnitAt(nxtState) && nxtState!=m_target->getPos()){
+                continue;
+            }
+            if(std::find(visited.begin(),visited.end(),nxtState)==visited.end()){
+                frontier.push(nxtState);
+                parentMap[nxtState]=state;
+                visited.push_back(nxtState);
+            }
+        }
+    }
+
+    return path;
 }

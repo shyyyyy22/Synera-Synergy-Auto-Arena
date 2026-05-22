@@ -40,6 +40,30 @@ Unit* Board::getUnitAt(const QPoint &pos)const{
 bool Board::hasUnitAt(const QPoint &pos)const{
     return getUnitAt(pos)!=nullptr;
 }
+
+std::vector<QPoint> Board::getNeighborGrid(const QPoint &pos) const
+{
+    std::vector<QPoint> neighborGrid;
+    int count=6;
+    int dir[6][2]={{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,1}};
+    if(pos.x()%2==0){
+        dir[4][0]=-1;
+        dir[4][1]=-1;
+        dir[5][0]=1;
+        dir[5][1]=-1;
+    }
+    for(int i=0;i<6;i++){
+        int x=dir[i][0]+pos.x();
+        int y=dir[i][1]+pos.y();
+        if(x>=Board::COLS || y>=Board::ROWS || x<0 || y<0){
+            continue;
+        }
+        else {
+            neighborGrid.push_back(QPoint(x,y));
+        }
+    }
+    return neighborGrid;
+}
 //工具函数
 bool Board::isValidPosition(const QPoint &pos)const{
     if(m_isBoard)return pos.x()>=0 && pos.x()<m_cols && pos.y()>=0 && pos.y()<m_rows;

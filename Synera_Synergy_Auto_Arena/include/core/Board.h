@@ -19,6 +19,7 @@ public:
     void moveUnit(Unit* unit,const QPoint &pos);
     Unit* getUnitAt(const QPoint &pos)const;
     bool hasUnitAt(const QPoint &pos)const;
+    std::vector<QPoint> getNeighborGrid(const QPoint& pos)const;
 
     //工具函数
     bool isValidPosition(const QPoint &pos)const;

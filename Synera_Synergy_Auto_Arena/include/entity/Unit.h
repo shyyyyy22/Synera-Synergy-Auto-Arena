@@ -41,6 +41,9 @@ public:
     void handleIdle(Board& board,const std::vector<Unit*> allUnits);
     void handleMoving(Board& board,const std::vector<Unit*> allUnits);
 
+    //寻路
+    std::vector<QPoint> breadFirstSearch(Board& board);
+
     //技能虚函数
     //virtual void skill()=0;
 
@@ -62,6 +65,8 @@ private:
     int m_star;
     State m_state;
     Unit* m_target;
+
+    int m_moveCoolDown;
 };
 
 #endif // UNIT_H
