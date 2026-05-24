@@ -57,7 +57,7 @@ std::vector<QPoint> Board::getNeighborGrid(const QPoint &pos) const
     for(int i=0;i<6;i++){
         int row=dir[i][0]+r;
         int col=dir[i][1]+c;
-        if(row>=Board::ROWS || col>=Board::ROWS || row<0 || col<0){
+        if(row>=Board::ROWS || col>=Board::COLS || row<0 || col<0){
             continue;
         }
         else {

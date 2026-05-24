@@ -12,6 +12,7 @@ GridItem::GridItem(int row, int col, qreal radius, GridShape shape, QGraphicsIte
     ,m_dropActive(false)
     ,m_hoverActive(false)
     ,m_pointerHover(false)
+    ,m_rangeActive(false)
 {
     for(int i=0;i<6;++i){
         qreal degrees=60.0*i-90.0;
@@ -37,11 +38,17 @@ void GridItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         QColor fill = m_baseColor;
         QColor border = QColor(40, 40, 40);
 
+        if(m_rangeActive){
+            setZValue(1.0);
+            fill = QColor(0, 180, 255, 35);
+            border = QColor(100, 220, 255, 190);
+        }
         if(m_dropActive){
             fill = QColor(110, 170, 110);
             border = QColor(100, 255, 100);
         }
-        else if(m_hoverActive || m_pointerHover){
+
+        else if(m_hoverActive){
             fill=m_baseColor.lighter(120);
         }
 
@@ -115,11 +122,21 @@ QPoint GridItem::getPos()const
 {
     return QPoint(m_cols,m_rows);
 }
+
+void GridItem::setRangeActive(bool active)
+{
+    if(m_rangeActive==active){
+        return;
+    }
+    m_rangeActive=active;
+    update();
+}
 //处理高亮
 void GridItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED(event);
     if(!m_pointerHover){
+        setZValue(1.0);
         m_pointerHover=true;
         update();
     }

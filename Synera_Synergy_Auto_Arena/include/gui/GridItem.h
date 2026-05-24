@@ -22,6 +22,7 @@ public:
     void setHoverActive(bool active);
     void setDropActive(bool active);
     QPoint getPos()const;
+    void setRangeActive(bool active);
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
@@ -37,6 +38,7 @@ private:
     bool m_dropActive;
     bool m_hoverActive;
     bool m_pointerHover;
+    bool m_rangeActive;
 };
 
 #endif // GRIDITEM_H

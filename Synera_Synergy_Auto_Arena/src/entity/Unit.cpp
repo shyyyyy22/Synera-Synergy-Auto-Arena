@@ -102,10 +102,13 @@ void Unit::setPos(QPoint newPos){
 void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 {
     if(m_pos.y()<Board::ROWS){
-        if(m_hp<=0){
+        if(m_hp<=0 || m_state==State::Dead){
             m_state=State::Dead;
+            return;
         }
-
+        if(m_mana==m_maxMana && m_state!=State::Dead){
+            m_state=State::Casting;
+        }
         switch(m_state){
             case State::Idle:
                 handleIdle(board,allUnits);
@@ -117,8 +120,7 @@ void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
                 handleAttking();
                 break;
             case State::Casting:
-                break;
-            case State::Dead:
+                handleCasting();
                 break;
         }
     }
@@ -218,9 +220,17 @@ void Unit::handleAttking()
     }
     if(m_atkCoolDown==0){
         m_target->takeDamage(m_atk);
-        qDebug()<<m_name<<"对"<<m_target->getName()<<"发起攻击："<<m_atk;
+        m_mana=qMin(m_mana+10,m_maxMana);
+        //qDebug()<<m_name<<"对"<<m_target->getName()<<"发起攻击："<<m_atk;
         m_atkCoolDown=60;
     }
+}
+
+void Unit::handleCasting()
+{
+    castSkill();
+    m_mana=0;
+    m_state=State::Idle;
 }
 
 std::vector<QPoint> Unit::breadFirstSearch(Board &board)
@@ -266,5 +276,12 @@ void Unit::takeDamage(int atk)
     m_hp=qMax(m_hp-atk,0);
 
     emit infoChanged(this);
+    if(m_hp<=0){
+        m_state=State::Dead;
+
+        emit isDead(this);
+
+        m_pos=QPoint(-1,-1);
+    }
 
 }

@@ -42,15 +42,16 @@ public:
     void handleIdle(Board& board,const std::vector<Unit*> allUnits);
     void handleMoving(Board& board);
     void handleAttking();
+    void handleCasting();
 
     //寻路
     std::vector<QPoint> breadFirstSearch(Board& board);
 
     //技能虚函数
-    //virtual void skill()=0;
+    virtual void castSkill()=0;
 
 signals:
-    void isDead(State state);
+    void isDead(Unit* unit);
     void infoChanged(Unit* unit);
 
 private:

@@ -1,4 +1,5 @@
 #include "Game.h"
+#include"Heroes.h"
 namespace {
 constexpr qreal kZGrid = 0.0;
 constexpr qreal kZUnit = 1.0;
@@ -183,6 +184,7 @@ void Game::buildScene(){
 
         connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
         connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
+        connect(unit,&Unit::isDead,this,&Game::onUnitDead);
     }
 
     m_scene->setSceneRect(totalBounds.adjusted(-40, -40, 40, 40));
@@ -192,6 +194,11 @@ void Game::syncFromBoardAndBench(){
 
     for(UnitItem* item:m_unitItems){
         if(!item || !item->getUnit()){
+            continue;
+        }
+
+        if(item->getUnit()->getState()==State::Dead){
+            item->setVisible(false);
             continue;
         }
 
@@ -241,6 +248,7 @@ void Game::clearGridHighLights()
         }
         item->setHoverActive(false);
         item->setDropActive(false);
+        item->setRangeActive(false);
     }
     for(GridItem* item:m_benchItems){
         if(!item){
@@ -408,11 +416,9 @@ QPoint Game::worldToGrid(QPointF worldPos) const
 
 void Game::generateEnemy()
 {
-    m_units.push_back(new Unit("战士敌人",150,5,1,100,Owner::EnemyCtrl));
-    m_units.push_back(new Unit("射手敌人",100,5,3,100,Owner::EnemyCtrl));
-    m_units.push_back(new Unit("法师敌人",100,8,3,80,Owner::EnemyCtrl));
-    m_units.push_back(new Unit("召唤师敌人",80,10,5,100,Owner::EnemyCtrl));
-
+    m_units.push_back(new Link(Owner::EnemyCtrl));
+    m_units.push_back(new Sun(Owner::EnemyCtrl));
+    m_units.push_back(new Power(Owner::EnemyCtrl));
 
 }
 
@@ -421,10 +427,9 @@ void Game::initialUnitForTest(){
     if(!m_units.empty()){
         return;
     }
-    m_units.push_back(new Unit("战士",150,5,1,100,Owner::PlayerCtrl));
-    m_units.push_back(new Unit("射手",100,5,3,100,Owner::PlayerCtrl));
-    m_units.push_back(new Unit("法师",100,8,3,80,Owner::PlayerCtrl));
-    m_units.push_back(new Unit("召唤师",80,10,5,100,Owner::PlayerCtrl));
+    m_units.push_back(new Link(Owner::PlayerCtrl));
+    m_units.push_back(new Sun(Owner::PlayerCtrl));
+    m_units.push_back(new Power(Owner::PlayerCtrl));
 }
 
 //属性面板
@@ -490,6 +495,12 @@ void Game::onDragMoved(int unitId, const QPoint &sourcePos, const QPointF &world
     targetItem->setHoverActive(true);
     if(canApplyDrop(unitId,m_sourcePos,target)){
         targetItem->setDropActive(true);
+        Unit* putUnit=getUnitById(unitId);
+        QSet rangeGrids=m_board.getRangeGrid(QPoint(target.x(),target.y()),putUnit->getRange());
+        for(QPoint rangeGrid:rangeGrids){
+            GridItem* rangeItem=getGridItem(rangeGrid);
+            rangeItem->setRangeActive(true);
+        }
     }
 }
 
@@ -521,9 +532,24 @@ void Game::onDragDropped(int unitId, const QPoint &sourcePos, const QPointF &wor
 void Game::gameTick()
 {
     if(m_phase!=GamePhase::Combat)return;
+    int playerLive=0,enemyLive=0;
     for (Unit* unit : m_units) {
         if (!unit) continue;
         unit->updateUnit(m_board,m_units);
+        if(unit->getState()!=State::Dead && unit->getPos().y()<m_rows){
+            if(unit->getOwner()==Owner::PlayerCtrl){
+                playerLive++;
+            }
+            else {
+                enemyLive++;
+            }
+        }
+    }
+
+    if(playerLive==0 || enemyLive==0){
+        m_phase=GamePhase::Resolve;
+        m_timer->stop();
+        handleStageResolve(playerLive>0);
     }
 
     syncFromBoardAndBench();
@@ -535,4 +561,26 @@ void Game::onClickStartBtn()
         m_phase=GamePhase::Combat;
         m_timer->start(FPS);
     }
+}
+
+void Game::onUnitDead(Unit *unit)
+{
+    if(unit && unit->getState()==State::Dead){
+        m_board.removeUnit(unit);
+
+        syncFromBoardAndBench();
+        m_scene->update();
+    }
+}
+
+void Game::handleStageResolve(bool win)
+{
+    if(win){
+        qDebug()<<"赢嬴赢";
+    }
+    else {
+        qDebug()<<"输输输";
+    }
+
+
 }

@@ -9,7 +9,7 @@
 #include"Player.h"
 #include<QTimer>
 #include<QPushButton>
-enum class GamePhase{Prep,Combat,Over};
+enum class GamePhase{Prep,Combat,Resolve};
 
 class Game : public QObject
 {
@@ -45,6 +45,8 @@ public slots:
     //游戏逻辑
     void gameTick();
     void onClickStartBtn();
+    void onUnitDead(Unit* unit);
+    void handleStageResolve(bool win);
 
 private:
     void buildScene();
