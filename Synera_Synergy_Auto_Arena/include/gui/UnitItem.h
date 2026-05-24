@@ -21,11 +21,14 @@ public:
     void setIsSelected(bool selected);
     bool getIsSelected()const;
 
+public slots:
+    void unitInfoChanged(Unit* unit);
 signals:
     void clicked(Unit* unit);
     void dragStarted(int unitId,const QPoint &gridPos,const QPointF &worldPos);
     void dragMoved(int unitId,const QPoint &gridPos,const QPointF &worldPos);
     void dragDropped(int unitId,const QPoint &gridPos,const QPointF &worldPos);
+    void unitInfoReflash(Unit* unit);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;

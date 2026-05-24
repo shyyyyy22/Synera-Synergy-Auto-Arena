@@ -91,6 +91,13 @@ bool UnitItem::getIsSelected() const
     return m_isSelected;
 }
 
+void UnitItem::unitInfoChanged(Unit *unit)
+{
+    if(m_isSelected){
+        emit unitInfoReflash(unit);
+    }
+}
+
 
 //拖拽
 void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

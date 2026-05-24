@@ -3,6 +3,7 @@
 
 #include<QPoint>
 #include"Unit.h"
+#include<QSet>
 
 class Board
 {
@@ -20,6 +21,7 @@ public:
     Unit* getUnitAt(const QPoint &pos)const;
     bool hasUnitAt(const QPoint &pos)const;
     std::vector<QPoint> getNeighborGrid(const QPoint& pos)const;
+    QSet<QPoint> getRangeGrid(const QPoint& pos,int range)const;
 
     //工具函数
     bool isValidPosition(const QPoint &pos)const;

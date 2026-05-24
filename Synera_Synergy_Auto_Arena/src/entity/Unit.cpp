@@ -20,6 +20,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_state(State::Idle)
     ,m_target(nullptr)
     ,m_moveCoolDown(0)
+    ,m_atkCoolDown(0)
 {}
 
 //属性相关
@@ -110,9 +111,10 @@ void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
                 handleIdle(board,allUnits);
                 break;
             case State::Moving:
-                handleMoving(board,allUnits);
+                handleMoving(board);
                 break;
             case State::Attacking:
+                handleAttking();
                 break;
             case State::Casting:
                 break;
@@ -126,7 +128,7 @@ void Unit::handleIdle(Board &board,const std::vector<Unit*> allUnits)
     Unit* closeEnemy=nullptr;
     qreal dist=1e18;
     for(Unit* enemyUnit:allUnits){
-        if(enemyUnit && enemyUnit->getOwner()!=m_owner &&enemyUnit->getPos().y()<Board::ROWS){
+        if(enemyUnit && enemyUnit->getOwner()!=m_owner &&enemyUnit->getPos().y()<Board::ROWS && enemyUnit->getState()!=State::Dead){
             QPointF myWorldPos=getWorldPos(m_pos);
             QPointF enemyWorldPos=getWorldPos(enemyUnit->getPos());
             qreal dx=myWorldPos.x()-enemyWorldPos.x();
@@ -158,24 +160,66 @@ void Unit::handleIdle(Board &board,const std::vector<Unit*> allUnits)
     if(closeEnemy){
         m_target=closeEnemy;
         m_state=State::Moving;
-        qDebug()<<m_name<<"目标是"<<closeEnemy->getName();
+        //qDebug()<<m_name<<"目标是"<<closeEnemy->getName();
     }
 }
 
-void Unit::handleMoving(Board &board, const std::vector<Unit *> allUnits)
+void Unit::handleMoving(Board &board)
 {
 
+    if(m_target==nullptr || m_target->getState()==State::Dead){
+        m_state=State::Idle;
+        m_target=nullptr;
+        return;
+    }
+
+    QSet<QPoint> oldRangeGrids=board.getRangeGrid(m_pos,m_range);
+    for(const QPoint& rangeGrid:oldRangeGrids){
+        if(m_target->getPos()==rangeGrid){
+            m_state=State::Attacking;
+            return;
+        }
+    }
+
+    if(m_moveCoolDown>0){
+        m_moveCoolDown--;
+        return;
+    }
     if(m_moveCoolDown==0){
         std::vector<QPoint> path=breadFirstSearch(board);
         if(path.size()==0){
             m_state=State::Idle;
+            return;
         }
         board.removeUnit(this);
         board.addUnit(this,path[0]);
         m_moveCoolDown=20;
     }
-    if(m_moveCoolDown>0){
-        m_moveCoolDown--;
+
+    QSet<QPoint> rangeGrids=board.getRangeGrid(m_pos,m_range);
+    for(const QPoint& rangeGrid:rangeGrids){
+        if(m_target->getPos()==rangeGrid){
+            m_state=State::Attacking;
+        }
+    }
+
+}
+
+void Unit::handleAttking()
+{
+    if(m_target==nullptr || m_target->getState()==State::Dead){
+        m_state=State::Idle;
+        m_target=nullptr;
+        return;
+    }
+    if(m_atkCoolDown>0){
+        m_atkCoolDown--;
+        return;
+    }
+    if(m_atkCoolDown==0){
+        m_target->takeDamage(m_atk);
+        qDebug()<<m_name<<"对"<<m_target->getName()<<"发起攻击："<<m_atk;
+        m_atkCoolDown=60;
     }
 }
 
@@ -214,4 +258,13 @@ std::vector<QPoint> Unit::breadFirstSearch(Board &board)
     }
 
     return path;
+}
+
+void Unit::takeDamage(int atk)
+{
+    if(m_hp<0)return;
+    m_hp=qMax(m_hp-atk,0);
+
+    emit infoChanged(this);
+
 }

@@ -30,6 +30,7 @@ public:
     State getState()const;
     QPointF getWorldPos(const QPoint& gridPos)const;
 
+
     void setHp(int newHp);
     void setAtk(int newAtk);
     void setRange(int newRange);
@@ -39,7 +40,8 @@ public:
     //状态机
     void updateUnit(Board& board,const std::vector<Unit*> allUnits);
     void handleIdle(Board& board,const std::vector<Unit*> allUnits);
-    void handleMoving(Board& board,const std::vector<Unit*> allUnits);
+    void handleMoving(Board& board);
+    void handleAttking();
 
     //寻路
     std::vector<QPoint> breadFirstSearch(Board& board);
@@ -49,7 +51,11 @@ public:
 
 signals:
     void isDead(State state);
+    void infoChanged(Unit* unit);
+
 private:
+    void takeDamage(int atk);
+
     static int m_nxtUnitId;
 
     int m_id;
@@ -67,6 +73,7 @@ private:
     Unit* m_target;
 
     int m_moveCoolDown;
+    int m_atkCoolDown;
 };
 
 #endif // UNIT_H

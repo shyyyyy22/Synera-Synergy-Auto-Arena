@@ -110,6 +110,7 @@ void GameWindow::setUI(){
 
     //信号区域
     connect(m_game,&Game::unitSelected,m_infoPanel,&InfoPanel::updateUnitInfo);
+    connect(m_game,&Game::unitInfoChanged,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_startBtn,&QPushButton::clicked,m_game,&Game::onClickStartBtn);
 }
 

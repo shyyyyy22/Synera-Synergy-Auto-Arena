@@ -46,23 +46,43 @@ std::vector<QPoint> Board::getNeighborGrid(const QPoint &pos) const
     std::vector<QPoint> neighborGrid;
     int count=6;
     int dir[6][2]={{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,1}};
-    if(pos.x()%2==0){
+    int r=pos.y();
+    int c=pos.x();
+    if(r%2==0){
         dir[4][0]=-1;
         dir[4][1]=-1;
         dir[5][0]=1;
         dir[5][1]=-1;
     }
     for(int i=0;i<6;i++){
-        int x=dir[i][0]+pos.x();
-        int y=dir[i][1]+pos.y();
-        if(x>=Board::COLS || y>=Board::ROWS || x<0 || y<0){
+        int row=dir[i][0]+r;
+        int col=dir[i][1]+c;
+        if(row>=Board::ROWS || col>=Board::ROWS || row<0 || col<0){
             continue;
         }
         else {
-            neighborGrid.push_back(QPoint(x,y));
+            neighborGrid.push_back(QPoint(col,row));
         }
     }
     return neighborGrid;
+}
+
+QSet<QPoint> Board::getRangeGrid(const QPoint &pos, int range) const
+{
+    QSet<QPoint> rangeGrid;
+    rangeGrid.insert(pos);
+    for(int i=0;i<range;i++){
+        QSet<QPoint> tmp;
+        for(const QPoint& newGrid:rangeGrid){
+            std::vector<QPoint> newNeighbor=getNeighborGrid(newGrid);
+            for(const QPoint &neighbor:newNeighbor){
+                tmp.insert(neighbor);
+            }
+        }
+        rangeGrid.unite(tmp);
+    }
+
+    return rangeGrid;
 }
 //工具函数
 bool Board::isValidPosition(const QPoint &pos)const{

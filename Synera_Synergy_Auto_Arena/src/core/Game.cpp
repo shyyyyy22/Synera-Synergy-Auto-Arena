@@ -180,6 +180,9 @@ void Game::buildScene(){
             connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
         }
         connect(item,&UnitItem::clicked,this,&Game::onClicked);
+
+        connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
+        connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
     }
 
     m_scene->setSceneRect(totalBounds.adjusted(-40, -40, 40, 40));
@@ -405,10 +408,10 @@ QPoint Game::worldToGrid(QPointF worldPos) const
 
 void Game::generateEnemy()
 {
-    m_units.push_back(new Unit("敌人战士",150,5,1,100,Owner::EnemyCtrl));
-    m_units.push_back(new Unit("敌人射手",100,5,3,100,Owner::EnemyCtrl));
-    m_units.push_back(new Unit("敌人法师",100,8,3,80,Owner::EnemyCtrl));
-    m_units.push_back(new Unit("敌人召唤师",80,10,5,100,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("战士敌人",150,5,1,100,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("射手敌人",100,5,3,100,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("法师敌人",100,8,3,80,Owner::EnemyCtrl));
+    m_units.push_back(new Unit("召唤师敌人",80,10,5,100,Owner::EnemyCtrl));
 
 
 }
@@ -520,15 +523,6 @@ void Game::gameTick()
     if(m_phase!=GamePhase::Combat)return;
     for (Unit* unit : m_units) {
         if (!unit) continue;
-
-        // 普攻回蓝测试：每秒加 10 点蓝
-        int currentMana = unit->getMana();
-        int maxMana = unit->getMaxMana();
-
-        if (currentMana < maxMana) {
-            // 涨蓝，但不能超过上限
-            unit->setMana(qMin(currentMana + 10, maxMana));
-        }
         unit->updateUnit(m_board,m_units);
     }
 

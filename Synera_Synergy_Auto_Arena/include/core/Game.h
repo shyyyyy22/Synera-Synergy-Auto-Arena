@@ -87,6 +87,7 @@ private:
     friend bool Board::isValidPosition(const QPoint &pos)const;
 signals:
     void unitSelected(Unit* unit);
+    void unitInfoChanged(Unit* unit);
 };
 
 #endif // GAME_H

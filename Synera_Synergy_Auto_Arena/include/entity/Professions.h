@@ -1,0 +1,4 @@
+#ifndef PROFESSIONS_H
+#define PROFESSIONS_H
+
+#endif // PROFESSIONS_H
