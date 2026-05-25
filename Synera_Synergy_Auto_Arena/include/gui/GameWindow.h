@@ -7,6 +7,7 @@
 #include"InfoPanel.h"
 #include<QLabel.h>
 #include<QPushButton>
+#include"SettlementPanel.h"
 class QGraphicsView;
 class Game;
 
@@ -17,6 +18,9 @@ class GameWindow : public QMainWindow
 public:
     explicit GameWindow(QWidget *parent = nullptr);
     ~GameWindow() override;
+
+protected:
+    void resizeEvent(QResizeEvent* event)override;
 
 private:
     void setUI();
@@ -35,5 +39,7 @@ private:
     QLabel *m_pGoldLabel;
     QLabel *m_pLevelLabel;
     QLabel *m_pUnitNumsLabel;
+
+    SettlementPanel* m_settlementPanel;
 };
 #endif // GAMEWINDOW_H

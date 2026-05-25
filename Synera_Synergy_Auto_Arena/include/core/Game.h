@@ -32,6 +32,9 @@ public:
     //测试使用
     void initialUnitForTest();
 
+    //游戏逻辑
+    void startNxtRound();
+
 
 public slots:
     //属性面板
@@ -90,6 +93,7 @@ private:
 signals:
     void unitSelected(Unit* unit);
     void unitInfoChanged(Unit* unit);
+    void roundFinishend(bool win,int gold,int hp);
 };
 
 #endif // GAME_H

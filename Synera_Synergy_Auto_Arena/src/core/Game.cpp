@@ -582,5 +582,7 @@ void Game::handleStageResolve(bool win)
         qDebug()<<"输输输";
     }
 
-
+    //test
+    int gold=5;
+    emit roundFinishend(win,gold,m_player->getHp());
 }

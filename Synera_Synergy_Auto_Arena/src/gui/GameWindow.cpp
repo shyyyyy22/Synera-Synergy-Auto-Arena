@@ -17,6 +17,17 @@ GameWindow::GameWindow(QWidget *parent)
 
 GameWindow::~GameWindow() = default;
 
+void GameWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+
+    if (m_centralWidget && m_settlementPanel) {
+        int x = (m_centralWidget->width() - m_settlementPanel->width()) / 2;
+        int y = (m_centralWidget->height() - m_settlementPanel->height()) / 2;
+        m_settlementPanel->move(x, y);
+    }
+}
+
 void GameWindow::setUI(){
     setCentralWidget(m_centralWidget);
     m_centralWidget->setLayout(m_mainLayout);
@@ -105,6 +116,10 @@ void GameWindow::setUI(){
 
     m_mainLayout->addWidget(controlBar,1);
 
+    //结算画面
+    m_settlementPanel=new SettlementPanel(m_centralWidget);
+    m_settlementPanel->hide();
+
     //连接主界面
     m_view->setScene(m_game->getScene());
 
@@ -112,6 +127,15 @@ void GameWindow::setUI(){
     connect(m_game,&Game::unitSelected,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_game,&Game::unitInfoChanged,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_startBtn,&QPushButton::clicked,m_game,&Game::onClickStartBtn);
+    connect(m_settlementPanel,&SettlementPanel::nxtRoundClicked,this,[this](){
+        m_settlementPanel->hide();
+        //m_game->startNxtRound();
+    });
+    connect(m_game,&Game::roundFinishend,this,[this](bool win,int gold,int hp){
+        m_settlementPanel->updateInfo(win,gold,hp);
+        m_settlementPanel->show();
+        m_settlementPanel->raise();
+    });
 }
 
 void GameWindow::mousePressEvent(QMouseEvent *event) {
