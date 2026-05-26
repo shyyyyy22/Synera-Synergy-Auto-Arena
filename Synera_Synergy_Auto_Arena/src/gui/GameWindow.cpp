@@ -49,7 +49,7 @@ void GameWindow::setUI(){
             font-size: 13px;
         }
         QPushButton:hover {
-            background-color: #3a3a3a;
+            background-color: #388e3c;
         }
         QPushButton:pressed {
             background-color: #242424;
@@ -83,11 +83,15 @@ void GameWindow::setUI(){
     m_pGoldLabel=new QLabel("金币：-",this);
     m_pLevelLabel=new QLabel("等级：-",this);
     m_pUnitNumsLabel=new QLabel("人口：-",this);
+    m_pStageLabel=new QLabel("关卡：-",this);
 
     topLayout->addWidget(m_pHpLabel);
-    topLayout->addStretch();
+    topLayout->addSpacing(20);
     topLayout->addWidget(m_pGoldLabel);
     topLayout->addStretch();
+    topLayout->addWidget(m_pStageLabel);
+    topLayout->addStretch();
+    topLayout->addSpacing(20);
     topLayout->addWidget(m_pLevelLabel);
     topLayout->addSpacing(20);
     topLayout->addWidget(m_pUnitNumsLabel);
@@ -108,7 +112,8 @@ void GameWindow::setUI(){
     QWidget* controlBar=new QWidget(this);
     controlBar->setFixedHeight(50);
     controlBar->setStyleSheet("background-color: #202020; border-top: 1px solid #444;");
-    m_startBtn->setStyleSheet("background-color: #2e7d32; color: white; font-weight: bold; font-size: 14px; padding: 6px 15px; border-radius: 4px;");
+    m_startBtn->setEnabled(false);
+
     QHBoxLayout* controlLayout=new QHBoxLayout(controlBar);
     controlLayout->setContentsMargins(20,0,20,0);
     controlLayout->addStretch();
@@ -128,13 +133,57 @@ void GameWindow::setUI(){
     connect(m_game,&Game::unitInfoChanged,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_startBtn,&QPushButton::clicked,m_game,&Game::onClickStartBtn);
     connect(m_settlementPanel,&SettlementPanel::nxtRoundClicked,this,[this](){
+        updatePlayerInfo();
         m_settlementPanel->hide();
-        //m_game->startNxtRound();
+        m_game->startNxtRound();
     });
     connect(m_game,&Game::roundFinishend,this,[this](bool win,int gold,int hp){
         m_settlementPanel->updateInfo(win,gold,hp);
         m_settlementPanel->show();
         m_settlementPanel->raise();
+    });
+    connect(m_game,&Game::gameOver,m_settlementPanel,&SettlementPanel::onGameOver);
+    connect(m_game,&Game::boardUpdate,this,&GameWindow::updatePlayerInfo);
+    connect(m_game,&Game::boardUpdate,this,[this](int count){
+        if(count>0){
+            m_startBtn->setStyleSheet(R"(
+            QPushButton {
+                background-color: #2e7d32;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                padding: 6px 15px;
+                border-radius: 4px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #388e3c;
+            }
+            QPushButton:pressed {
+                background-color: #1b5e20;
+            }
+        )");
+        }
+        else {
+            m_startBtn->setStyleSheet(R"(
+            QPushButton {
+                background-color: #2f2f2f;
+                color: #f2f2f2;
+                border: 1px solid #565656;
+                border-radius: 4px;
+                padding: 6px 14px;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background-color: #388e3c;
+            }
+            QPushButton:pressed {
+                background-color: #1b5e20;
+            }
+        )");
+        }
+
+        m_startBtn->setEnabled(count>0);
     });
 }
 
@@ -165,7 +214,8 @@ void GameWindow::updatePlayerInfo()
         m_pHpLabel->setText(QString("血量：%1").arg(p->getHp()));
         m_pGoldLabel->setText(QString("金币：%1").arg(p->getGold()));
         m_pLevelLabel->setText(QString("等级：Lv.%1").arg(p->getLevel()));
-        m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(0).arg(p->getMaxUnit()));
+        m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(m_game->getPlayerUnitInBoard()).arg(p->getMaxUnit()));
+        m_pStageLabel->setText(QString("关卡：%1.%2").arg(p->getMajorStage()).arg(p->getMinorStage()));
     }
 
 }

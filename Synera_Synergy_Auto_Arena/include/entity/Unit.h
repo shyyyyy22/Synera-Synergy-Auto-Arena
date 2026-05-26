@@ -29,6 +29,7 @@ public:
     int getStar()const;
     State getState()const;
     QPointF getWorldPos(const QPoint& gridPos)const;
+    QPoint getStartPos()const;
 
 
     void setHp(int newHp);
@@ -36,6 +37,8 @@ public:
     void setRange(int newRange);
     void setMana(int newMana);
     void setPos(QPoint newPos);
+    void setStartPos(QPoint pos);
+    void setState(State state);
 
     //状态机
     void updateUnit(Board& board,const std::vector<Unit*> allUnits);
@@ -72,6 +75,7 @@ private:
     int m_star;
     State m_state;
     Unit* m_target;
+    QPoint m_startPos;
 
     int m_moveCoolDown;
     int m_atkCoolDown;

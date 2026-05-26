@@ -21,6 +21,7 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_player(new Player)
     ,m_timer(new QTimer(this))
     ,m_phase(GamePhase::Prep)
+    ,m_playerUnitInBoard(0)
 {
 
 }
@@ -44,7 +45,6 @@ void Game::initialize(){
 void Game::reset(){
     m_board.clear();
     m_bench.clear();
-
     int playerPos=0,enemyPos=0;
     const QPoint initialPositions[]{
         QPoint (0,m_rows),
@@ -52,14 +52,12 @@ void Game::reset(){
         QPoint (2,m_rows),
         QPoint (3,m_rows)
     };
-
     const QPoint initialPositionsForEnemys[]{
         QPoint (0,3),
         QPoint (1,3),
         QPoint (2,3),
         QPoint (3,3)
     };
-
 
     for(int i=0;i<m_units.size();++i){
         if(m_units[i]->getOwner()==Owner::PlayerCtrl){
@@ -69,7 +67,6 @@ void Game::reset(){
             m_board.addUnit(m_units[i],initialPositionsForEnemys[enemyPos++]);
         }
     }
-
     syncFromBoardAndBench();
 }
 
@@ -100,6 +97,11 @@ UnitItem *Game::getUnitItem(int unitId) const
 Player *Game::getPlayer() const
 {
     return m_player;
+}
+
+int Game::getPlayerUnitInBoard() const
+{
+    return m_playerUnitInBoard;
 }
 
 GridItem *Game::getGridItem(const QPoint &gridPos)const
@@ -191,7 +193,7 @@ void Game::buildScene(){
 }
 void Game::syncFromBoardAndBench(){
 
-
+    m_playerUnitInBoard=0; //用于判断能否开始
     for(UnitItem* item:m_unitItems){
         if(!item || !item->getUnit()){
             continue;
@@ -209,17 +211,19 @@ void Game::syncFromBoardAndBench(){
         }
 
         QPoint pos=item->getUnit()->getPos();
-        //qDebug() << "Unit:" << item->getUnit()->getName() << "at pos:" << pos;
         if(item->getIsBoard()){
             if(!m_board.isValidPosition(pos) || m_board.getUnitAt(pos)!=item->getUnit()){
-                //qDebug() << "Debug消失:" << item->getUnit()->getName() << "应该在棋盘(" << pos << ")，但棋盘没它！";
                 item->setVisible(false);
                 continue;
+            }
+            else {
+                if(item->getUnit()->getOwner()==Owner::PlayerCtrl){
+                    m_playerUnitInBoard++;
+                }
             }
         }
         else {
             if(!m_bench.isValidPosition(pos) || m_bench.getUnitAt(pos)!=item->getUnit()){
-                //qDebug() << "Debug消失:" << item->getUnit()->getName() << "应该在备战区(" << pos << ")，但备战区没它！";
                 item->setVisible(false);
                 continue;
             }
@@ -237,6 +241,7 @@ void Game::syncFromBoardAndBench(){
             item->setGridPos(pos);
         }
     }
+    emit boardUpdate(m_playerUnitInBoard);
     m_scene->update();
 }
 
@@ -276,6 +281,9 @@ bool Game::canApplyDrop(int unitId, const QPoint &sourcePos, const QPoint &targe
             }
         }
         else {
+            if(m_playerUnitInBoard>=m_player->getMaxUnit() && !m_board.hasUnitAt(target)){
+                return false;
+            }
             if(sourcePos.x()<0 || sourcePos.x()>=m_cols || !m_board.isValidPosition(target)){
                 return false;
             }
@@ -420,6 +428,31 @@ void Game::generateEnemy()
     m_units.push_back(new Sun(Owner::EnemyCtrl));
     m_units.push_back(new Power(Owner::EnemyCtrl));
 
+    const QPoint initialPositionsForEnemys[]{
+        QPoint (0,3),
+        QPoint (1,3),
+        QPoint (2,3),
+        QPoint (3,3)
+    };
+    int enemyPos=0;
+    for(int i=0;i<m_units.size();++i){
+        if(m_units[i]->getOwner()==Owner::EnemyCtrl){
+            m_board.addUnit(m_units[i],initialPositionsForEnemys[enemyPos++]);
+            UnitItem* item=nullptr;
+            item=new UnitItem(m_units[i],true);
+            item->setZValue(kZUnit);
+            m_scene->addItem(item);
+            m_unitItems.push_back(item);
+            m_unitItemById[m_units[i]->getId()]=item;
+
+            connect(item,&UnitItem::clicked,this,&Game::onClicked);
+
+            connect(m_units[i],&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
+            connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
+            connect(m_units[i],&Unit::isDead,this,&Game::onUnitDead);
+        }
+    }
+
 }
 
 //测试使用
@@ -558,6 +591,11 @@ void Game::gameTick()
 void Game::onClickStartBtn()
 {
     if(m_phase==GamePhase::Prep){
+        for(Unit* unit:m_units){
+            if(unit->getOwner()==Owner::PlayerCtrl){
+                unit->setStartPos(unit->getPos());
+            }
+        }
         m_phase=GamePhase::Combat;
         m_timer->start(FPS);
     }
@@ -576,13 +614,79 @@ void Game::onUnitDead(Unit *unit)
 void Game::handleStageResolve(bool win)
 {
     if(win){
-        qDebug()<<"赢嬴赢";
+        m_player->addGold(5);
     }
     else {
-        qDebug()<<"输输输";
+        int total=0;
+        for(Unit* unit:m_units){
+            if(unit->getOwner()==Owner::EnemyCtrl && unit->getState()!=State::Dead){
+                total+=3;
+            }
+        }
+        total=qBound(5,total,20);
+        m_player->setHp(m_player->getHp()-total);
+        m_player->addGold(3);
+    }
+    if(m_player->getHp()<=0){
+        emit gameOver();
+    }
+    else{
+        emit roundFinishend(win,m_player->getGold(),m_player->getHp());
     }
 
-    //test
-    int gold=5;
-    emit roundFinishend(win,gold,m_player->getHp());
 }
+
+void Game::clearEnemyBeforeRound()
+{
+    for(auto it=m_units.begin();it!=m_units.end();){
+        Unit* enemy=*it;
+        if(enemy && enemy->getOwner()==Owner::EnemyCtrl){
+            m_board.removeUnit(enemy);
+
+            UnitItem* item=getUnitItem(enemy->getId());
+            if(item){
+                m_scene->removeItem(item);
+
+                auto itemIt=std::find(m_unitItems.begin(),m_unitItems.end(),item);
+                if(itemIt!=m_unitItems.end()){
+                    m_unitItems.erase(itemIt);
+                }
+                delete item;
+            }
+
+            m_unitItemById.erase(enemy->getId());
+
+            delete enemy;
+
+            it=m_units.erase(it);
+        }
+        else {
+            it++;
+        }
+    }
+}
+
+void Game::startNxtRound()
+{
+    clearEnemyBeforeRound();
+
+    for(Unit* unit:m_units){
+        if(unit->getOwner()==Owner::PlayerCtrl){
+            unit->setHp(unit->getMaxHp());
+            unit->setState(State::Idle);
+            unit->setMana(0);
+
+            m_board.removeUnit(unit);
+            QPoint pos=unit->getStartPos();
+            m_board.addUnit(unit,pos);
+        }
+    }
+
+    generateEnemy();
+
+    m_phase=GamePhase::Prep;
+
+    syncFromBoardAndBench();
+    m_scene->update();
+}
+

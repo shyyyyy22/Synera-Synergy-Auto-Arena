@@ -39,6 +39,7 @@ private:
     QLabel *m_pGoldLabel;
     QLabel *m_pLevelLabel;
     QLabel *m_pUnitNumsLabel;
+    QLabel *m_pStageLabel;
 
     SettlementPanel* m_settlementPanel;
 };

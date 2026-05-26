@@ -21,6 +21,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_target(nullptr)
     ,m_moveCoolDown(0)
     ,m_atkCoolDown(0)
+    ,m_startPos(-1,-1)
 {}
 
 //属性相关
@@ -82,6 +83,11 @@ QPointF Unit::getWorldPos(const QPoint& gridPos) const
     return QPointF(x, y);
 }
 
+QPoint Unit::getStartPos() const
+{
+    return m_startPos;
+}
+
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }
@@ -96,6 +102,16 @@ void Unit::setMana(int newMana){
 }
 void Unit::setPos(QPoint newPos){
     m_pos=newPos;
+}
+
+void Unit::setStartPos(QPoint pos)
+{
+    m_startPos=pos;
+}
+
+void Unit::setState(State state)
+{
+    m_state=state;
 }
 
 //状态机
@@ -278,6 +294,7 @@ void Unit::takeDamage(int atk)
     emit infoChanged(this);
     if(m_hp<=0){
         m_state=State::Dead;
+        m_mana=0;
 
         emit isDead(this);
 

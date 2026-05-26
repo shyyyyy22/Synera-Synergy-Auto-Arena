@@ -28,6 +28,7 @@ public:
     UnitItem* getUnitItem(int unitId)const;
     GridItem* getGridItem(const QPoint &gridPos)const;
     Player* getPlayer()const;
+    int getPlayerUnitInBoard()const;
 
     //测试使用
     void initialUnitForTest();
@@ -50,6 +51,7 @@ public slots:
     void onClickStartBtn();
     void onUnitDead(Unit* unit);
     void handleStageResolve(bool win);
+    void clearEnemyBeforeRound();
 
 private:
     void buildScene();
@@ -79,6 +81,8 @@ private:
     std::vector<UnitItem*> m_unitItems;
     std::unordered_map<int ,UnitItem*>m_unitItemById;
 
+    int m_playerUnitInBoard;
+
     //gui层面
     QGraphicsScene *m_scene;
     bool m_dragActive;
@@ -94,6 +98,8 @@ signals:
     void unitSelected(Unit* unit);
     void unitInfoChanged(Unit* unit);
     void roundFinishend(bool win,int gold,int hp);
+    void gameOver();
+    void boardUpdate(int count);
 };
 
 #endif // GAME_H

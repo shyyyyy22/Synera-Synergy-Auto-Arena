@@ -2,7 +2,7 @@
 
 Player::Player()
     :m_hp(100)
-    ,m_gold(0)
+    ,m_gold(10)
     ,m_level(0)
     ,m_maxUnit(3)
     ,m_majorStage(1)
@@ -21,4 +21,24 @@ unsigned short Player::getLevel()const{
 };
 unsigned short Player::getMaxUnit()const{
     return m_maxUnit;
+}
+
+unsigned short Player::getMajorStage() const
+{
+    return m_majorStage;
+}
+
+unsigned short Player::getMinorStage() const
+{
+    return m_minorStage;
+}
+
+void Player::addGold(int addGold)
+{
+    m_gold+=addGold;
+}
+
+void Player::setHp(int newHp)
+{
+    m_hp=newHp;
 };

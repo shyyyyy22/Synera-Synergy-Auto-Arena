@@ -44,6 +44,9 @@ bool Board::hasUnitAt(const QPoint &pos)const{
 std::vector<QPoint> Board::getNeighborGrid(const QPoint &pos) const
 {
     std::vector<QPoint> neighborGrid;
+    if(pos.y()==Board::ROWS){
+        return neighborGrid;
+    }
     int count=6;
     int dir[6][2]={{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,1}};
     int r=pos.y();

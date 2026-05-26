@@ -12,6 +12,11 @@ public:
     int getGold()const;
     unsigned short getLevel()const;
     unsigned short getMaxUnit()const;
+    unsigned short getMajorStage()const;
+    unsigned short getMinorStage()const;
+
+    void addGold(int addGold);
+    void setHp(int newHp);
 
 private:
     int m_hp;

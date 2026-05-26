@@ -14,6 +14,7 @@ public:
 
 public slots:
     void updateInfo(bool win,int gold,int hp);
+    void onGameOver();
 signals:
     void nxtRoundClicked();
 
