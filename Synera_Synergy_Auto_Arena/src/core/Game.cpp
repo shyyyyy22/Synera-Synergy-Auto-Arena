@@ -34,7 +34,7 @@ Game::~Game(){
 
 //初始化相关
 void Game::initialize(){
-    initialUnitForTest();
+    initialUnits();
     generateEnemy();
     buildScene();
     reset();
@@ -43,28 +43,18 @@ void Game::initialize(){
     connect(m_timer,&QTimer::timeout,this,&Game::gameTick);
 }
 void Game::reset(){
-    m_board.clear();
     m_bench.clear();
-    int playerPos=0,enemyPos=0;
+    int playerPos=0;
     const QPoint initialPositions[]{
         QPoint (0,m_rows),
         QPoint (1,m_rows),
         QPoint (2,m_rows),
         QPoint (3,m_rows)
     };
-    const QPoint initialPositionsForEnemys[]{
-        QPoint (0,3),
-        QPoint (1,3),
-        QPoint (2,3),
-        QPoint (3,3)
-    };
 
     for(int i=0;i<m_units.size();++i){
         if(m_units[i]->getOwner()==Owner::PlayerCtrl){
             m_bench.addUnit(m_units[i],initialPositions[playerPos++]);
-        }
-        else {
-            m_board.addUnit(m_units[i],initialPositionsForEnemys[enemyPos++]);
         }
     }
     syncFromBoardAndBench();
@@ -422,47 +412,82 @@ QPoint Game::worldToGrid(QPointF worldPos) const
     return best;
 }
 
+//敌人生成
 void Game::generateEnemy()
 {
-    m_units.push_back(new Link(Owner::EnemyCtrl));
-    m_units.push_back(new Sun(Owner::EnemyCtrl));
-    m_units.push_back(new Power(Owner::EnemyCtrl));
+    int round=(m_player->getMajorStage()-1)*4+m_player->getMinorStage();
+    qreal scale=qMin(2.0,(1+0.1*(round-1)));
 
-    const QPoint initialPositionsForEnemys[]{
-        QPoint (0,3),
-        QPoint (1,3),
-        QPoint (2,3),
-        QPoint (3,3)
-    };
-    int enemyPos=0;
-    for(int i=0;i<m_units.size();++i){
-        if(m_units[i]->getOwner()==Owner::EnemyCtrl){
-            m_board.addUnit(m_units[i],initialPositionsForEnemys[enemyPos++]);
+    switch(round){
+    case 1:{
+        Unit* enemy1=new Noah("腐化-卓拉战士",620*scale,55*scale,Owner::EnemyCtrl);
+        m_units.push_back(enemy1);
+        m_board.addUnit(enemy1,QPoint(3,1));
+        break;
+    }
+    case 2:{
+        Unit* enemy1=new Noah("腐化-卓拉战士",620*scale,55*scale,Owner::EnemyCtrl);
+        Unit* enemy2=new Luna("腐化-卓拉法师",450*scale,38*scale,Owner::EnemyCtrl);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+
+        m_board.addUnit(enemy1,QPoint(2,1));
+        m_board.addUnit(enemy2,QPoint(5,0));
+        break;
+    }
+    case 3:{
+        Unit* enemy1=new Noah("腐化-卓拉战士",620*scale,55*scale,Owner::EnemyCtrl);
+        Unit* enemy2=new Sidon("腐化-卓拉守卫",700*scale,30*scale,Owner::EnemyCtrl);
+        Unit* enemy3=new Luna("腐化-卓拉法师",450*scale,38*scale,Owner::EnemyCtrl);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+
+        m_board.addUnit(enemy1,QPoint(2,1));
+        m_board.addUnit(enemy2,QPoint(3,1));
+        m_board.addUnit(enemy3,QPoint(4,0));
+        break;
+    }
+
+    }
+
+    if(round!=1){
+        for(Unit* unit:m_units){
             UnitItem* item=nullptr;
-            item=new UnitItem(m_units[i],true);
-            item->setZValue(kZUnit);
-            m_scene->addItem(item);
-            m_unitItems.push_back(item);
-            m_unitItemById[m_units[i]->getId()]=item;
+            if(unit->getOwner()==Owner::EnemyCtrl){
+                item=new UnitItem(unit,true);
+            }
+            else {
+                continue;
+            }
+            if(item){
+                item->setZValue(kZUnit);
+                m_scene->addItem(item);
+                m_unitItems.push_back(item);
+                m_unitItemById[unit->getId()]=item;
+                connect(item,&UnitItem::clicked,this,&Game::onClicked);
 
-            connect(item,&UnitItem::clicked,this,&Game::onClicked);
-
-            connect(m_units[i],&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
-            connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
-            connect(m_units[i],&Unit::isDead,this,&Game::onUnitDead);
+                connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
+                connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
+                connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+            }
         }
     }
 
+    syncFromBoardAndBench();
+    m_scene->update();
+
 }
 
-//测试使用
-void Game::initialUnitForTest(){
+void Game::initialUnits(){
     if(!m_units.empty()){
         return;
     }
-    m_units.push_back(new Link(Owner::PlayerCtrl));
-    m_units.push_back(new Sun(Owner::PlayerCtrl));
-    m_units.push_back(new Power(Owner::PlayerCtrl));
+    m_units.push_back(new Sidon("卓拉守卫-辛顿",700,30,Owner::PlayerCtrl));
+    m_units.push_back(new Luna("卓拉祭司-露娜",450,38,Owner::PlayerCtrl));
+    m_units.push_back(new Noah("卓拉战士-诺亚",620,55,Owner::PlayerCtrl));
 }
 
 //属性面板
@@ -631,6 +656,7 @@ void Game::handleStageResolve(bool win)
         emit gameOver();
     }
     else{
+        m_player->nxtStage();
         emit roundFinishend(win,m_player->getGold(),m_player->getHp());
     }
 
@@ -677,10 +703,16 @@ void Game::startNxtRound()
             unit->setMana(0);
 
             m_board.removeUnit(unit);
+
+        }
+    }
+    for(Unit* unit:m_units){
+        if(unit->getOwner()==Owner::PlayerCtrl){
             QPoint pos=unit->getStartPos();
             m_board.addUnit(unit,pos);
         }
     }
+
 
     generateEnemy();
 

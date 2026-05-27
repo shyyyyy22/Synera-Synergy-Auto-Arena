@@ -41,4 +41,15 @@ void Player::addGold(int addGold)
 void Player::setHp(int newHp)
 {
     m_hp=newHp;
+}
+
+void Player::nxtStage()
+{
+    if(m_minorStage==4){
+        m_majorStage++;
+        m_minorStage=1;
+    }
+    else {
+        m_minorStage++;
+    }
 };

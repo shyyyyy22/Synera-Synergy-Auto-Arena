@@ -1,17 +1,28 @@
 #include "Heroes.h"
 
-Link::Link(Owner owner):Warrior("战战战",150,8,100,owner)
-{
+Sidon::Sidon(const QString& name,int maxHp,int atk,Owner owner)
+    :Unit(name,maxHp,atk,1,60,owner,Profession::Guardian)
+{}
 
+void Sidon::castSkill()
+{
+    qDebug()<<getName()<<"释放技能";
 }
 
+Luna::Luna(const QString &name, int maxHp, int atk, Owner owner)
+    :Unit(name,maxHp,atk,3,80,owner,Profession::Mage)
+{}
 
-Sun::Sun(Owner owner):Archer("射射射",100,5,100,owner)
+void Luna::castSkill()
 {
-
+    qDebug()<<getName()<<"释放技能";
 }
 
-Power::Power(Owner owner):Mage("法法法",100,5,120,owner)
-{
+Noah::Noah(const QString &name, int maxHp, int atk, Owner owner)
+    :Unit(name,maxHp,atk,1,60,owner,Profession::Warrior)
+{}
 
+void Noah::castSkill()
+{
+    qDebug()<<getName()<<"释放技能";
 }

@@ -4,7 +4,7 @@
 #include<QHash>
 #include<queue>
 int Unit::m_nxtUnitId=0;
-Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,QObject *parent)
+Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,QObject *parent)
     :QObject(parent)
     ,m_id(m_nxtUnitId++)
     ,m_maxHp(maxHp)
@@ -22,6 +22,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_moveCoolDown(0)
     ,m_atkCoolDown(0)
     ,m_startPos(-1,-1)
+    ,m_profession(profession)
 {}
 
 //属性相关

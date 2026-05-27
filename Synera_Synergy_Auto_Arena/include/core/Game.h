@@ -30,8 +30,7 @@ public:
     Player* getPlayer()const;
     int getPlayerUnitInBoard()const;
 
-    //测试使用
-    void initialUnitForTest();
+    void initialUnits();
 
     //游戏逻辑
     void startNxtRound();

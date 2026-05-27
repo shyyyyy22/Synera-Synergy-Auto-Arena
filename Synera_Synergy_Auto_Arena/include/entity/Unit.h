@@ -6,13 +6,15 @@
 class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
-enum class Traits{};
+enum class Race{Hyrulean,Zora,Rito,Gerudo,Goron};
+enum class Profession{Warrior,Archer,Mage,Guardian,Assassin};
 enum class State{Idle,Moving,Attacking,Casting,Dead};
+
 class Unit:public QObject
 {
     Q_OBJECT
 public:
-    Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,QObject *parent=nullptr);
+    Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,QObject *parent=nullptr);
     virtual ~Unit()=default;
 
     //属性相关
@@ -79,6 +81,9 @@ private:
 
     int m_moveCoolDown;
     int m_atkCoolDown;
+
+    Profession m_profession;
+    Race m_race;
 };
 
 #endif // UNIT_H

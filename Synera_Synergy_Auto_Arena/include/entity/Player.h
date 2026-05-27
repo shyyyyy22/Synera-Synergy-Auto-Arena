@@ -18,6 +18,8 @@ public:
     void addGold(int addGold);
     void setHp(int newHp);
 
+    void nxtStage();
+
 private:
     int m_hp;
     int m_gold;

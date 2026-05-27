@@ -143,8 +143,8 @@ void GameWindow::setUI(){
         m_settlementPanel->raise();
     });
     connect(m_game,&Game::gameOver,m_settlementPanel,&SettlementPanel::onGameOver);
-    connect(m_game,&Game::boardUpdate,this,&GameWindow::updatePlayerInfo);
     connect(m_game,&Game::boardUpdate,this,[this](int count){
+        m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(m_game->getPlayerUnitInBoard()).arg(m_game->getPlayer()->getMaxUnit()));
         if(count>0){
             m_startBtn->setStyleSheet(R"(
             QPushButton {

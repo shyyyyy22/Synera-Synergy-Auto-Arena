@@ -1,31 +1,23 @@
 #ifndef HEROES_H
 #define HEROES_H
-#include"Professions.h"
+
+#include"Unit.h"
 #include<QDebug>
 
-class Link:public Warrior{
+class Sidon:public Unit{
 public:
-    Link(Owner owner);
-    void castSkill()override{
-        qDebug()<<getName()<<"释放技能";
-        return;
-    };
+    Sidon(const QString& name,int maxHp,int atk,Owner owner);
+    void castSkill()override;
 };
-class Sun:public Archer{
+class Luna:public Unit{
 public:
-    Sun(Owner owner);
-    void castSkill()override{
-        qDebug()<<getName()<<"释放技能";
-        return;
-    };
+    Luna(const QString& name,int maxHp,int atk,Owner owner);
+    void castSkill()override;
 };
-class Power:public Mage{
+class Noah:public Unit{
 public:
-    Power(Owner owner);
-    void castSkill()override{
-        qDebug()<<getName()<<"释放技能";
-        return;
-    };
+    Noah(const QString& name,int maxHp,int atk,Owner owner);
+    void castSkill()override;
 };
 
 #endif // HEROES_H
