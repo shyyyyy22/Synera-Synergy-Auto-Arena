@@ -416,18 +416,18 @@ QPoint Game::worldToGrid(QPointF worldPos) const
 void Game::generateEnemy()
 {
     int round=(m_player->getMajorStage()-1)*4+m_player->getMinorStage();
-    qreal scale=qMin(2.0,(1+0.1*(round-1)));
+    qreal scale=1.0+(m_player->getMajorStage()-1)*0.15+(m_player->getMinorStage()-1)*0.03;
 
     switch(round){
     case 1:{
-        Unit* enemy1=new Noah("腐化-卓拉战士",620*scale,55*scale,Owner::EnemyCtrl);
+        Unit* enemy1=new Noah("腐化-卓拉战士",Owner::EnemyCtrl,scale);
         m_units.push_back(enemy1);
         m_board.addUnit(enemy1,QPoint(3,1));
         break;
     }
     case 2:{
-        Unit* enemy1=new Noah("腐化-卓拉战士",620*scale,55*scale,Owner::EnemyCtrl);
-        Unit* enemy2=new Luna("腐化-卓拉法师",450*scale,38*scale,Owner::EnemyCtrl);
+        Unit* enemy1=new Noah("腐化-卓拉战士",Owner::EnemyCtrl,scale);
+        Unit* enemy2=new Luna("腐化-卓拉祭司",Owner::EnemyCtrl,scale);
 
         m_units.push_back(enemy1);
         m_units.push_back(enemy2);
@@ -437,9 +437,9 @@ void Game::generateEnemy()
         break;
     }
     case 3:{
-        Unit* enemy1=new Noah("腐化-卓拉战士",620*scale,55*scale,Owner::EnemyCtrl);
-        Unit* enemy2=new Sidon("腐化-卓拉守卫",700*scale,30*scale,Owner::EnemyCtrl);
-        Unit* enemy3=new Luna("腐化-卓拉法师",450*scale,38*scale,Owner::EnemyCtrl);
+        Unit* enemy1=new Noah("腐化-卓拉战士",Owner::EnemyCtrl,scale);
+        Unit* enemy2=new Sidon("腐化-卓拉守卫",Owner::EnemyCtrl,scale);
+        Unit* enemy3=new Luna("腐化-卓拉祭司",Owner::EnemyCtrl,scale);
 
         m_units.push_back(enemy1);
         m_units.push_back(enemy2);
@@ -448,6 +448,20 @@ void Game::generateEnemy()
         m_board.addUnit(enemy1,QPoint(2,1));
         m_board.addUnit(enemy2,QPoint(3,1));
         m_board.addUnit(enemy3,QPoint(4,0));
+        break;
+    }
+    case 4:{
+        Unit* boss=new WaterblightGanon("水咒盖侬");
+        Unit* enemy1=new Luna("腐化-卓拉祭司",Owner::EnemyCtrl,scale);
+        Unit* enemy2=new Luna("腐化-卓拉祭司",Owner::EnemyCtrl,scale);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(boss);
+
+        m_board.addUnit(enemy1,QPoint(3,1));
+        m_board.addUnit(enemy2,QPoint(4,1));
+        m_board.addUnit(boss,QPoint(4,0));
         break;
     }
 
@@ -485,9 +499,9 @@ void Game::initialUnits(){
     if(!m_units.empty()){
         return;
     }
-    m_units.push_back(new Sidon("卓拉守卫-辛顿",700,30,Owner::PlayerCtrl));
-    m_units.push_back(new Luna("卓拉祭司-露娜",450,38,Owner::PlayerCtrl));
-    m_units.push_back(new Noah("卓拉战士-诺亚",620,55,Owner::PlayerCtrl));
+    m_units.push_back(new Sidon("卓拉守卫-辛顿",Owner::PlayerCtrl,1));
+    m_units.push_back(new Luna("卓拉祭司-露娜",Owner::PlayerCtrl,1));
+    m_units.push_back(new Noah("卓拉战士-诺亚",Owner::PlayerCtrl,1));
 }
 
 //属性面板

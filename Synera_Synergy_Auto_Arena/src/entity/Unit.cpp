@@ -89,6 +89,21 @@ QPoint Unit::getStartPos() const
     return m_startPos;
 }
 
+Unit *Unit::getTarget() const
+{
+    return m_target;
+}
+
+int Unit::getMoveCoolDown() const
+{
+    return m_moveCoolDown;
+}
+
+int Unit::getAtkCoolDown() const
+{
+    return m_atkCoolDown;
+}
+
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }
@@ -115,6 +130,21 @@ void Unit::setState(State state)
     m_state=state;
 }
 
+void Unit::setMoveCoolDown(int newCoolDown)
+{
+    m_moveCoolDown=newCoolDown;
+}
+
+void Unit::setAtkCoolDown(int newCoolDown)
+{
+    m_atkCoolDown=newCoolDown;
+}
+
+void Unit::setMaxMana(int newMaxMana)
+{
+    m_maxMana=newMaxMana;
+}
+
 //状态机
 void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 {
@@ -137,7 +167,7 @@ void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
                 handleAttking();
                 break;
             case State::Casting:
-                handleCasting();
+                handleCasting(board,allUnits);
                 break;
         }
     }
@@ -243,9 +273,9 @@ void Unit::handleAttking()
     }
 }
 
-void Unit::handleCasting()
+void Unit::handleCasting(Board& board,const std::vector<Unit*> allUnits)
 {
-    castSkill();
+    castSkill(board,allUnits);
     m_mana=0;
     m_state=State::Idle;
 }

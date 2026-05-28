@@ -32,6 +32,9 @@ public:
     State getState()const;
     QPointF getWorldPos(const QPoint& gridPos)const;
     QPoint getStartPos()const;
+    Unit* getTarget()const;
+    int getMoveCoolDown()const;
+    int getAtkCoolDown()const;
 
 
     void setHp(int newHp);
@@ -41,26 +44,29 @@ public:
     void setPos(QPoint newPos);
     void setStartPos(QPoint pos);
     void setState(State state);
+    void setMoveCoolDown(int newCoolDown);
+    void setAtkCoolDown(int newCoolDown);
+    void setMaxMana(int newMaxMana);
 
     //状态机
-    void updateUnit(Board& board,const std::vector<Unit*> allUnits);
+    virtual void updateUnit(Board& board,const std::vector<Unit*> allUnits);
     void handleIdle(Board& board,const std::vector<Unit*> allUnits);
     void handleMoving(Board& board);
     void handleAttking();
-    void handleCasting();
+    void handleCasting(Board& board,const std::vector<Unit*> allUnits);
 
     //寻路
     std::vector<QPoint> breadFirstSearch(Board& board);
 
     //技能虚函数
-    virtual void castSkill()=0;
+    virtual void castSkill(Board& board,const std::vector<Unit*> allUnits)=0;
+    virtual void takeDamage(int atk);
 
 signals:
     void isDead(Unit* unit);
     void infoChanged(Unit* unit);
 
 private:
-    void takeDamage(int atk);
 
     static int m_nxtUnitId;
 
