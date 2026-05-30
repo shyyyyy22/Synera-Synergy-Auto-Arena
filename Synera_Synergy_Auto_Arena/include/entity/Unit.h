@@ -14,7 +14,7 @@ class Unit:public QObject
 {
     Q_OBJECT
 public:
-    Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,QObject *parent=nullptr);
+    Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,bool isShopHero=false,QObject *parent=nullptr);
     virtual ~Unit()=default;
 
     //属性相关
@@ -35,6 +35,7 @@ public:
     Unit* getTarget()const;
     int getMoveCoolDown()const;
     int getAtkCoolDown()const;
+    bool getIsShopHero()const;
 
 
     void setHp(int newHp);
@@ -47,6 +48,7 @@ public:
     void setMoveCoolDown(int newCoolDown);
     void setAtkCoolDown(int newCoolDown);
     void setMaxMana(int newMaxMana);
+    void setIsShop(bool isShop);
 
     //状态机
     virtual void updateUnit(Board& board,const std::vector<Unit*> allUnits);
@@ -84,6 +86,7 @@ private:
     State m_state;
     Unit* m_target;
     QPoint m_startPos;
+    bool m_isShopHero;
 
     int m_moveCoolDown;
     int m_atkCoolDown;

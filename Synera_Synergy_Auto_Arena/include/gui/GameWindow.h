@@ -19,6 +19,9 @@ public:
     explicit GameWindow(QWidget *parent = nullptr);
     ~GameWindow() override;
 
+public slots:
+    void toggleShop();
+
 protected:
     void resizeEvent(QResizeEvent* event)override;
 
@@ -27,6 +30,7 @@ private:
     void mousePressEvent(QMouseEvent *event)override;
 
     void updatePlayerInfo();
+    void updateShopInfo();
 
     QWidget* m_centralWidget;
     QGraphicsView* m_view;
@@ -34,6 +38,11 @@ private:
     QVBoxLayout* m_mainLayout;
     InfoPanel* m_infoPanel;
     QPushButton* m_startBtn;
+    QWidget* m_shopWidget;
+    QPushButton* m_shopBtn;
+    QPushButton* m_buyXpBtn;
+    QPushButton* m_rollShopBtn;
+    std::vector<QPushButton*> m_shopSlots;
 
     QLabel *m_pHpLabel;
     QLabel *m_pGoldLabel;
@@ -42,5 +51,8 @@ private:
     QLabel *m_pStageLabel;
 
     SettlementPanel* m_settlementPanel;
+
+    std::vector<QString> m_shopPools;
+    int m_shopIndex;
 };
 #endif // GAMEWINDOW_H

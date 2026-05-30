@@ -10,12 +10,30 @@ GameWindow::GameWindow(QWidget *parent)
     ,m_game(new Game(Board::ROWS,Board::COLS,this))
     ,m_infoPanel(new InfoPanel(this))
     ,m_startBtn(new QPushButton("开始对战",this))
+    ,m_shopBtn(new QPushButton("商店",this))
 {
+    m_shopPools=m_game->rollShop();
     setUI();
     m_game->initialize();
 }
 
 GameWindow::~GameWindow() = default;
+
+void GameWindow::toggleShop()
+{
+    m_infoPanel->updateUnitInfo(nullptr);
+    updateShopInfo();
+    if(m_shopWidget->isHidden()){
+        m_shopWidget->show();
+        m_shopBtn->setText("收回商店");
+        m_shopBtn->setStyleSheet("background-color: #d32f2f; color: white; font-weight: bold; border-radius: 4px;");
+    }
+    else {
+        m_shopWidget->hide();
+        m_shopBtn->setText("商店");
+        m_shopBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
+    }
+}
 
 void GameWindow::resizeEvent(QResizeEvent *event)
 {
@@ -108,15 +126,51 @@ void GameWindow::setUI(){
 
     m_mainLayout->addWidget(gameContainer,1);
 
+    //商店层
+    m_shopWidget=new QWidget(this);
+    m_shopWidget->setFixedHeight(80);
+    m_shopWidget->setStyleSheet("background-color: rgba(30, 30, 30, 220); border-top: 2px solid #D4AF37;");
+
+    QHBoxLayout* shopLayout=new QHBoxLayout(m_shopWidget);
+    shopLayout->setContentsMargins(10, 5, 10, 5);
+
+    m_buyXpBtn=new QPushButton("增加经验(4金币)",this);
+    m_rollShopBtn=new QPushButton("刷新商店(2金币)",this);
+
+    shopLayout->addWidget(m_buyXpBtn);
+    shopLayout->addSpacing(10);
+
+    for(int i=0;i<5;i++){
+        m_shopSlots.push_back(new QPushButton(m_shopPools[i],this));
+        m_shopSlots[i]->setStyleSheet("background-color: #3e2723; color: white; border: 1px solid #555; border-radius: 4px; font-weight: bold;");
+        shopLayout->addWidget(m_shopSlots[i], 1);
+
+        connect(m_shopSlots[i],&QPushButton::clicked,this,[this,i](){
+            m_game->clearAllSelected();
+            std::unique_ptr<Unit> unit=m_game->createHeroforPreview(m_shopPools[i]);
+            m_infoPanel->updateUnitInfo(unit.release());
+            m_shopIndex=i;
+        });
+    }
+    updateShopInfo();
+
+    shopLayout->addSpacing(10);
+    shopLayout->addWidget(m_rollShopBtn);
+
+    m_shopWidget->hide();
+    m_mainLayout->addWidget(m_shopWidget);
+
     //下层：控制层
     QWidget* controlBar=new QWidget(this);
     controlBar->setFixedHeight(50);
     controlBar->setStyleSheet("background-color: #202020; border-top: 1px solid #444;");
     m_startBtn->setEnabled(false);
+    m_shopBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
 
     QHBoxLayout* controlLayout=new QHBoxLayout(controlBar);
     controlLayout->setContentsMargins(20,0,20,0);
     controlLayout->addStretch();
+    controlLayout->addWidget(m_shopBtn);
     controlLayout->addWidget(m_startBtn);
 
     m_mainLayout->addWidget(controlBar,1);
@@ -132,9 +186,37 @@ void GameWindow::setUI(){
     connect(m_game,&Game::unitSelected,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_game,&Game::unitInfoChanged,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_startBtn,&QPushButton::clicked,m_game,&Game::onClickStartBtn);
+    connect(m_shopBtn,&QPushButton::clicked,this,&GameWindow::toggleShop);
+    connect(m_game,&Game::gameIsCombat,m_infoPanel,&InfoPanel::onIsGameCombat);
+    connect(m_infoPanel,&InfoPanel::onBuyAndSellBtn,this,[=](bool isShopHero){
+        if(isShopHero){
+            if(m_game->buyHero(-3,m_shopPools[m_shopIndex])){
+                m_shopPools[m_shopIndex]="";
+            }
+        }
+        else {
+            m_game->sellHero(2,m_infoPanel->getUnit());
+        }
+        m_infoPanel->updateUnitInfo(nullptr);
+        updatePlayerInfo();
+        updateShopInfo();
+    });
+    connect(m_buyXpBtn,&QPushButton::clicked,this,[=](){
+        m_game->buyXp();
+        updatePlayerInfo();
+        updateShopInfo();
+    });
+    connect(m_rollShopBtn,&QPushButton::clicked,this,[=](){
+        m_shopPools=m_game->rollShop();
+        m_game->getPlayer()->changeGold(-2);
+        updateShopInfo();
+        updatePlayerInfo();
+    });
     connect(m_settlementPanel,&SettlementPanel::nxtRoundClicked,this,[this](){
         updatePlayerInfo();
         m_settlementPanel->hide();
+        m_shopPools=m_game->rollShop();
+        updateShopInfo();
         m_game->startNxtRound();
     });
     connect(m_game,&Game::roundFinishend,this,[this](bool win,int gold,int hp){
@@ -185,6 +267,8 @@ void GameWindow::setUI(){
 
         m_startBtn->setEnabled(count>0);
     });
+
+
 }
 
 void GameWindow::mousePressEvent(QMouseEvent *event) {
@@ -215,7 +299,37 @@ void GameWindow::updatePlayerInfo()
         m_pGoldLabel->setText(QString("金币：%1").arg(p->getGold()));
         m_pLevelLabel->setText(QString("等级：Lv.%1").arg(p->getLevel()));
         m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(m_game->getPlayerUnitInBoard()).arg(p->getMaxUnit()));
-        m_pStageLabel->setText(QString("关卡：%1.%2").arg(p->getMajorStage()).arg(p->getMinorStage()));
+        m_pStageLabel->setText(QString("关卡：%1-%2").arg(p->getMajorStage()).arg(p->getMinorStage()));
     }
 
+}
+
+void GameWindow::updateShopInfo()
+{
+    int playerGold=m_game->getPlayer()->getGold();
+    if(playerGold<2){
+        m_buyXpBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
+        m_rollShopBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
+        m_buyXpBtn->setEnabled(false);
+        m_rollShopBtn->setEnabled(false);
+    }
+    else if(playerGold<4) {
+        m_rollShopBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
+        m_buyXpBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
+        m_buyXpBtn->setEnabled(false);
+        m_rollShopBtn->setEnabled(true);
+    }
+    else {
+        m_buyXpBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
+        m_rollShopBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
+        m_rollShopBtn->setEnabled(true);
+        m_buyXpBtn->setEnabled(true);
+    }
+    if(m_game->getPlayer()->getLevel()==6){
+        m_buyXpBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
+        m_buyXpBtn->setText("已达最大经验");
+    }
+    for(int i=0;i<5;i++){
+        m_shopSlots[i]->setText(m_shopPools[i]);
+    }
 }

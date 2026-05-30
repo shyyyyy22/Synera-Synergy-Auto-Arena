@@ -4,7 +4,7 @@
 #include<QHash>
 #include<queue>
 int Unit::m_nxtUnitId=0;
-Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,QObject *parent)
+Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,bool isShopHero,QObject *parent)
     :QObject(parent)
     ,m_id(m_nxtUnitId++)
     ,m_maxHp(maxHp)
@@ -23,6 +23,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_atkCoolDown(0)
     ,m_startPos(-1,-1)
     ,m_profession(profession)
+    ,m_isShopHero(isShopHero)
 {}
 
 //属性相关
@@ -104,6 +105,11 @@ int Unit::getAtkCoolDown() const
     return m_atkCoolDown;
 }
 
+bool Unit::getIsShopHero() const
+{
+    return m_isShopHero;
+}
+
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }
@@ -143,6 +149,11 @@ void Unit::setAtkCoolDown(int newCoolDown)
 void Unit::setMaxMana(int newMaxMana)
 {
     m_maxMana=newMaxMana;
+}
+
+void Unit::setIsShop(bool isShop)
+{
+    m_isShopHero=isShop;
 }
 
 //状态机
@@ -189,7 +200,7 @@ void Unit::handleIdle(Board &board,const std::vector<Unit*> allUnits)
                 closeEnemy=enemyUnit;
             }
             else if(qAbs(distance-dist)<=0.1){
-                if(enemyUnit->getHp()>closeEnemy->getHp()){
+                if(enemyUnit->getHp()<closeEnemy->getHp()){
                     closeEnemy=enemyUnit;
                 }
                 else if(enemyUnit->getHp()==closeEnemy->getHp()){

@@ -15,18 +15,22 @@ public:
     unsigned short getMajorStage()const;
     unsigned short getMinorStage()const;
 
-    void addGold(int addGold);
+    void changeGold(int addGold);
     void setHp(int newHp);
 
     void nxtStage();
+    void addXp(int addXp);
 
 private:
     int m_hp;
     int m_gold;
     unsigned short m_level;
+    unsigned short m_maxLevel;
     unsigned short m_maxUnit;
     unsigned short m_majorStage;
     unsigned short m_minorStage;
+    unsigned short m_xp;
+    unsigned short m_maxXP;
 };
 
 #endif // PLAYER_H

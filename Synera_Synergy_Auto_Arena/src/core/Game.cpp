@@ -1,5 +1,6 @@
 #include "Game.h"
 #include"Heroes.h"
+#include<QRandomGenerator>
 namespace {
 constexpr qreal kZGrid = 0.0;
 constexpr qreal kZUnit = 1.0;
@@ -23,7 +24,7 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_phase(GamePhase::Prep)
     ,m_playerUnitInBoard(0)
 {
-
+    m_heroPools={"卓拉守卫-辛顿","卓拉战士-诺亚","卓拉祭司-露娜"};
 }
 Game::~Game(){
     qDeleteAll(m_units);
@@ -621,6 +622,7 @@ void Game::gameTick()
     if(playerLive==0 || enemyLive==0){
         m_phase=GamePhase::Resolve;
         m_timer->stop();
+        emit gameIsCombat(false);
         handleStageResolve(playerLive>0);
     }
 
@@ -636,6 +638,7 @@ void Game::onClickStartBtn()
             }
         }
         m_phase=GamePhase::Combat;
+        emit gameIsCombat(true);
         m_timer->start(FPS);
     }
 }
@@ -653,7 +656,8 @@ void Game::onUnitDead(Unit *unit)
 void Game::handleStageResolve(bool win)
 {
     if(win){
-        m_player->addGold(5);
+        m_player->changeGold(4);
+        m_player->addXp(3);
     }
     else {
         int total=0;
@@ -664,7 +668,8 @@ void Game::handleStageResolve(bool win)
         }
         total=qBound(5,total,20);
         m_player->setHp(m_player->getHp()-total);
-        m_player->addGold(3);
+        m_player->changeGold(2);
+        m_player->addXp(1);
     }
     if(m_player->getHp()<=0){
         emit gameOver();
@@ -703,6 +708,112 @@ void Game::clearEnemyBeforeRound()
         else {
             it++;
         }
+    }
+}
+
+bool Game::buyHero(int gold,QString name)
+{
+    if(m_player->getGold()+gold<0){
+        return false;
+    }
+    m_player->changeGold(gold);
+    QPoint pos(-1,-1);
+    for(int i=0;i<m_cols;i++){
+        if(!m_bench.hasUnitAt(QPoint(i,Board::ROWS))){
+            pos=QPoint(i,Board::ROWS);
+            break;
+        }
+    }
+
+    if(m_bench.isValidPosition(pos)){
+        Unit * unit=createHeroforPreview(name).release();
+        unit->setIsShop(false);
+        m_units.push_back(unit);
+        m_bench.addUnit(unit,pos);
+        UnitItem* item=new UnitItem(unit,false);
+        item->setZValue(kZUnit);
+        m_scene->addItem(item);
+        m_unitItems.push_back(item);
+        m_unitItemById[unit->getId()]=item;
+
+        connect(item,&UnitItem::dragStarted,this,&Game::onDragStarted);
+        connect(item,&UnitItem::dragMoved,this,&Game::onDragMoved);
+        connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
+        connect(item,&UnitItem::clicked,this,&Game::onClicked);
+
+        connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
+        connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
+        connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+    }
+
+    syncFromBoardAndBench();
+    return true;
+}
+
+void Game::sellHero(int gold, Unit *unit)
+{
+    if(!unit){
+        return;
+    }
+    m_player->changeGold(gold);
+
+    UnitItem* item=getUnitItem(unit->getId());
+    if(item){
+        if(item->getIsBoard()){
+            m_board.removeUnit(unit);
+        }
+        else {
+            m_bench.removeUnit(unit);
+        }
+        m_scene->removeItem(item);
+
+        auto itemIt=std::find(m_unitItems.begin(),m_unitItems.end(),item);
+        if(itemIt!=m_unitItems.end()){
+            m_unitItems.erase(itemIt);
+        }
+        delete item;
+    }
+
+    m_unitItemById.erase(unit->getId());
+
+    auto it=std::find(m_units.begin(),m_units.end(),unit);
+    if(it!=m_units.end()){
+        m_units.erase(it);
+    }
+    delete unit;
+
+    syncFromBoardAndBench();
+}
+
+std::unique_ptr<Unit> Game::createHeroforPreview(QString name)
+{
+    if(name.isEmpty()){
+        return nullptr;
+    }
+    if(name=="卓拉战士-诺亚"){
+        return std::make_unique<Noah>(name,Owner::PlayerCtrl,1,true);
+    } else if(name=="卓拉守卫-辛顿"){
+        return std::make_unique<Sidon>(name,Owner::PlayerCtrl,1,true);
+    } else if(name=="卓拉祭司-露娜"){
+        return std::make_unique<Luna>(name,Owner::PlayerCtrl,1,true);
+    }
+}
+
+std::vector<QString> Game::rollShop()
+{
+    std::vector<QString> shopPools;
+    for(int i=0;i<5;i++){
+        int randomIndex=QRandomGenerator::global()->bounded(3);
+        shopPools.push_back(m_heroPools[randomIndex]);
+    }
+    return shopPools;
+}
+
+void Game::buyXp()
+{
+    if(m_player->getGold()>=4){
+        m_player->changeGold(-4);
+        m_player->addXp(4);
     }
 }
 

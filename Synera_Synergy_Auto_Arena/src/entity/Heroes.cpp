@@ -1,8 +1,8 @@
 #include "Heroes.h"
 #include"Board.h"
 
-Sidon::Sidon(const QString& name,Owner owner,qreal scale)
-    :Unit(name,750*scale,30*scale,1,60,owner,Profession::Guardian)
+Sidon::Sidon(const QString& name,Owner owner,qreal scale,bool isShopHero)
+    :Unit(name,750*scale,30*scale,1,60,owner,Profession::Guardian,isShopHero)
     ,m_skillTime(0)
 {}
 
@@ -29,8 +29,8 @@ void Sidon::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 }
 
 
-Luna::Luna(const QString& name,Owner owner,qreal scale)
-    :Unit(name,450*scale,35*scale,3,70,owner,Profession::Mage)
+Luna::Luna(const QString& name,Owner owner,qreal scale,bool isShopHero)
+    :Unit(name,450*scale,35*scale,3,70,owner,Profession::Mage,isShopHero)
 {}
 
 void Luna::castSkill(Board& board,const std::vector<Unit*> allUnits)
@@ -63,8 +63,8 @@ void Luna::castSkill(Board& board,const std::vector<Unit*> allUnits)
     }
 }
 
-Noah::Noah(const QString& name,Owner owner,qreal scale)
-    :Unit(name,620*scale,52*scale,1,60,owner,Profession::Warrior)
+Noah::Noah(const QString& name,Owner owner,qreal scale,bool isShopHero)
+    :Unit(name,620*scale,52*scale,1,60,owner,Profession::Warrior,isShopHero)
     ,m_skillTime(0)
     ,m_inSkill(false)
     ,m_debuffUnit(nullptr)

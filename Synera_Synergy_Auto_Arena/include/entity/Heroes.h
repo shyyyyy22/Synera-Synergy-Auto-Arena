@@ -6,7 +6,7 @@
 
 class Sidon:public Unit{
 public:
-    Sidon(const QString& name,Owner owner,qreal scale);
+    Sidon(const QString& name,Owner owner,qreal scale,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void takeDamage(int atk)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
@@ -15,12 +15,12 @@ private:
 };
 class Luna:public Unit{
 public:
-    Luna(const QString& name,Owner owner,qreal scale);
+    Luna(const QString& name,Owner owner,qreal scale,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
 };
 class Noah:public Unit{
 public:
-    Noah(const QString& name,Owner owner,qreal scale);
+    Noah(const QString& name,Owner owner,qreal scale,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
 private:

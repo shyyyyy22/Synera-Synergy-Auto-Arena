@@ -34,6 +34,8 @@ public:
 
     //游戏逻辑
     void startNxtRound();
+    void buyXp();
+    std::vector<QString> rollShop();
 
 
 public slots:
@@ -51,6 +53,11 @@ public slots:
     void onUnitDead(Unit* unit);
     void handleStageResolve(bool win);
     void clearEnemyBeforeRound();
+    bool buyHero(int gold,QString name);
+    void sellHero(int gold,Unit* unit);
+    std::unique_ptr<Unit> createHeroforPreview(QString name);
+
+
 
 private:
     void buildScene();
@@ -81,6 +88,7 @@ private:
     std::unordered_map<int ,UnitItem*>m_unitItemById;
 
     int m_playerUnitInBoard;
+    std::vector<QString> m_heroPools;
 
     //gui层面
     QGraphicsScene *m_scene;
@@ -99,6 +107,7 @@ signals:
     void roundFinishend(bool win,int gold,int hp);
     void gameOver();
     void boardUpdate(int count);
+    void gameIsCombat(bool isCombat);
 };
 
 #endif // GAME_H

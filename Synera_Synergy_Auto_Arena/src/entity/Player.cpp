@@ -3,10 +3,13 @@
 Player::Player()
     :m_hp(100)
     ,m_gold(10)
-    ,m_level(0)
+    ,m_level(1)
+    ,m_maxLevel(6)
     ,m_maxUnit(3)
     ,m_majorStage(1)
     ,m_minorStage(1)
+    ,m_xp(0)
+    ,m_maxXP(2)
 {}
 
 //基础功能
@@ -33,7 +36,7 @@ unsigned short Player::getMinorStage() const
     return m_minorStage;
 }
 
-void Player::addGold(int addGold)
+void Player::changeGold(int addGold)
 {
     m_gold+=addGold;
 }
@@ -51,5 +54,18 @@ void Player::nxtStage()
     }
     else {
         m_minorStage++;
+    }
+}
+
+void Player::addXp(int addXp)
+{
+    if(m_xp+addXp>=m_maxXP && m_level<m_maxLevel){
+        m_xp=m_xp+addXp-m_maxXP;
+        m_maxXP*=2;
+        m_level++;
+        m_maxUnit++;
+    }
+    else {
+        m_xp+=addXp;
     }
 };
