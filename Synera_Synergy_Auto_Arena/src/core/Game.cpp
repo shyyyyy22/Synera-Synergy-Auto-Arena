@@ -24,7 +24,9 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_phase(GamePhase::Prep)
     ,m_playerUnitInBoard(0)
 {
-    m_heroPools={"卓拉守卫-辛顿","卓拉战士-诺亚","卓拉祭司-露娜"};
+    m_heroPools={"卓拉守卫-辛顿","卓拉战士-诺亚","卓拉祭司-露娜"
+                ,"利特射手-力巴","利特舞者-卡西","利特风语者-艾文"
+                ,"格鲁德士兵-乌尔","格鲁德咒师-娜吉","格鲁德刺客-希卡"};
 }
 Game::~Game(){
     qDeleteAll(m_units);
@@ -744,17 +746,26 @@ bool Game::buyHero(int gold,QString name)
         connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
         connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
         connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+
+        if(m_phase==GamePhase::Prep){
+            upUnitStar(name,1);
+            upUnitStar(name,2);
+        }
     }
+
 
     syncFromBoardAndBench();
     return true;
 }
 
-void Game::sellHero(int gold, Unit *unit)
+void Game::sellHero(Unit *unit)
 {
     if(!unit){
         return;
     }
+    int star=unit->getStar();
+    int gold=2*star*star-3*star+3;
+
     m_player->changeGold(gold);
 
     UnitItem* item=getUnitItem(unit->getId());
@@ -785,17 +796,29 @@ void Game::sellHero(int gold, Unit *unit)
     syncFromBoardAndBench();
 }
 
-std::unique_ptr<Unit> Game::createHeroforPreview(QString name)
+std::unique_ptr<Unit> Game::createHeroforPreview(QString name,int star)
 {
     if(name.isEmpty()){
         return nullptr;
     }
     if(name=="卓拉战士-诺亚"){
-        return std::make_unique<Noah>(name,Owner::PlayerCtrl,1,true);
+        return std::make_unique<Noah>(name,Owner::PlayerCtrl,1,star,true);
     } else if(name=="卓拉守卫-辛顿"){
-        return std::make_unique<Sidon>(name,Owner::PlayerCtrl,1,true);
+        return std::make_unique<Sidon>(name,Owner::PlayerCtrl,1,star,true);
     } else if(name=="卓拉祭司-露娜"){
-        return std::make_unique<Luna>(name,Owner::PlayerCtrl,1,true);
+        return std::make_unique<Luna>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="利特射手-力巴"){
+        return std::make_unique<Revali>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="利特舞者-卡西"){
+        return std::make_unique<Kashi>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="利特风语者-艾文"){
+        return std::make_unique<Evan>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="格鲁德士兵-乌尔"){
+        return std::make_unique<Ur>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="格鲁德咒师-娜吉"){
+        return std::make_unique<Naji>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="格鲁德刺客-希卡"){
+        return std::make_unique<Shika>(name,Owner::PlayerCtrl,1,star,true);
     }
 }
 
@@ -803,10 +826,89 @@ std::vector<QString> Game::rollShop()
 {
     std::vector<QString> shopPools;
     for(int i=0;i<5;i++){
-        int randomIndex=QRandomGenerator::global()->bounded(3);
+        int randomIndex=QRandomGenerator::global()->bounded(m_heroPools.size());
         shopPools.push_back(m_heroPools[randomIndex]);
     }
     return shopPools;
+}
+
+void Game::upUnitStar(QString name, int star)
+{
+    bool first=true;
+    int count=0;
+    QPoint pos(-1,-1);
+    Unit* units[3];
+    for(Unit* unit:m_units){
+        if(unit->getOwner()==Owner::EnemyCtrl){
+            continue;
+        }
+        else {
+            if(unit->getName()==name && unit->getStar()==star){
+                if(first){
+                    pos=unit->getPos();
+                    first=false;
+                }
+                units[count++]=unit;
+            }
+        }
+        if(count==3)break;
+    }
+    if(count==3){
+        for(int i=0;i<count;i++){
+            UnitItem* item=getUnitItem(units[i]->getId());
+            if(item){
+                if(item->getIsBoard()){
+                    m_board.removeUnit(units[i]);
+                }
+                else {
+                    m_bench.removeUnit(units[i]);
+                }
+                m_scene->removeItem(item);
+
+                auto itemIt=std::find(m_unitItems.begin(),m_unitItems.end(),item);
+                if(itemIt!=m_unitItems.end()){
+                    m_unitItems.erase(itemIt);
+                }
+                delete item;
+            }
+
+            m_unitItemById.erase(units[i]->getId());
+
+            auto it=std::find(m_units.begin(),m_units.end(),units[i]);
+            if(it!=m_units.end()){
+                m_units.erase(it);
+            }
+            delete units[i];
+        }
+        Unit * unit=createHeroforPreview(name,star+1).release();
+        unit->setIsShop(false);
+        m_units.push_back(unit);
+        UnitItem* item=nullptr;
+        if(pos.y()==Board::ROWS){
+            m_bench.addUnit(unit,pos);
+            item=new UnitItem(unit,false);
+        }
+        else {
+            m_board.addUnit(unit,pos);
+            item=new UnitItem(unit,true);
+        }
+
+        item->setZValue(kZUnit);
+        m_scene->addItem(item);
+        m_unitItems.push_back(item);
+        m_unitItemById[unit->getId()]=item;
+
+        connect(item,&UnitItem::dragStarted,this,&Game::onDragStarted);
+        connect(item,&UnitItem::dragMoved,this,&Game::onDragMoved);
+        connect(item,&UnitItem::dragDropped,this,&Game::onDragDropped);
+        connect(item,&UnitItem::clicked,this,&Game::onClicked);
+
+        connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
+        connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
+        connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+    }
+
+    syncFromBoardAndBench();
 }
 
 void Game::buyXp()
@@ -840,6 +942,10 @@ void Game::startNxtRound()
 
 
     generateEnemy();
+    for(QString& name:m_heroPools){
+        upUnitStar(name,1);
+        upUnitStar(name,2);
+    }
 
     m_phase=GamePhase::Prep;
 

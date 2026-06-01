@@ -62,14 +62,24 @@ void InfoPanel::updateUnitInfo(Unit *unit)
     m_manaLabel->setText(QString("法力值：%1/%2").arg(unit->getMana()).arg(unit->getMaxMana()));
     m_rangeLabel->setText(QString("攻击范围：%1").arg(unit->getRange()));
     m_starLabel->setText(QString("星级：%1").arg(unit->getStar()));
-    m_buyAndSellBtn->setText(unit->getIsShopHero()?"购买(3金币)":"出售(2金币)");
-    if(m_isGameCombat && m_unit->getPos().y()<Board::ROWS && m_unit->getPos().y()>=0){
+    int star=unit->getStar();
+    m_buyAndSellBtn->setText(unit->getIsShopHero()?"购买(3金币)":QString("出售(%1金币)").arg(2*star*star-3*star+3));
+
+    if(unit->getOwner()==Owner::EnemyCtrl){
         m_buyAndSellBtn->setEnabled(false);
-        m_buyAndSellBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
-    } else {
+        m_buyAndSellBtn->setVisible(false);
+    }
+    else {
         m_buyAndSellBtn->setEnabled(true);
-        m_buyAndSellBtn->setStyleSheet(unit->getIsShopHero()?"background-color: #2e7d32; color: white; font-weight: bold; padding: 6px; border-radius: 4px;"
-                                                             :"background-color: #d32f2f; color: white; font-weight: bold; border-radius: 4px;");
+        m_buyAndSellBtn->setVisible(true);
+        if(m_isGameCombat && m_unit->getPos().y()<Board::ROWS && m_unit->getPos().y()>=0){
+            m_buyAndSellBtn->setEnabled(false);
+            m_buyAndSellBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
+        } else {
+            m_buyAndSellBtn->setEnabled(true);
+            m_buyAndSellBtn->setStyleSheet(unit->getIsShopHero()?"background-color: #2e7d32; color: white; font-weight: bold; padding: 6px; border-radius: 4px;"
+                                                                 :"background-color: #d32f2f; color: white; font-weight: bold; border-radius: 4px;");
+        }
     }
 
     this->show();

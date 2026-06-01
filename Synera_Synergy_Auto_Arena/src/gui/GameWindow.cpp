@@ -195,7 +195,7 @@ void GameWindow::setUI(){
             }
         }
         else {
-            m_game->sellHero(2,m_infoPanel->getUnit());
+            m_game->sellHero(m_infoPanel->getUnit());
         }
         m_infoPanel->updateUnitInfo(nullptr);
         updatePlayerInfo();
@@ -327,7 +327,7 @@ void GameWindow::updateShopInfo()
     }
     if(m_game->getPlayer()->getLevel()==6){
         m_buyXpBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
-        m_buyXpBtn->setText("已达最大经验");
+        m_buyXpBtn->setText("已达最大等级");
     }
     for(int i=0;i<5;i++){
         m_shopSlots[i]->setText(m_shopPools[i]);

@@ -1,11 +1,13 @@
 #include "Heroes.h"
 #include"Board.h"
 
-Sidon::Sidon(const QString& name,Owner owner,qreal scale,bool isShopHero)
-    :Unit(name,750*scale,30*scale,1,60,owner,Profession::Guardian,isShopHero)
+//水
+Sidon::Sidon(const QString& name,Owner owner,qreal scale,int star,bool isShopHero)
+    :Unit(name,750*scale,30*scale,1,60,owner,Profession::Guardian,star,isShopHero)
     ,m_skillTime(0)
-{}
-
+{
+    setRace(Race::Zora);
+}
 void Sidon::castSkill(Board& board,const std::vector<Unit*> allUnits)
 {
     m_skillTime=180;
@@ -19,7 +21,6 @@ void Sidon::takeDamage(int atk)
         Unit::takeDamage(atk);
     }
 }
-
 void Sidon::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 {
     if(m_skillTime){
@@ -29,10 +30,11 @@ void Sidon::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 }
 
 
-Luna::Luna(const QString& name,Owner owner,qreal scale,bool isShopHero)
-    :Unit(name,450*scale,35*scale,3,70,owner,Profession::Mage,isShopHero)
-{}
-
+Luna::Luna(const QString& name,Owner owner,qreal scale,int star,bool isShopHero)
+    :Unit(name,450*scale,35*scale,3,70,owner,Profession::Mage,star,isShopHero)
+{
+    setRace(Race::Zora);
+}
 void Luna::castSkill(Board& board,const std::vector<Unit*> allUnits)
 {
     Unit* unit1=nullptr;
@@ -63,14 +65,16 @@ void Luna::castSkill(Board& board,const std::vector<Unit*> allUnits)
     }
 }
 
-Noah::Noah(const QString& name,Owner owner,qreal scale,bool isShopHero)
-    :Unit(name,620*scale,52*scale,1,60,owner,Profession::Warrior,isShopHero)
+
+Noah::Noah(const QString& name,Owner owner,qreal scale,int star,bool isShopHero)
+    :Unit(name,620*scale,52*scale,1,60,owner,Profession::Warrior,star,isShopHero)
     ,m_skillTime(0)
     ,m_inSkill(false)
     ,m_debuffUnit(nullptr)
     ,m_originAtk(-1)
-{}
-
+{
+    setRace(Race::Zora);
+}
 void Noah::castSkill(Board& board,const std::vector<Unit*> allUnits)
 {
     if(getTarget()){
@@ -79,10 +83,10 @@ void Noah::castSkill(Board& board,const std::vector<Unit*> allUnits)
         m_debuffUnit=getTarget();
         getTarget()->setAtk(getTarget()->getAtk()*4/5);
         m_inSkill=true;
+        m_skillTime=180;
     }
-    m_skillTime=180;
-}
 
+}
 void Noah::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 {
     if(m_skillTime){
@@ -91,18 +95,19 @@ void Noah::updateUnit(Board &board, const std::vector<Unit *> allUnits)
     else if(m_inSkill){
         if(m_debuffUnit && m_debuffUnit->getState()!=State::Dead){
             m_debuffUnit->setAtk(m_originAtk);
-            m_inSkill=false;
+
         }
+        m_inSkill=false;
         m_debuffUnit=nullptr;
     }
     Unit::updateUnit(board,allUnits);
 }
 
+
 WaterblightGanon::WaterblightGanon(const QString &name)
     :Unit(name,1300,45,3,90,Owner::EnemyCtrl,Profession::Mage)
     ,m_hasPhase2(false)
 {}
-
 void WaterblightGanon::castSkill(Board& board,const std::vector<Unit*> allUnits)
 {
     for(Unit* unit:allUnits){
@@ -118,7 +123,6 @@ void WaterblightGanon::castSkill(Board& board,const std::vector<Unit*> allUnits)
         }
     }
 }
-
 void WaterblightGanon::takeDamage(int atk)
 {
     Unit::takeDamage(atk);
@@ -127,5 +131,253 @@ void WaterblightGanon::takeDamage(int atk)
 
         setMaxMana(45);
         setMana(0);
+    }
+}
+
+//风
+Revali::Revali(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,450*scale,50*scale,3,50,owner,Profession::Archer,star,isShopHero)
+{
+    setRace(Race::Rito);
+}
+void Revali::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    Unit* target=nullptr;
+    int col=getPos().x(),row=getPos().y();
+    int q=col-(row+(row&1))/2;
+    int r=row;
+    int s=-q-r;
+    int dist=0;
+    for(Unit* enemy:allUnits){
+        if(enemy->getOwner()==getOwner() || enemy->getState()==State::Dead || enemy->getPos().y()==Board::ROWS){
+            continue;
+        }
+        else {
+            int Ecol=enemy->getPos().x(),Erow=enemy->getPos().y();
+            int Eq=Ecol-(Erow+(Erow&1))/2;
+            int Er=Erow;
+            int Es=-Eq-Er;
+            int dq=qAbs(Eq-q);
+            int dr=qAbs(Er-r);
+            int ds=qAbs(Es-s);
+            if((dq+dr+ds)/2>dist){
+                dist=(dq+dr+ds)/2;
+                target=enemy;
+            }
+        }
+    }
+    if(target){
+        if(dist>=3){
+            target->takeDamage(5*getAtk()/2);
+        }
+        else {
+            target->takeDamage(2*getAtk());
+        }
+        target->setMoveCoolDown(90);
+        target->setAtkCoolDown(90);
+    }
+}
+
+
+Kashi::Kashi(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,490*scale,58*scale,1,50,owner,Profession::Assassin,star,isShopHero)
+{
+    setRace(Race::Rito);
+}
+void Kashi::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    Unit* target=nullptr;
+    int col=getPos().x(),row=getPos().y();
+    int q=col-(row+(row&1))/2;
+    int r=row;
+    int s=-q-r;
+    int dist=0;
+    for(Unit* enemy:allUnits){
+        if(enemy->getOwner()==getOwner() || enemy->getState()==State::Dead || enemy->getPos().y()==Board::ROWS){
+            continue;
+        }
+        else {
+            int Ecol=enemy->getPos().x(),Erow=enemy->getPos().y();
+            int Eq=Ecol-(Erow+(Erow&1))/2;
+            int Er=Erow;
+            int Es=-Eq-Er;
+            int dq=qAbs(Eq-q);
+            int dr=qAbs(Er-r);
+            int ds=qAbs(Es-s);
+            if((dq+dr+ds)/2>dist){
+                dist=(dq+dr+ds)/2;
+                target=enemy;
+            }
+        }
+    }
+    if(target){
+        std::vector<QPoint> neighbor=board.getNeighborGrid(target->getPos());
+        for(QPoint pos:neighbor){
+            if(board.hasUnitAt(pos)){
+                continue;
+            }
+            else {
+                board.removeUnit(this);
+                board.addUnit(this,pos);
+                break;
+            }
+        }
+        target->takeDamage(11*getAtk()/5);
+        this->setState(State::Idle);
+    }
+}
+
+
+Evan::Evan(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,420*scale,42*scale,3,65,owner,Profession::Mage,star,isShopHero)
+{
+    setRace(Race::Rito);
+}
+void Evan::castSkill(Board &board, const std::vector<Unit*> allUnits) {
+    Unit* furthestEnemy = nullptr;
+    int col = getPos().x(), row = getPos().y();
+
+    int q = col - (row + (row & 1)) / 2;
+    int r = row;
+    int s = -q - r;
+    int maxDist = 0;
+
+    for (Unit* enemy : allUnits) {
+        if (!enemy || enemy->getOwner() == getOwner() ||
+            enemy->getState() == State::Dead ||
+            enemy->getPos().y() >= Board::ROWS) continue;
+
+        int Ecol = enemy->getPos().x(), Erow = enemy->getPos().y();
+        int Eq = Ecol - (Erow + (Erow & 1)) / 2;
+        int Er = Erow;
+        int Es = -Eq - Er;
+        int dist = (qAbs(Eq-q) + qAbs(Er-r) + qAbs(Es-s)) / 2;
+
+        if (dist > maxDist) {
+            maxDist = dist;
+            furthestEnemy = enemy;
+        }
+    }
+
+    if (furthestEnemy) {
+        QPoint landingPos(-1, -1);
+
+        for (Unit* ally : allUnits) {
+            if (ally && ally->getOwner() == getOwner() &&
+                ally->getProfession() == Profession::Warrior &&
+                ally->getState() != State::Dead &&
+                ally->getPos().y() < Board::ROWS)
+            {
+                std::vector<QPoint> neighbors = board.getNeighborGrid(ally->getPos());
+                for (const QPoint& p : neighbors) {
+                    if (!board.hasUnitAt(p)) {
+                        landingPos = p;
+                        break;
+                    }
+                }
+            }
+            if (landingPos != QPoint(-1, -1)) break;
+        }
+
+        if (landingPos != QPoint(-1, -1)) {
+
+            board.removeUnit(furthestEnemy);
+            board.addUnit(furthestEnemy, landingPos);
+
+            furthestEnemy->setMoveCoolDown(60);
+            furthestEnemy->setAtkCoolDown(60);
+            furthestEnemy->setState(State::Idle);
+
+
+            furthestEnemy->takeDamage(getAtk());
+        }
+    }
+}
+
+//雷
+Ur::Ur(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,620*scale,60*scale,1,60,owner,Profession::Warrior,star,isShopHero)
+{
+    setRace(Race::Gerudo);
+}
+void Ur::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk());
+        getTarget()->takeDamage(getAtk());
+        getTarget()->setMoveCoolDown(60);
+        getTarget()->setAtkCoolDown(60);
+    }
+}
+
+Naji::Naji(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,420*scale,40*scale,3,60,owner,Profession::Mage,star,isShopHero)
+    ,m_skillTime(0)
+    ,m_inSkill(false)
+    ,m_debuffUnit(nullptr)
+    ,m_originAtk(-1)
+{
+    setRace(Race::Gerudo);
+}
+void Naji::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        m_originAtk=getTarget()->getAtk();
+        m_debuffUnit=getTarget();
+        getTarget()->setAtk(0);
+        m_inSkill=true;
+        m_skillTime=240;
+    }
+
+}
+void Naji::updateUnit(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(m_skillTime){
+        m_skillTime--;
+    }
+    else if(m_inSkill){
+        if(m_debuffUnit && m_debuffUnit->getState()!=State::Dead){
+            m_debuffUnit->setAtk(m_originAtk);
+        }
+        m_inSkill=false;
+        m_debuffUnit=nullptr;
+    }
+    Unit::updateUnit(board,allUnits);
+}
+
+Shika::Shika(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,480*scale,55*scale,1,50,owner,Profession::Assassin,star,isShopHero)
+{
+    setRace(Race::Gerudo);
+}
+void Shika::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    Unit* target=nullptr;
+    int hp=1e8;
+    for(Unit* enemy:allUnits){
+        if(enemy->getOwner()==getOwner() || enemy->getState()==State::Dead || enemy->getPos().y()==Board::ROWS){
+            continue;
+        }
+        else {
+            if(enemy->getHp()<hp){
+                hp=enemy->getHp();
+                target=enemy;
+            }
+        }
+    }
+    if(target){
+        std::vector<QPoint> neighbor=board.getNeighborGrid(target->getPos());
+        for(QPoint pos:neighbor){
+            if(board.hasUnitAt(pos)){
+                continue;
+            }
+            else {
+                board.removeUnit(this);
+                board.addUnit(this,pos);
+                break;
+            }
+        }
+        target->takeDamage(9*getAtk()/5);
+        this->setState(State::Idle);
     }
 }

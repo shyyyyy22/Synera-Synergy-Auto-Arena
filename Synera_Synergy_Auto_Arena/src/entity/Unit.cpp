@@ -4,7 +4,7 @@
 #include<QHash>
 #include<queue>
 int Unit::m_nxtUnitId=0;
-Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,bool isShopHero,QObject *parent)
+Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,int star,bool isShopHero,QObject *parent)
     :QObject(parent)
     ,m_id(m_nxtUnitId++)
     ,m_maxHp(maxHp)
@@ -16,7 +16,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_name(name)
     ,m_pos(-1,-1)
     ,m_owner(owner)
-    ,m_star(1)
+    ,m_star(star)
     ,m_state(State::Idle)
     ,m_target(nullptr)
     ,m_moveCoolDown(0)
@@ -24,7 +24,10 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_startPos(-1,-1)
     ,m_profession(profession)
     ,m_isShopHero(isShopHero)
-{}
+    ,m_race(Race::Boss)
+{
+    resetWithStar();
+}
 
 //属性相关
 int Unit::getId()const{
@@ -110,6 +113,11 @@ bool Unit::getIsShopHero() const
     return m_isShopHero;
 }
 
+Profession Unit::getProfession() const
+{
+    return m_profession;
+}
+
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }
@@ -151,9 +159,37 @@ void Unit::setMaxMana(int newMaxMana)
     m_maxMana=newMaxMana;
 }
 
+void Unit::setMaxHp(int newMaxHp)
+{
+    m_maxHp=newMaxHp;
+}
+
 void Unit::setIsShop(bool isShop)
 {
     m_isShopHero=isShop;
+}
+
+void Unit::setRace(Race race)
+{
+    m_race=race;
+}
+
+void Unit::resetWithStar()
+{
+    switch(m_star){
+    case 1:
+        break;
+    case 2:
+        setMaxHp(getMaxHp()*1.8);
+        setHp(getMaxHp());
+        setAtk(getAtk()*1.8);
+        break;
+    case 3:
+        setMaxHp(getMaxHp()*3.2);
+        setHp(getMaxHp());
+        setAtk(getAtk()*3.2);
+        break;
+    }
 }
 
 //状态机

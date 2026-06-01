@@ -1,10 +1,7 @@
 #include "GameWindow.h"
-#include"Unit.h"
-#include"Board.h"
 #include <QApplication>
 #include<QDebug>
 #include<QGraphicsScene>
-#include"GridItem.h"
 #include<QGraphicsView>
 int main(int argc, char *argv[])
 {
@@ -16,7 +13,7 @@ int main(int argc, char *argv[])
 
     GameWindow window;
     window.setWindowTitle("Synera: Synergy Auto-Arena");
-    window.resize(1500,1200);
+    window.resize(2400,1000);
     window.show();
 
     return app.exec();

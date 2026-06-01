@@ -36,6 +36,7 @@ public:
     void startNxtRound();
     void buyXp();
     std::vector<QString> rollShop();
+    void upUnitStar(QString name,int star);
 
 
 public slots:
@@ -54,8 +55,8 @@ public slots:
     void handleStageResolve(bool win);
     void clearEnemyBeforeRound();
     bool buyHero(int gold,QString name);
-    void sellHero(int gold,Unit* unit);
-    std::unique_ptr<Unit> createHeroforPreview(QString name);
+    void sellHero(Unit* unit);
+    std::unique_ptr<Unit> createHeroforPreview(QString name,int star=1);
 
 
 

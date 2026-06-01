@@ -6,7 +6,7 @@
 class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
-enum class Race{Hyrulean,Zora,Rito,Gerudo,Goron};
+enum class Race{Hyrulean,Zora,Rito,Gerudo,Goron,Boss};
 enum class Profession{Warrior,Archer,Mage,Guardian,Assassin};
 enum class State{Idle,Moving,Attacking,Casting,Dead};
 
@@ -14,7 +14,7 @@ class Unit:public QObject
 {
     Q_OBJECT
 public:
-    Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,bool isShopHero=false,QObject *parent=nullptr);
+    Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,int star=1,bool isShopHero=false,QObject *parent=nullptr);
     virtual ~Unit()=default;
 
     //属性相关
@@ -36,6 +36,7 @@ public:
     int getMoveCoolDown()const;
     int getAtkCoolDown()const;
     bool getIsShopHero()const;
+    Profession getProfession()const;
 
 
     void setHp(int newHp);
@@ -48,7 +49,10 @@ public:
     void setMoveCoolDown(int newCoolDown);
     void setAtkCoolDown(int newCoolDown);
     void setMaxMana(int newMaxMana);
+    void setMaxHp(int newMaxHp);
     void setIsShop(bool isShop);
+    void setRace(Race race);
+    void resetWithStar();
 
     //状态机
     virtual void updateUnit(Board& board,const std::vector<Unit*> allUnits);

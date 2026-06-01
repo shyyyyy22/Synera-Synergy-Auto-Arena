@@ -2,7 +2,7 @@
 
 Player::Player()
     :m_hp(100)
-    ,m_gold(10)
+    ,m_gold(1000)
     ,m_level(1)
     ,m_maxLevel(6)
     ,m_maxUnit(3)
