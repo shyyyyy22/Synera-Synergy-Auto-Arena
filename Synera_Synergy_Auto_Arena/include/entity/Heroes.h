@@ -78,4 +78,47 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
 };
 
+//火
+class Daruk:public Unit{
+public:
+    Daruk(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+    void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
+private:
+    int m_skillTime;
+    bool m_inSkill;
+};
+class Goma:public Unit{
+public:
+    Goma(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+class Mag:public Unit{
+public:
+    Mag(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+    void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
+private:
+    int m_skillTime;
+    bool m_inSkill;
+    QPoint m_burnCenter;
+};
+
+//海拉鲁
+class Leo:public Unit{
+public:
+    Leo(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+class Alan:public Unit{
+public:
+    Alan(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+class Syndra:public Unit{
+public:
+    Syndra(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+
 #endif // HEROES_H

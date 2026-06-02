@@ -12,7 +12,10 @@ class InfoPanel : public QWidget
     Q_OBJECT
 public:
     explicit InfoPanel(QWidget *parent = nullptr);
+    ~InfoPanel() override;
+
     void updateUnitInfo(Unit* unit);
+    void updateOwnedUnitInfo(Unit* unit);
 
     Unit* getUnit()const;
 
@@ -23,7 +26,11 @@ signals:
     void onBuyAndSellBtn(bool isShopHero);
 
 private:
+    void clearOwnedUnit();
+    void setUnitInfo(Unit* unit, bool takeOwnership);
+
     Unit* m_unit;
+    bool m_ownsUnit;
     bool m_isGameCombat;
 
     QLabel *m_nameLabel;

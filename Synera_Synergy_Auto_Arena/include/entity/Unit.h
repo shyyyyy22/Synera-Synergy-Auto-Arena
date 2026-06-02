@@ -52,6 +52,7 @@ public:
     void setMaxHp(int newMaxHp);
     void setIsShop(bool isShop);
     void setRace(Race race);
+    void setTarget(Unit* newTarget);
     void resetWithStar();
 
     //状态机

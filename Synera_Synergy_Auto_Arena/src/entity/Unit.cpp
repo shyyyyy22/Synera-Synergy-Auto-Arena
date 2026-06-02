@@ -174,6 +174,11 @@ void Unit::setRace(Race race)
     m_race=race;
 }
 
+void Unit::setTarget(Unit *newTarget)
+{
+    m_target=newTarget;
+}
+
 void Unit::resetWithStar()
 {
     switch(m_star){

@@ -381,3 +381,169 @@ void Shika::castSkill(Board &board, const std::vector<Unit *> allUnits)
         this->setState(State::Idle);
     }
 }
+
+//火
+Daruk::Daruk(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,800*scale,32*scale,1,60,owner,Profession::Guardian,star,isShopHero)
+    ,m_skillTime(0)
+    ,m_inSkill(false)
+{
+    setRace(Race::Goron);
+}
+void Daruk::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    std::vector<QPoint> neighbor=board.getNeighborGrid(getPos());
+    for(QPoint pos:neighbor){
+        if(board.hasUnitAt(pos)){
+            Unit* target=board.getUnitAt(pos);
+            if(target->getOwner()!=getOwner()){
+                target->setTarget(this);
+                target->setState(State::Moving);
+            }
+        }
+    }
+    m_inSkill=true;
+    m_skillTime=240;
+}
+void Daruk::updateUnit(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(m_skillTime){
+        if(m_skillTime%60==0){
+            setHp(qMin(getHp()+30,getMaxHp()));
+        }
+        m_skillTime--;
+    }
+    else if(m_inSkill){
+        m_inSkill=false;
+    }
+    Unit::updateUnit(board,allUnits);
+}
+
+Goma::Goma(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,650*scale,62*scale,1,60,owner,Profession::Warrior,star,isShopHero)
+{
+    setRace(Race::Goron);
+}
+void Goma::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk()*2);
+        getTarget()->setMoveCoolDown(60);
+        getTarget()->setAtkCoolDown(60);
+    }
+}
+
+Mag::Mag(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,480*scale,48*scale,3,70,owner,Profession::Mage,star,isShopHero)
+    ,m_skillTime(0)
+    ,m_inSkill(false)
+{
+    setRace(Race::Goron);
+}
+void Mag::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk()*3/2);
+        m_burnCenter=getTarget()->getPos();
+    }
+    m_inSkill=true;
+    m_skillTime=240;
+}
+void Mag::updateUnit(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(m_skillTime){
+        if(m_skillTime%60==0){
+            if(getTarget()){
+                std::vector<QPoint> neighbor=board.getNeighborGrid(m_burnCenter);
+                for(QPoint pos:neighbor){
+                    if(board.hasUnitAt(pos)){
+                        Unit* target=board.getUnitAt(pos);
+                        if(target->getOwner()!=getOwner()){
+                            target->takeDamage(20);
+                        }
+                    }
+                }
+            }
+        }
+        m_skillTime--;
+    }
+    else if(m_inSkill){
+        m_inSkill=false;
+    }
+    Unit::updateUnit(board,allUnits);
+}
+
+Leo::Leo(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,720*scale,35*scale,1,60,owner,Profession::Guardian,star,isShopHero)
+{
+    setRace(Race::Hyrulean);
+}
+void Leo::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    Unit* lowestAlly = nullptr;
+    double lowestPercent = 1.1;
+    for (Unit* ally : allUnits) {
+        if (!ally) continue;
+
+        if (ally != this &&
+            ally->getOwner() == getOwner() &&
+            ally->getState() != State::Dead &&
+            ally->getPos().y() < Board::ROWS)
+        {
+            double percent = static_cast<double>(ally->getHp()) / ally->getMaxHp();
+            if (percent < lowestPercent) {
+                lowestPercent = percent;
+                lowestAlly = ally;
+            }
+        }
+    }
+
+    if (lowestAlly) {
+        QPoint landingPos(-1, -1);
+        std::vector<QPoint> neighbors = board.getNeighborGrid(lowestAlly->getPos());
+        for (const QPoint& p : neighbors) {
+            if (!board.hasUnitAt(p)) {
+                landingPos = p;
+                break;
+            }
+        }
+        if (landingPos != QPoint(-1, -1)) {
+            board.removeUnit(this);
+            board.addUnit(this, landingPos);
+            lowestAlly->setHp(qMin(lowestAlly->getMaxHp(),lowestAlly->getHp()+250));
+            setState(State::Idle);
+        }
+    }
+}
+
+Alan::Alan(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,600*scale,55*scale,1,60,owner,Profession::Warrior,star,isShopHero)
+{
+    setRace(Race::Hyrulean);
+}
+void Alan::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    std::vector<QPoint> neighbor=board.getNeighborGrid(getPos());
+    for(QPoint pos:neighbor){
+        if(board.hasUnitAt(pos)){
+            Unit* target=board.getUnitAt(pos);
+            if(target->getOwner()!=getOwner()){
+                target->takeDamage(3*getAtk()/2);
+                target->setMoveCoolDown(30);
+                target->setAtkCoolDown(30);
+            }
+        }
+    }
+}
+
+Syndra::Syndra(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
+    :Unit(name,450*scale,45*scale,3,70,owner,Profession::Mage,star,isShopHero)
+{
+    setRace(Race::Hyrulean);
+}
+void Syndra::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk()*3);
+    }
+}

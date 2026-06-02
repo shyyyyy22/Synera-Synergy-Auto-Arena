@@ -26,7 +26,9 @@ Game::Game(int rows,int cols,QObject *parent)
 {
     m_heroPools={"卓拉守卫-辛顿","卓拉战士-诺亚","卓拉祭司-露娜"
                 ,"利特射手-力巴","利特舞者-卡西","利特风语者-艾文"
-                ,"格鲁德士兵-乌尔","格鲁德咒师-娜吉","格鲁德刺客-希卡"};
+                ,"格鲁德士兵-乌尔","格鲁德咒师-娜吉","格鲁德刺客-希卡"
+                ,"鼓隆铁卫-达鲁克","鼓隆狂战士-戈玛","鼓隆火焰祭司-玛格"
+                ,"骑士团长-雷欧","皇家剑士-艾伦","宫廷法师-辛德拉"};
 }
 Game::~Game(){
     qDeleteAll(m_units);
@@ -819,6 +821,18 @@ std::unique_ptr<Unit> Game::createHeroforPreview(QString name,int star)
         return std::make_unique<Naji>(name,Owner::PlayerCtrl,1,star,true);
     } else if(name=="格鲁德刺客-希卡"){
         return std::make_unique<Shika>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="鼓隆铁卫-达鲁克"){
+        return std::make_unique<Daruk>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="鼓隆狂战士-戈玛"){
+        return std::make_unique<Goma>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="鼓隆火焰祭司-玛格"){
+        return std::make_unique<Mag>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="骑士团长-雷欧"){
+        return std::make_unique<Leo>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="皇家剑士-艾伦"){
+        return std::make_unique<Alan>(name,Owner::PlayerCtrl,1,star,true);
+    } else if(name=="宫廷法师-辛德拉"){
+        return std::make_unique<Syndra>(name,Owner::PlayerCtrl,1,star,true);
     }
 }
 

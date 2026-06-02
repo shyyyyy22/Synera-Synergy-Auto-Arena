@@ -148,7 +148,7 @@ void GameWindow::setUI(){
         connect(m_shopSlots[i],&QPushButton::clicked,this,[this,i](){
             m_game->clearAllSelected();
             std::unique_ptr<Unit> unit=m_game->createHeroforPreview(m_shopPools[i]);
-            m_infoPanel->updateUnitInfo(unit.release());
+            m_infoPanel->updateOwnedUnitInfo(unit.release());
             m_shopIndex=i;
         });
     }

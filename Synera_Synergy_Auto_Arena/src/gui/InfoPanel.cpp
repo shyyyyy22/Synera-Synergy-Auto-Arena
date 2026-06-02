@@ -13,6 +13,7 @@ InfoPanel::InfoPanel(QWidget *parent):QWidget(parent)
     m_starLabel=new QLabel("",this);
     m_buyAndSellBtn=new QPushButton("",this);
     m_unit=nullptr;
+    m_ownsUnit=false;
     m_isGameCombat=false;
 
     layout->addWidget(m_nameLabel);
@@ -48,9 +49,35 @@ InfoPanel::InfoPanel(QWidget *parent):QWidget(parent)
     });
 }
 
+InfoPanel::~InfoPanel()
+{
+    clearOwnedUnit();
+}
+
+void InfoPanel::clearOwnedUnit()
+{
+    if(m_ownsUnit){
+        delete m_unit;
+    }
+    m_unit=nullptr;
+    m_ownsUnit=false;
+}
+
 void InfoPanel::updateUnitInfo(Unit *unit)
 {
+    setUnitInfo(unit,false);
+}
+
+void InfoPanel::updateOwnedUnitInfo(Unit *unit)
+{
+    setUnitInfo(unit,true);
+}
+
+void InfoPanel::setUnitInfo(Unit *unit, bool takeOwnership)
+{
+    clearOwnedUnit();
     m_unit=unit;
+    m_ownsUnit=takeOwnership;
     if(!unit){
         this->hide();
         return;
