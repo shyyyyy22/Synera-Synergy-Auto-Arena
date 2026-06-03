@@ -39,6 +39,8 @@ private:
     QLabel *m_manaLabel;
     QLabel *m_rangeLabel;
     QLabel *m_starLabel;
+    QLabel *m_raceLabel;
+    QLabel *m_proLabel;
 
     QPushButton* m_buyAndSellBtn;
 };

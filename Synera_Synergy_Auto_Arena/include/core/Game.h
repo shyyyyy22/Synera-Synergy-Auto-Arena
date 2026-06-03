@@ -29,6 +29,9 @@ public:
     GridItem* getGridItem(const QPoint &gridPos)const;
     Player* getPlayer()const;
     int getPlayerUnitInBoard()const;
+    std::vector<QString> getActivateSynergyList()const;
+    QString getRaceName(Race race)const;
+    QString getProName(Profession pro)const;
 
     void initialUnits();
 
@@ -57,7 +60,7 @@ public slots:
     bool buyHero(int gold,QString name);
     void sellHero(Unit* unit);
     std::unique_ptr<Unit> createHeroforPreview(QString name,int star=1);
-
+    void calculateSynergies();
 
 
 private:
@@ -68,6 +71,7 @@ private:
     void applyDrop(int unitId,const QPoint& sourcePos,const QPoint& target);
     QPointF gridToWorld(int row, int col,bool isBoard) const;
     QPoint worldToGrid(QPointF worldPos)const;
+    void applySynergyBuffs(std::map<Race,int> raceCount,std::map<Profession,int> proCount,Owner owner);
 
     //敌人生成
     void generateEnemy();
@@ -91,11 +95,15 @@ private:
     int m_playerUnitInBoard;
     std::vector<QString> m_heroPools;
 
+    std::map<Race,int> m_raceCount;
+    std::map<Profession,int> m_professionCount;
+
     //gui层面
     QGraphicsScene *m_scene;
     bool m_dragActive;
     int m_activeUnitId;
     QPoint m_sourcePos;
+    std::vector<QString> m_activateSynergyList;
 
     //逻辑控制层
     QTimer* m_timer;

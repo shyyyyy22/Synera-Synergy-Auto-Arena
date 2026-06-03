@@ -36,6 +36,16 @@ unsigned short Player::getMinorStage() const
     return m_minorStage;
 }
 
+unsigned short Player::getXp() const
+{
+    return m_xp;
+}
+
+unsigned short Player::getMaxXP() const
+{
+    return m_maxXP;
+}
+
 void Player::changeGold(int addGold)
 {
     m_gold+=addGold;

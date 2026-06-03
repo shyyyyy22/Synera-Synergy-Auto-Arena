@@ -52,12 +52,12 @@ void SettlementPanel::updateInfo(bool win, int gold, int hp)
     if(win){
         m_titleLabel->setText("胜利");
         m_titleLabel->setStyleSheet("color: #D4AF37; font-size: 26px; font-weight: bold;"); // 金色胜利
-        m_detailLabel->setText(QString("💰 获得金币: +5\n❤️ 玩家血量: %1").arg(hp));
+        m_detailLabel->setText(QString("获得金币: +5\n获得经验: +3\n玩家血量: %1").arg(hp));
     }
     else {
         m_titleLabel->setText("失败");
         m_titleLabel->setStyleSheet("color: #d32f2f; font-size: 26px; font-weight: bold;"); // 红色失败
-        m_detailLabel->setText(QString("💰 获得金币: +3 \n❤️ 玩家血量: %1").arg(hp));
+        m_detailLabel->setText(QString("获得金币: +3\n获得经验: +1\n玩家血量: %1").arg(hp));
     }
 }
 

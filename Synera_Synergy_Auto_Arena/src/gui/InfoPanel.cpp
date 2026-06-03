@@ -11,12 +11,16 @@ InfoPanel::InfoPanel(QWidget *parent):QWidget(parent)
     m_manaLabel=new QLabel("",this);
     m_rangeLabel=new QLabel("",this);
     m_starLabel=new QLabel("",this);
+    m_raceLabel=new QLabel("",this);
+    m_proLabel=new QLabel("",this);
     m_buyAndSellBtn=new QPushButton("",this);
     m_unit=nullptr;
     m_ownsUnit=false;
     m_isGameCombat=false;
 
     layout->addWidget(m_nameLabel);
+    layout->addWidget(m_raceLabel);
+    layout->addWidget(m_proLabel);
     layout->addWidget(m_hpLabel);
     layout->addWidget(m_atkLabel);
     layout->addWidget(m_manaLabel);
@@ -84,6 +88,8 @@ void InfoPanel::setUnitInfo(Unit *unit, bool takeOwnership)
     }
 
     m_nameLabel->setText("英雄："+unit->getName());
+    m_raceLabel->setText("种族："+unit->getRaceName());
+    m_proLabel->setText("职业："+unit->getProName());
     m_hpLabel->setText(QString("血量：%1/%2").arg(unit->getHp()).arg(unit->getMaxHp()));
     m_atkLabel->setText(QString("攻击力：%1").arg(unit->getAtk()));
     m_manaLabel->setText(QString("法力值：%1/%2").arg(unit->getMana()).arg(unit->getMaxMana()));

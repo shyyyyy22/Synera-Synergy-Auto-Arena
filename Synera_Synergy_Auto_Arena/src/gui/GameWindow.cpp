@@ -117,10 +117,32 @@ void GameWindow::setUI(){
 
     m_mainLayout->addWidget(topBar);
 
-    //中层：游戏区：主界面-单位信息栏
+    //中层：游戏区：羁绊栏-主界面-单位信息栏
+    m_synergySidebar=new QWidget(this);
+    m_synergySidebar->setFixedWidth(200);
+    m_synergySidebar->setStyleSheet("background-color: rgba(30, 30, 30, 180); border: 1px solid #444; border-radius: 6px;");
+
+    QVBoxLayout* sidebarLayout = new QVBoxLayout(m_synergySidebar);
+    sidebarLayout->setContentsMargins(5, 10, 5, 10);
+    sidebarLayout->setSpacing(5);
+
+    QLabel* titleLabel = new QLabel(" 羁绊 ", m_synergySidebar);
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #D4AF37; padding-bottom: 8px; border-bottom: 1px solid #444;");
+
+    sidebarLayout->addWidget(titleLabel);
+
+    m_synergyLayout = new QVBoxLayout();
+    m_synergyLayout->setSpacing(8);
+    m_synergyLayout->setContentsMargins(0, 10, 0, 0);
+
+    sidebarLayout->addLayout(m_synergyLayout);
+    sidebarLayout->addStretch();
+
     QWidget* gameContainer = new QWidget(this);
     QHBoxLayout* gameLayout = new QHBoxLayout(gameContainer);
     gameLayout->setContentsMargins(0, 0, 0, 0);
+    gameLayout->addWidget(m_synergySidebar);
     gameLayout->addWidget(m_view, 1);
     gameLayout->addWidget(m_infoPanel);
 
@@ -266,6 +288,7 @@ void GameWindow::setUI(){
         }
 
         m_startBtn->setEnabled(count>0);
+        updateSynergyUI();
     });
 
 
@@ -297,7 +320,8 @@ void GameWindow::updatePlayerInfo()
     if(p){
         m_pHpLabel->setText(QString("血量：%1").arg(p->getHp()));
         m_pGoldLabel->setText(QString("金币：%1").arg(p->getGold()));
-        m_pLevelLabel->setText(QString("等级：Lv.%1").arg(p->getLevel()));
+        if(p->getLevel()<6)m_pLevelLabel->setText(QString("等级：Lv.%1  距下一级还需:%2经验").arg(p->getLevel()).arg(p->getMaxXP()-p->getXp()));
+        else m_pLevelLabel->setText(QString("等级：Lv.%1(最大等级)").arg(p->getLevel()));
         m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(m_game->getPlayerUnitInBoard()).arg(p->getMaxUnit()));
         m_pStageLabel->setText(QString("关卡：%1-%2").arg(p->getMajorStage()).arg(p->getMinorStage()));
     }
@@ -328,8 +352,37 @@ void GameWindow::updateShopInfo()
     if(m_game->getPlayer()->getLevel()==6){
         m_buyXpBtn->setStyleSheet("background-color: #2f2f2f; color: #f2f2f2;; font-weight: bold; border-radius: 4px;");
         m_buyXpBtn->setText("已达最大等级");
+        m_buyXpBtn->setEnabled(false);
     }
     for(int i=0;i<5;i++){
         m_shopSlots[i]->setText(m_shopPools[i]);
     }
+}
+
+void GameWindow::updateSynergyUI()
+{
+    QLayoutItem *child;
+    while ((child = m_synergyLayout->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            delete child->widget();
+        }
+        delete child;
+    }
+
+    std::vector<QString> list = m_game->getActivateSynergyList();
+
+    for (const QString& text : list) {
+        QLabel* label = new QLabel(text, m_synergySidebar);
+
+        if (text.contains("已激活")) {
+            label->setStyleSheet("background-color: rgba(212, 175, 55, 30); border: 1px solid #D4AF37; color: #D4AF37; padding: 5px; border-radius: 4px; font-weight: bold;");
+        } else {
+            label->setStyleSheet("background-color: rgba(100, 100, 100, 20); border: 1px dashed #555; color: #888; padding: 5px; border-radius: 4px;");
+        }
+
+        m_synergyLayout->addWidget(label);
+    }
+
+    m_synergyLayout->addStretch();
+
 }

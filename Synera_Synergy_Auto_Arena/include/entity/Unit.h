@@ -3,6 +3,7 @@
 #include<QObject>
 #include<QString>
 #include<QPoint>
+
 class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
@@ -37,7 +38,9 @@ public:
     int getAtkCoolDown()const;
     bool getIsShopHero()const;
     Profession getProfession()const;
-
+    Race getRace()const;
+    QString getRaceName()const;
+    QString getProName()const;
 
     void setHp(int newHp);
     void setAtk(int newAtk);
@@ -68,6 +71,7 @@ public:
     //技能虚函数
     virtual void castSkill(Board& board,const std::vector<Unit*> allUnits)=0;
     virtual void takeDamage(int atk);
+
 
 signals:
     void isDead(Unit* unit);

@@ -118,6 +118,55 @@ Profession Unit::getProfession() const
     return m_profession;
 }
 
+Race Unit::getRace() const
+{
+    return m_race;
+}
+QString Unit::getRaceName() const
+{
+    switch(m_race){
+    case Race::Gerudo:
+        return "格鲁德";
+        break;
+    case Race::Goron:
+        return "鼓隆";
+        break;
+    case Race::Hyrulean:
+        return "海拉鲁";
+        break;
+    case Race::Rito:
+        return "利特";
+        break;
+    case Race::Zora:
+        return "卓拉";
+        break;
+    default:
+        return "";
+    }
+}
+
+QString Unit::getProName() const
+{
+    switch(m_profession){
+    case Profession::Warrior:
+        return "战士";
+        break;
+    case Profession::Archer:
+        return "射手";
+        break;
+    case Profession::Mage:
+        return "法师";
+        break;
+    case Profession::Assassin:
+        return "刺客";
+        break;
+    case Profession::Guardian:
+        return "守卫";
+        break;
+    default:
+        return "";
+    }
+}
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }

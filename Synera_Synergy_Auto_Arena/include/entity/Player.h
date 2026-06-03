@@ -14,6 +14,8 @@ public:
     unsigned short getMaxUnit()const;
     unsigned short getMajorStage()const;
     unsigned short getMinorStage()const;
+    unsigned short getXp()const;
+    unsigned short getMaxXP()const;
 
     void changeGold(int addGold);
     void setHp(int newHp);

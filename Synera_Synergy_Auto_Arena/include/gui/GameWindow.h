@@ -31,6 +31,7 @@ private:
 
     void updatePlayerInfo();
     void updateShopInfo();
+    void updateSynergyUI();
 
     QWidget* m_centralWidget;
     QGraphicsView* m_view;
@@ -43,6 +44,8 @@ private:
     QPushButton* m_buyXpBtn;
     QPushButton* m_rollShopBtn;
     std::vector<QPushButton*> m_shopSlots;
+    QWidget* m_synergySidebar;
+    QVBoxLayout* m_synergyLayout;
 
     QLabel *m_pHpLabel;
     QLabel *m_pGoldLabel;

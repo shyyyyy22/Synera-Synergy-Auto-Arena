@@ -99,6 +99,11 @@ int Game::getPlayerUnitInBoard() const
     return m_playerUnitInBoard;
 }
 
+std::vector<QString> Game::getActivateSynergyList() const
+{
+    return m_activateSynergyList;
+}
+
 GridItem *Game::getGridItem(const QPoint &gridPos)const
 {
     for(GridItem* item:m_gridItems){
@@ -114,6 +119,51 @@ GridItem *Game::getGridItem(const QPoint &gridPos)const
     return nullptr;
 }
 
+QString Game::getRaceName(Race race) const
+{
+    switch(race){
+    case Race::Gerudo:
+        return "格鲁德";
+        break;
+    case Race::Goron:
+        return "鼓隆";
+        break;
+    case Race::Hyrulean:
+        return "海拉鲁";
+        break;
+    case Race::Rito:
+        return "利特";
+        break;
+    case Race::Zora:
+        return "卓拉";
+        break;
+    default:
+        return "";
+    }
+}
+
+QString Game::getProName(Profession pro) const
+{
+    switch(pro){
+    case Profession::Warrior:
+        return "战士";
+        break;
+    case Profession::Archer:
+        return "射手";
+        break;
+    case Profession::Mage:
+        return "法师";
+        break;
+    case Profession::Assassin:
+        return "刺客";
+        break;
+    case Profession::Guardian:
+        return "守卫";
+        break;
+    default:
+        return "";
+    }
+}
 
 //画棋盘
 void Game::buildScene(){
@@ -236,6 +286,7 @@ void Game::syncFromBoardAndBench(){
             item->setGridPos(pos);
         }
     }
+    calculateSynergies();
     emit boardUpdate(m_playerUnitInBoard);
     m_scene->update();
 }
@@ -415,6 +466,77 @@ QPoint Game::worldToGrid(QPointF worldPos) const
     }
 
     return best;
+}
+
+void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession, int> proCount, Owner owner)
+{
+    for(const auto& racePair:m_raceCount){
+        int count=racePair.second;
+        if(count>0){
+            switch(racePair.first){
+            case Race::Gerudo:
+                if(count>=2){
+                    if(count>=4){
+
+                    }
+                    else {
+
+                    }
+                }
+                break;
+            case Race::Goron:
+                if(count>=2){
+                    if(count>=4){
+
+                    }
+                    else {
+
+                    }
+                }
+                break;
+            case Race::Hyrulean:
+                if(count>=2){
+                    if(count>=4){
+
+                    }
+                    else {
+
+                    }
+                }
+                break;
+            case Race::Rito:
+                if(count>=2){
+                    if(count>=4){
+
+                    }
+                    else {
+
+                    }
+                }
+                break;
+            case Race::Zora:
+                if(count>=2){
+                    if(count>=4){
+
+                    }
+                    else {
+
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    for(const auto& ProPair:m_professionCount){
+        if(ProPair.second>0){
+            QString name=getProName(ProPair.first);
+            int target=ProPair.second>=2?3:2;
+            QString text=ProPair.second>=2?QString("(已激活第%1档)").arg(ProPair.second>=3?2:1):"";
+            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(ProPair.second).arg(target).arg(text));
+        }
+    }
 }
 
 //敌人生成
@@ -833,6 +955,47 @@ std::unique_ptr<Unit> Game::createHeroforPreview(QString name,int star)
         return std::make_unique<Alan>(name,Owner::PlayerCtrl,1,star,true);
     } else if(name=="宫廷法师-辛德拉"){
         return std::make_unique<Syndra>(name,Owner::PlayerCtrl,1,star,true);
+    }
+}
+
+void Game::calculateSynergies()
+{
+    m_raceCount.clear();
+    m_professionCount.clear();
+
+    std::map<Race,int> enemyRaceCount;
+    std::map<Profession,int> enemyProfessionCount;
+
+    for(Unit* unit:m_units){
+        if( !unit || unit->getPos().y()==Board::ROWS ||unit->getState()==State::Dead){
+            continue;
+        }
+        if(unit->getOwner()==Owner::PlayerCtrl){
+            m_raceCount[unit->getRace()]++;
+            m_professionCount[unit->getProfession()]++;
+        }
+        else {
+            enemyRaceCount[unit->getRace()]++;
+            enemyProfessionCount[unit->getProfession()]++;
+        }
+    }
+
+    m_activateSynergyList.clear();
+    for(const auto& racePair:m_raceCount){
+        if(racePair.second>0){
+            QString name=getRaceName(racePair.first);
+            int target=racePair.second>=2?4:2;
+            QString text=racePair.second>=2?QString("(已激活第%1级)").arg(racePair.second>=4?2:1):"";
+            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(racePair.second).arg(target).arg(text));
+        }
+    }
+    for(const auto& ProPair:m_professionCount){
+        if(ProPair.second>0){
+            QString name=getProName(ProPair.first);
+            int target=ProPair.second>=2?3:2;
+            QString text=ProPair.second>=2?QString("(已激活第%1档)").arg(ProPair.second>=3?2:1):"";
+            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(ProPair.second).arg(target).arg(text));
+        }
     }
 }
 
