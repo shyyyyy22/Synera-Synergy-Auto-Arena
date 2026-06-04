@@ -32,6 +32,7 @@ public:
     std::vector<QString> getActivateSynergyList()const;
     QString getRaceName(Race race)const;
     QString getProName(Profession pro)const;
+    GamePhase getPhase()const;
 
     void initialUnits();
 
@@ -117,6 +118,7 @@ signals:
     void gameOver();
     void boardUpdate(int count);
     void gameIsCombat(bool isCombat);
+    void unitSelled(Unit* unit);
 };
 
 #endif // GAME_H

@@ -53,8 +53,7 @@ void Game::reset(){
     const QPoint initialPositions[]{
         QPoint (0,m_rows),
         QPoint (1,m_rows),
-        QPoint (2,m_rows),
-        QPoint (3,m_rows)
+        QPoint (2,m_rows)
     };
 
     for(int i=0;i<m_units.size();++i){
@@ -163,6 +162,11 @@ QString Game::getProName(Profession pro) const
     default:
         return "";
     }
+}
+
+GamePhase Game::getPhase() const
+{
+    return m_phase;
 }
 
 //画棋盘
@@ -286,7 +290,7 @@ void Game::syncFromBoardAndBench(){
             item->setGridPos(pos);
         }
     }
-    calculateSynergies();
+    if(m_phase==GamePhase::Prep)calculateSynergies();
     emit boardUpdate(m_playerUnitInBoard);
     m_scene->update();
 }
@@ -419,6 +423,7 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
                 m_bench.addUnit(unit,target);
                 item->setIsBoard(false);
             }
+            unit->restoreOriAtt();
         }
         else {
             Unit* targetUnit=m_board.getUnitAt(target);
@@ -470,71 +475,91 @@ QPoint Game::worldToGrid(QPointF worldPos) const
 
 void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession, int> proCount, Owner owner)
 {
-    for(const auto& racePair:m_raceCount){
-        int count=racePair.second;
-        if(count>0){
-            switch(racePair.first){
-            case Race::Gerudo:
-                if(count>=2){
-                    if(count>=4){
+    int hyruleanCount=raceCount[Race::Hyrulean];
+    int hyrulean=hyruleanCount<2?0:(hyruleanCount>=4?300:150);
 
-                    }
-                    else {
+    int gerudoCount=raceCount[Race::Gerudo];
+    int gerudo=gerudoCount<2?0:(gerudoCount>=4?20:10);
 
-                    }
-                }
-                break;
-            case Race::Goron:
-                if(count>=2){
-                    if(count>=4){
+    int goronCount=raceCount[Race::Goron];
+    int goron=goronCount<2?10:(goronCount>=4?12:11);
 
-                    }
-                    else {
+    int ritoCount=raceCount[Race::Rito];
+    int rito=ritoCount<2?60:(ritoCount>=4?50:54);
 
-                    }
-                }
-                break;
-            case Race::Hyrulean:
-                if(count>=2){
-                    if(count>=4){
+    int zoraCount=raceCount[Race::Zora];
+    int zora=zoraCount<2?0:(zoraCount>=4?40:20);
 
-                    }
-                    else {
+    int warriorCount=proCount[Profession::Warrior];
+    int warrior=warriorCount>=2?5:0;
+    bool warriorSyn=warriorCount>=3?true:false;
 
-                    }
-                }
-                break;
-            case Race::Rito:
-                if(count>=2){
-                    if(count>=4){
+    int archerCount=proCount[Profession::Archer];
+    int archer=archerCount>=2?4:3;
+    bool archerSyn=archerCount>=3?true:false;
 
-                    }
-                    else {
+    int mageCount=proCount[Profession::Mage];
+    int mage=mageCount>=2?20:0;
+    bool mageSyn=mageCount>=3?true:false;
 
-                    }
-                }
-                break;
-            case Race::Zora:
-                if(count>=2){
-                    if(count>=4){
+    int assassinCount=proCount[Profession::Assassin];
+    int assassin=assassinCount>=2?52:60;
+    bool assassinSyn=assassinCount>=3?true:false;
 
-                    }
-                    else {
+    int guardianCount=proCount[Profession::Guardian];
+    int guardian=guardianCount>=2?100:0;
+    bool guardianSyn=guardianCount>=3?true:false;
 
-                    }
-                }
-                break;
-            default:
-                break;
-            }
+    for(Unit* unit:m_units){
+        if(!unit || unit->getState()==State::Dead || unit->getPos().y()==Board::ROWS || unit->getOwner()!=owner){
+            continue;
         }
-    }
-    for(const auto& ProPair:m_professionCount){
-        if(ProPair.second>0){
-            QString name=getProName(ProPair.first);
-            int target=ProPair.second>=2?3:2;
-            QString text=ProPair.second>=2?QString("(已激活第%1档)").arg(ProPair.second>=3?2:1):"";
-            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(ProPair.second).arg(target).arg(text));
+        unit->restoreOriAtt();
+        Race race=unit->getRace();
+        Profession pro=unit->getProfession();
+        switch(race){
+        case Race::Hyrulean:
+            unit->setMaxHp(unit->getMaxHp()+hyrulean);
+            unit->setHp(unit->getMaxHp());
+            break;
+        case Race::Gerudo:
+            unit->setAtk(unit->getAtk()+gerudo);
+            break;
+        case Race::Goron:
+            unit->setMaxHp(unit->getMaxHp()*goron/10);
+            unit->setHp(unit->getMaxHp());
+            break;
+        case Race::Rito:
+            unit->setOriAtkCoolDown(rito);
+            break;
+        case Race::Zora:
+            unit->setMana(zora);
+            break;
+        default:
+            break;
+        }
+        switch(pro){
+        case Profession::Warrior:
+            unit->setAtk(unit->getAtk()+warrior);
+            unit->m_warriorSyn=warriorSyn;
+            break;
+        case Profession::Archer:
+            unit->setRange(archer);
+            unit->m_archerSyn=archerSyn;
+            break;
+        case Profession::Mage:
+            unit->setMaxMana(unit->getMaxMana()-mage);
+            unit->m_mageSyn=mageSyn;
+            break;
+        case Profession::Assassin:
+            unit->setOriAtkCoolDown(assassin);
+            unit->m_assassinSyn=assassinSyn;
+            break;
+        case Profession::Guardian:
+            unit->setMaxHp(unit->getMaxHp()+guardian);
+            unit->setHp(unit->getMaxHp());
+            unit->m_guardianSyn=guardianSyn;
+            break;
         }
     }
 }
@@ -917,6 +942,7 @@ void Game::sellHero(Unit *unit)
     }
     delete unit;
 
+    emit unitSelled(nullptr);
     syncFromBoardAndBench();
 }
 
@@ -967,10 +993,10 @@ void Game::calculateSynergies()
     std::map<Profession,int> enemyProfessionCount;
 
     for(Unit* unit:m_units){
-        if( !unit || unit->getPos().y()==Board::ROWS ||unit->getState()==State::Dead){
+        if( !unit || unit->getPos().y()==Board::ROWS ||unit->getState()==State::Dead || unit->getPos().y()<0){
             continue;
         }
-        if(unit->getOwner()==Owner::PlayerCtrl){
+        else if(unit->getOwner()==Owner::PlayerCtrl){
             m_raceCount[unit->getRace()]++;
             m_professionCount[unit->getProfession()]++;
         }
@@ -993,10 +1019,12 @@ void Game::calculateSynergies()
         if(ProPair.second>0){
             QString name=getProName(ProPair.first);
             int target=ProPair.second>=2?3:2;
-            QString text=ProPair.second>=2?QString("(已激活第%1档)").arg(ProPair.second>=3?2:1):"";
+            QString text=ProPair.second>=2?QString("(已激活第%1级)").arg(ProPair.second>=3?2:1):"";
             m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(ProPair.second).arg(target).arg(text));
         }
     }
+    applySynergyBuffs(m_raceCount,m_professionCount,Owner::PlayerCtrl);
+    applySynergyBuffs(enemyRaceCount,enemyProfessionCount,Owner::EnemyCtrl);
 }
 
 std::vector<QString> Game::rollShop()

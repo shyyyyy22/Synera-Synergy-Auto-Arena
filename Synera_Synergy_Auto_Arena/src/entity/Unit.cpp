@@ -8,10 +8,14 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     :QObject(parent)
     ,m_id(m_nxtUnitId++)
     ,m_maxHp(maxHp)
+    ,m_oriMaxHp(maxHp)
     ,m_hp(maxHp)
     ,m_atk(atk)
+    ,m_oriAtk(atk)
     ,m_range(range)
+    ,m_oriRange(range)
     ,m_maxMana(maxMana)
+    ,m_oriMaxMana(maxMana)
     ,m_mana(0)
     ,m_name(name)
     ,m_pos(-1,-1)
@@ -20,12 +24,16 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_state(State::Idle)
     ,m_target(nullptr)
     ,m_moveCoolDown(0)
+    ,m_oriMoveCoolDown(20)
     ,m_atkCoolDown(0)
+    ,m_oriAtkCoolDown(60)
     ,m_startPos(-1,-1)
     ,m_profession(profession)
     ,m_isShopHero(isShopHero)
     ,m_race(Race::Boss)
 {
+    m_warriorSyn=m_archerSyn=m_mageSyn=m_assassinSyn=m_guardianSyn=false;
+    m_atkCount=0;
     resetWithStar();
 }
 
@@ -203,6 +211,11 @@ void Unit::setAtkCoolDown(int newCoolDown)
     m_atkCoolDown=newCoolDown;
 }
 
+void Unit::setOriAtkCoolDown(int newCooldown)
+{
+    m_oriAtkCoolDown=newCooldown;
+}
+
 void Unit::setMaxMana(int newMaxMana)
 {
     m_maxMana=newMaxMana;
@@ -244,6 +257,19 @@ void Unit::resetWithStar()
         setAtk(getAtk()*3.2);
         break;
     }
+}
+
+void Unit::restoreOriAtt()
+{
+    m_maxHp=m_oriMaxHp;
+    m_hp=m_maxHp;
+    m_atk=m_oriAtk;
+    m_range=m_oriRange;
+    m_maxMana=m_oriMaxMana;
+    m_oriMoveCoolDown=20;
+    m_oriAtkCoolDown=60;
+    m_mana=0;
+    m_warriorSyn=m_archerSyn=m_mageSyn=m_assassinSyn=m_guardianSyn=false;
 }
 
 //状态机
@@ -343,7 +369,7 @@ void Unit::handleMoving(Board &board)
         }
         board.removeUnit(this);
         board.addUnit(this,path[0]);
-        m_moveCoolDown=20;
+        m_moveCoolDown=m_oriMoveCoolDown;
     }
 
     QSet<QPoint> rangeGrids=board.getRangeGrid(m_pos,m_range);
@@ -367,16 +393,36 @@ void Unit::handleAttking()
         return;
     }
     if(m_atkCoolDown==0){
-        m_target->takeDamage(m_atk);
+        if(m_warriorSyn && getHp()<=getMaxHp()/2){
+            m_target->takeDamage(m_atk*13/10);
+            m_atkCount++;
+        }
+        else if(m_archerSyn && m_atkCount>=3){
+            m_target->takeDamage(m_atk*3/2);
+            m_atkCount=0;
+        }
+        else if(m_assassinSyn){
+            m_target->takeDamage(m_atk*2);
+            m_assassinSyn=false;
+            m_atkCount++;
+        }
+        else {
+            m_target->takeDamage(m_atk);
+            m_atkCount++;
+        }
         m_mana=qMin(m_mana+10,m_maxMana);
         //qDebug()<<m_name<<"对"<<m_target->getName()<<"发起攻击："<<m_atk;
-        m_atkCoolDown=60;
+        m_atkCoolDown=m_oriAtkCoolDown;
     }
 }
 
 void Unit::handleCasting(Board& board,const std::vector<Unit*> allUnits)
 {
     castSkill(board,allUnits);
+    if(m_mageSyn && m_target && m_target->getState()!=State::Dead){
+        m_target->setAtkCoolDown(30);
+        m_target->setMoveCoolDown(30);
+    }
     m_mana=0;
     m_state=State::Idle;
 }
@@ -420,8 +466,13 @@ std::vector<QPoint> Unit::breadFirstSearch(Board &board)
 
 void Unit::takeDamage(int atk)
 {
-    if(m_hp<0)return;
-    m_hp=qMax(m_hp-atk,0);
+    if(m_hp<=0)return;
+    if(m_guardianSyn){
+        m_guardianSyn=false;
+    }
+    else {
+        m_hp=qMax(m_hp-atk,0);
+    }
 
     emit infoChanged(this);
     if(m_hp<=0){

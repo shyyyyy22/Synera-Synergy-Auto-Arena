@@ -170,7 +170,7 @@ void GameWindow::setUI(){
         connect(m_shopSlots[i],&QPushButton::clicked,this,[this,i](){
             m_game->clearAllSelected();
             std::unique_ptr<Unit> unit=m_game->createHeroforPreview(m_shopPools[i]);
-            m_infoPanel->updateOwnedUnitInfo(unit.release());
+            m_infoPanel->updateUnitInfo(unit.release());
             m_shopIndex=i;
         });
     }
@@ -210,6 +210,7 @@ void GameWindow::setUI(){
     connect(m_startBtn,&QPushButton::clicked,m_game,&Game::onClickStartBtn);
     connect(m_shopBtn,&QPushButton::clicked,this,&GameWindow::toggleShop);
     connect(m_game,&Game::gameIsCombat,m_infoPanel,&InfoPanel::onIsGameCombat);
+    connect(m_game,&Game::unitSelled,m_infoPanel,&InfoPanel::updateUnitInfo);
     connect(m_infoPanel,&InfoPanel::onBuyAndSellBtn,this,[=](bool isShopHero){
         if(isShopHero){
             if(m_game->buyHero(-3,m_shopPools[m_shopIndex])){
@@ -288,7 +289,8 @@ void GameWindow::setUI(){
         }
 
         m_startBtn->setEnabled(count>0);
-        updateSynergyUI();
+        m_infoPanel->updateUnitInfo(m_infoPanel->getUnit());
+        if(m_game->getPhase()==GamePhase::Prep)updateSynergyUI();
     });
 
 

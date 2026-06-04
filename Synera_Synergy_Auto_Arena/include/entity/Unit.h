@@ -51,12 +51,14 @@ public:
     void setState(State state);
     void setMoveCoolDown(int newCoolDown);
     void setAtkCoolDown(int newCoolDown);
+    void setOriAtkCoolDown(int newCooldown);
     void setMaxMana(int newMaxMana);
     void setMaxHp(int newMaxHp);
     void setIsShop(bool isShop);
     void setRace(Race race);
     void setTarget(Unit* newTarget);
     void resetWithStar();
+    void restoreOriAtt();
 
     //状态机
     virtual void updateUnit(Board& board,const std::vector<Unit*> allUnits);
@@ -72,7 +74,7 @@ public:
     virtual void castSkill(Board& board,const std::vector<Unit*> allUnits)=0;
     virtual void takeDamage(int atk);
 
-
+    bool m_warriorSyn,m_archerSyn,m_mageSyn,m_assassinSyn,m_guardianSyn;
 signals:
     void isDead(Unit* unit);
     void infoChanged(Unit* unit);
@@ -102,6 +104,14 @@ private:
 
     Profession m_profession;
     Race m_race;
+
+    int m_oriMaxHp;
+    int m_oriAtk;
+    int m_oriRange;
+    int m_oriMaxMana;
+    int m_oriMoveCoolDown;
+    int m_oriAtkCoolDown;
+    int m_atkCount;
 };
 
 #endif // UNIT_H
