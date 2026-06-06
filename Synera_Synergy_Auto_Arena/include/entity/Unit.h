@@ -3,7 +3,7 @@
 #include<QObject>
 #include<QString>
 #include<QPoint>
-
+#include"EquipmentItem.h"
 class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
@@ -41,6 +41,7 @@ public:
     Race getRace()const;
     QString getRaceName()const;
     QString getProName()const;
+    Equipment getEquipment()const;
 
     void setHp(int newHp);
     void setAtk(int newAtk);
@@ -57,6 +58,7 @@ public:
     void setIsShop(bool isShop);
     void setRace(Race race);
     void setTarget(Unit* newTarget);
+    void setEquipment(Equipment type);
     void resetWithStar();
     void restoreOriAtt();
 
@@ -75,6 +77,9 @@ public:
     virtual void takeDamage(int atk);
 
     bool m_warriorSyn,m_archerSyn,m_mageSyn,m_assassinSyn,m_guardianSyn;
+
+    //装备
+    void addEquipment(Equipment type);
 signals:
     void isDead(Unit* unit);
     void infoChanged(Unit* unit);
@@ -112,6 +117,8 @@ private:
     int m_oriMoveCoolDown;
     int m_oriAtkCoolDown;
     int m_atkCount;
+
+    Equipment m_equipment;
 };
 
 #endif // UNIT_H

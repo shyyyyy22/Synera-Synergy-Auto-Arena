@@ -62,6 +62,13 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
             painter->setBrush(Qt::NoBrush);
             painter->drawEllipse(QPoint(m_gridPos.x()-3,m_gridPos.y()-10),30,35);
         }
+
+        //装备
+        Equipment items = m_unit->getEquipment();
+        int startX = 14;
+        int startY = 22;
+        QPointF miniIconPos(startX, startY);
+        drawMiniItem(painter, miniIconPos, items);
     }
 }
 
@@ -140,6 +147,56 @@ void UnitItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     m_dragging=false;
     emit dragDropped(getUnit()->getId(),m_gridPos,event->scenePos());
     event->accept();
+}
+
+void UnitItem::drawMiniItem(QPainter* painter, const QPointF& pos, Equipment type ) {
+    if ( type == Equipment::None) return;
+
+    QRectF rect(pos.x() - 7, pos.y() - 7, 14, 14);
+
+    painter->setPen(QPen(QColor(18, 18, 18), 1));
+    painter->setBrush(QColor(25, 25, 25, 230));
+    painter->drawRoundedRect(rect, 2, 2);
+
+    QColor color;
+    switch(type) {
+    case Equipment::Sword:   color = QColor(190, 190, 200); break;
+    case Equipment::Mail:    color = QColor(100, 130, 160); break;
+    case Equipment::Gloves:  color = QColor(180, 110, 60);  break;
+    case Equipment::Crystal: color = QColor(0, 190, 255);   break;
+    default: return;
+    }
+
+    painter->setBrush(color);
+    painter->setPen(Qt::NoPen);
+
+    if (type== Equipment ::Sword) {
+        painter->setPen(QPen(color, 2));
+        painter->drawLine(rect.left() + 3, rect.bottom() - 3, rect.right() - 3, rect.top() + 3);
+    }
+    else if (type == Equipment ::Mail) {
+        QPolygonF armor;
+        armor << QPointF(rect.center().x(), rect.top() + 2)
+              << QPointF(rect.right() - 2, rect.top() + 4)
+              << QPointF(rect.right() - 2, rect.center().y() + 2)
+              << QPointF(rect.center().x(), rect.bottom() - 2)
+              << QPointF(rect.left() + 2, rect.center().y() + 2)
+              << QPointF(rect.left() + 2, rect.top() + 4);
+        painter->drawPolygon(armor);
+    }
+    else if (type == Equipment ::Gloves) {
+        painter->drawEllipse(rect.center(), 3, 3);
+        painter->setPen(QPen(color, 1));
+        painter->drawLine(rect.center().x() - 3, rect.center().y() + 3, rect.center().x() + 3, rect.center().y() + 3);
+    }
+    else if ( type == Equipment ::Crystal) {
+        QPolygonF gem;
+        gem << QPointF(rect.center().x(), rect.top() + 2)
+            << QPointF(rect.right() - 2, rect.center().y())
+            << QPointF(rect.center().x(), rect.bottom() - 2)
+            << QPointF(rect.left() + 2, rect.center().y());
+        painter->drawPolygon(gem);
+    }
 }
 
 

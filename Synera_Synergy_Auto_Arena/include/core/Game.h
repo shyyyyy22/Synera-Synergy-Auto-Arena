@@ -9,6 +9,7 @@
 #include"Player.h"
 #include<QTimer>
 #include<QPushButton>
+#include<EquipmentItem.h>
 enum class GamePhase{Prep,Combat,Resolve};
 
 class Game : public QObject
@@ -33,6 +34,7 @@ public:
     QString getRaceName(Race race)const;
     QString getProName(Profession pro)const;
     GamePhase getPhase()const;
+    EquipmentItem* getEquipmentItem(int index)const;
 
     void initialUnits();
 
@@ -51,6 +53,9 @@ public slots:
     void onDragStarted(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragMoved(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragDropped(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
+    void onEquipStarted(int index,Equipment type,const QPointF &worldPos);
+    void onEquipMoved(int index,Equipment type,const QPointF &worldPos);
+    void onEquipDropped(int index,Equipment type,const QPointF &worldPos);
 
     //游戏逻辑
     void gameTick();
@@ -63,7 +68,6 @@ public slots:
     std::unique_ptr<Unit> createHeroforPreview(QString name,int star=1);
     void calculateSynergies();
 
-
 private:
     void buildScene();
     void syncFromBoardAndBench();
@@ -73,6 +77,9 @@ private:
     QPointF gridToWorld(int row, int col,bool isBoard) const;
     QPoint worldToGrid(QPointF worldPos)const;
     void applySynergyBuffs(std::map<Race,int> raceCount,std::map<Profession,int> proCount,Owner owner);
+    bool canApplyEquipDrop(int index,const QPoint& target);
+    void applyEquipmentDrop(int index,const QPoint& target);
+    void generateRandomEquip();
 
     //敌人生成
     void generateEnemy();
@@ -92,6 +99,9 @@ private:
     std::vector<GridItem*> m_benchItems;
     std::vector<UnitItem*> m_unitItems;
     std::unordered_map<int ,UnitItem*>m_unitItemById;
+    std::unordered_map<int,EquipmentItem*>m_equipmentByIndex;
+    std::vector<QPointF> m_equipmentSlotPos;
+    std::vector<Equipment>m_EquipmentPools;
 
     int m_playerUnitInBoard;
     std::vector<QString> m_heroPools;
@@ -104,6 +114,9 @@ private:
     bool m_dragActive;
     int m_activeUnitId;
     QPoint m_sourcePos;
+    bool m_dragEquipActive;
+    int m_activeIndex;
+    QPointF m_dragEquipPos;
     std::vector<QString> m_activateSynergyList;
 
     //逻辑控制层

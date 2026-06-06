@@ -1,5 +1,6 @@
 #include "Game.h"
 #include"Heroes.h"
+#include"EquipmentSlotItem.h"
 #include<QRandomGenerator>
 namespace {
 constexpr qreal kZGrid = 0.0;
@@ -23,12 +24,16 @@ Game::Game(int rows,int cols,QObject *parent)
     ,m_timer(new QTimer(this))
     ,m_phase(GamePhase::Prep)
     ,m_playerUnitInBoard(0)
+    ,m_dragEquipActive(false)
+    ,m_activeIndex(-1)
+    ,m_dragEquipPos(QPointF(-1,-1))
 {
     m_heroPools={"卓拉守卫-辛顿","卓拉战士-诺亚","卓拉祭司-露娜"
                 ,"利特射手-力巴","利特舞者-卡西","利特风语者-艾文"
                 ,"格鲁德士兵-乌尔","格鲁德咒师-娜吉","格鲁德刺客-希卡"
                 ,"鼓隆铁卫-达鲁克","鼓隆狂战士-戈玛","鼓隆火焰祭司-玛格"
                 ,"骑士团长-雷欧","皇家剑士-艾伦","宫廷法师-辛德拉"};
+    m_EquipmentPools={Equipment::Sword,Equipment::Mail,Equipment::Gloves,Equipment::Crystal};
 }
 Game::~Game(){
     qDeleteAll(m_units);
@@ -169,6 +174,15 @@ GamePhase Game::getPhase() const
     return m_phase;
 }
 
+EquipmentItem *Game::getEquipmentItem(int index) const
+{
+    auto it=m_equipmentByIndex.find(index);
+    if(it==m_equipmentByIndex.end()){
+        return nullptr;
+    }
+    return it->second;
+}
+
 //画棋盘
 void Game::buildScene(){
     m_scene->clear();
@@ -236,6 +250,31 @@ void Game::buildScene(){
         connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
         connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
         connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+    }
+
+    //装备栏
+    for(int i=0;i<4;++i){
+        EquipmentSlotItem *equipmentSlotItem = new EquipmentSlotItem(i);
+        equipmentSlotItem->setZValue(kZGrid);
+        m_scene->addItem(equipmentSlotItem);
+
+        EquipmentItem *item=new EquipmentItem(Equipment::Sword,i);
+        m_equipmentByIndex[i]=item;
+        item->setZValue(kZUnit);
+        m_scene->addItem(item);
+        connect(item,&EquipmentItem::dragStarted,this,&Game::onEquipStarted);
+        connect(item,&EquipmentItem::dragMoved,this,&Game::onEquipMoved);
+        connect(item,&EquipmentItem::dragDropped,this,&Game::onEquipDropped);
+
+        QPointF pos=gridToWorld(m_rows,m_cols,false);
+        pos=QPointF(pos.x()+40,pos.y()-50*(3-i)+25);
+        equipmentSlotItem->setPos(pos);
+        item->setPos(pos);
+        m_equipmentSlotPos.push_back(pos);
+
+        const QRectF bounds=equipmentSlotItem->mapRectToScene(equipmentSlotItem->boundingRect());
+        totalBounds=first?bounds:totalBounds.united(bounds);
+        first=false;
     }
 
     m_scene->setSceneRect(totalBounds.adjusted(-40, -40, 40, 40));
@@ -548,7 +587,7 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
             unit->m_archerSyn=archerSyn;
             break;
         case Profession::Mage:
-            unit->setMaxMana(unit->getMaxMana()-mage);
+            unit->setMaxMana(qMax(unit->getMaxMana()-mage,20));
             unit->m_mageSyn=mageSyn;
             break;
         case Profession::Assassin:
@@ -562,6 +601,64 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
             break;
         }
     }
+}
+
+bool Game::canApplyEquipDrop(int index, const QPoint &target)
+{
+    EquipmentItem* item=getEquipmentItem(index);
+    if(!item){
+        return false;
+    }
+    Unit* unit=nullptr;
+    if(target.y()==Board::ROWS){
+        unit=m_bench.getUnitAt(target);
+    }
+    else unit=m_board.getUnitAt(target);
+    if(!unit || unit->getOwner()==Owner::EnemyCtrl || unit->getEquipment()!=Equipment::None){
+        return false;
+    }
+    return true;
+}
+
+void Game::applyEquipmentDrop(int index, const QPoint &target)
+{
+    EquipmentItem* item=getEquipmentItem(index);
+    if(!item)return;
+    Unit* unit=nullptr;
+    if(target.y()==Board::ROWS){
+        unit=m_bench.getUnitAt(target);
+    }
+    else unit=m_board.getUnitAt(target);
+    if(!unit)return;
+
+    unit->addEquipment(item->getType());
+
+    item->setType(Equipment::None);
+    item->setPos(m_equipmentSlotPos[index]);
+    UnitItem* UItem=getUnitItem(unit->getId());
+    if(UItem){
+        UItem->update();
+    }
+    syncFromBoardAndBench();
+}
+
+void Game::generateRandomEquip()
+{
+    bool generateEquip=QRandomGenerator::global()->bounded(100)<50?true:false;
+    int randomIndex=QRandomGenerator::global()->bounded(m_EquipmentPools.size());
+    if(generateEquip){
+        int find=-1;
+        for(int i=0;i<4;i++){
+            if(m_equipmentByIndex[i] && m_equipmentByIndex[i]->getType()==Equipment::None){
+                find=i;
+                break;
+            }
+        }
+        if(find!=-1){
+            m_equipmentByIndex[find]->setType(m_EquipmentPools[randomIndex]);
+        }
+    }
+
 }
 
 //敌人生成
@@ -712,7 +809,6 @@ void Game::onDragMoved(int unitId, const QPoint &sourcePos, const QPointF &world
 
     const QPoint target=worldToGrid(worldPos);
     GridItem* targetItem=getGridItem(target);
-    //qDebug() << "Target item found:" << targetItem<<111;
     if(!targetItem){
         return;
     }
@@ -750,6 +846,57 @@ void Game::onDragDropped(int unitId, const QPoint &sourcePos, const QPointF &wor
 
 
     syncFromBoardAndBench();
+}
+
+void Game::onEquipStarted(int index, Equipment type, const QPointF &worldPos)
+{
+    if(m_phase!=GamePhase::Prep){
+        return;
+    }
+    m_dragEquipActive=true;
+    m_activeIndex=index;
+    m_dragEquipPos=m_equipmentSlotPos[index];
+
+    EquipmentItem* item=getEquipmentItem(index);
+    if(item){
+        item->setZValue(kZDraggingUnit);
+    }
+}
+
+void Game::onEquipMoved(int index, Equipment type, const QPointF &worldPos)
+{
+    if(!m_dragEquipActive){
+        return;
+    }
+    if(m_phase!=GamePhase::Prep){
+        return;
+    }
+    EquipmentItem* item=getEquipmentItem(index);
+    if(item){
+        item->setPos(worldPos);
+    }
+
+}
+
+void Game::onEquipDropped(int index, Equipment type, const QPointF &worldPos)
+{
+    if(!m_dragEquipActive){
+        return;
+    }
+    QPoint target=worldToGrid(worldPos);
+    EquipmentItem* item=getEquipmentItem(index);
+    if(item){
+        if(canApplyEquipDrop(index,target)){
+            applyEquipmentDrop(index,target);
+        }else{
+            item->setPos(m_dragEquipPos);
+        }
+        item->setZValue(kZUnit);
+    }
+
+    m_dragEquipActive=false;
+    m_activeIndex=-1;
+    m_dragEquipPos=QPointF(-1,-1);
 }
 
 //游戏逻辑
@@ -826,6 +973,7 @@ void Game::handleStageResolve(bool win)
         emit gameOver();
     }
     else{
+        generateRandomEquip();
         m_player->nxtStage();
         emit roundFinishend(win,m_player->getGold(),m_player->getHp());
     }

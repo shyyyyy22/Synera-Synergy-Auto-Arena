@@ -10,8 +10,8 @@ public:
     UnitItem(Unit* unit, bool isBoard,QGraphicsItem* parent = nullptr);
 
     //基础功能
-    QRectF boundingRect() const;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+    QRectF boundingRect() const override;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)override;
 
     //属性相关
     Unit* getUnit()const;
@@ -36,6 +36,8 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
+    void drawMiniItem(QPainter* painter, const QPointF& pos, Equipment type);
+
     Unit* m_unit;
     QPoint m_gridPos;
     bool m_isBoard;

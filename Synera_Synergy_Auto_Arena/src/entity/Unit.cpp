@@ -31,6 +31,7 @@ Unit::Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner own
     ,m_profession(profession)
     ,m_isShopHero(isShopHero)
     ,m_race(Race::Boss)
+    ,m_equipment(Equipment::None)
 {
     m_warriorSyn=m_archerSyn=m_mageSyn=m_assassinSyn=m_guardianSyn=false;
     m_atkCount=0;
@@ -175,6 +176,11 @@ QString Unit::getProName() const
         return "";
     }
 }
+
+Equipment Unit::getEquipment() const
+{
+    return m_equipment;
+}
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }
@@ -241,6 +247,11 @@ void Unit::setTarget(Unit *newTarget)
     m_target=newTarget;
 }
 
+void Unit::setEquipment(Equipment type)
+{
+    m_equipment=type;
+}
+
 void Unit::resetWithStar()
 {
     switch(m_star){
@@ -270,6 +281,23 @@ void Unit::restoreOriAtt()
     m_oriAtkCoolDown=60;
     m_mana=0;
     m_warriorSyn=m_archerSyn=m_mageSyn=m_assassinSyn=m_guardianSyn=false;
+    switch(m_equipment){
+    case Equipment::Sword:
+        m_atk+=15;
+        break;
+    case Equipment::Mail:
+        m_maxHp+=150;
+        m_hp=m_maxHp;
+        break;
+    case Equipment::Gloves:
+        m_oriAtkCoolDown=50;
+        break;
+    case Equipment::Crystal:
+        m_maxMana=qMax(m_maxMana-30,20);
+        break;
+    default:
+        break;
+    }
 }
 
 //状态机
@@ -484,4 +512,26 @@ void Unit::takeDamage(int atk)
         m_pos=QPoint(-1,-1);
     }
 
+}
+
+void Unit::addEquipment(Equipment type)
+{
+    setEquipment(type);
+    switch(type){
+    case Equipment::Sword:
+        m_atk+=15;
+        break;
+    case Equipment::Mail:
+        m_maxHp+=150;
+        m_hp=m_maxHp;
+        break;
+    case Equipment::Gloves:
+        m_oriAtkCoolDown=50;
+        break;
+    case Equipment::Crystal:
+        m_maxMana=qMax(m_maxMana-30,20);
+        break;
+    default:
+        break;
+    }
 }
