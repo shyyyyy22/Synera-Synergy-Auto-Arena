@@ -56,6 +56,25 @@ void Player::setHp(int newHp)
     m_hp=newHp;
 }
 
+void Player::setGold(int newGold)
+{
+    m_gold=newGold;
+}
+
+void Player::setLevel(int newLevel)
+{
+    m_level=newLevel;
+    m_xp=0;
+    m_maxXP=2;
+    m_maxUnit=3;
+}
+
+void Player::initialStage()
+{
+    m_minorStage=1;
+    m_majorStage=1;
+}
+
 void Player::nxtStage()
 {
     if(m_minorStage==4){

@@ -21,7 +21,7 @@ public:
 
     //初始化相关
     void initialize();
-    void reset();
+    void startNewGame();
 
     //属性获取
     QGraphicsScene* getScene()const;
@@ -37,13 +37,14 @@ public:
     EquipmentItem* getEquipmentItem(int index)const;
     bool getEquipmentSlotFull();
 
-    void initialUnits();
 
     //游戏逻辑
     void startNxtRound();
     void buyXp();
     std::vector<QString> rollShop();
     void upUnitStar(QString name,int star);
+    void pauseGame();
+    void resumeGame();
 
 
 public slots:

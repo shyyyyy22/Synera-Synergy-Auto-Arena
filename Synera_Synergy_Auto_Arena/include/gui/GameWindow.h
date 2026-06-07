@@ -7,7 +7,10 @@
 #include"InfoPanel.h"
 #include<QLabel.h>
 #include<QPushButton>
+#include<QStackedWidget>
+#include"StartMenuWidget.h"
 #include"SettlementPanel.h"
+#include"PauseMenuPanel.h"
 class QGraphicsView;
 class Game;
 
@@ -57,5 +60,10 @@ private:
 
     std::vector<QString> m_shopPools;
     int m_shopIndex;
+
+    StartMenuWidget* m_startMenu;
+    QStackedWidget* m_stackedWidget;
+    PauseMenuPanel* m_pauseMenu;
+    QPushButton* m_pauseBtn;
 };
 #endif // GAMEWINDOW_H

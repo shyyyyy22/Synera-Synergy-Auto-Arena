@@ -19,6 +19,9 @@ public:
 
     void changeGold(int addGold);
     void setHp(int newHp);
+    void setGold(int newGold);
+    void setLevel(int newLevel);
+    void initialStage();
 
     void nxtStage();
     void addXp(int addXp);

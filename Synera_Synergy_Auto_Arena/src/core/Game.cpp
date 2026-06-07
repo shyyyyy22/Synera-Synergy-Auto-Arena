@@ -34,6 +34,9 @@ Game::Game(int rows,int cols,QObject *parent)
                 ,"鼓隆铁卫-达鲁克","鼓隆狂战士-戈玛","鼓隆火焰祭司-玛格"
                 ,"骑士团长-雷欧","皇家剑士-艾伦","宫廷法师-辛德拉"};
     m_EquipmentPools={Equipment::Sword,Equipment::Mail,Equipment::Gloves,Equipment::Crystal};
+
+    //设置定时器
+    connect(m_timer,&QTimer::timeout,this,&Game::gameTick);
 }
 Game::~Game(){
     qDeleteAll(m_units);
@@ -44,28 +47,36 @@ Game::~Game(){
 
 //初始化相关
 void Game::initialize(){
-    initialUnits();
-    generateEnemy();
-    buildScene();
-    reset();
-
-    //设置定时器
-    connect(m_timer,&QTimer::timeout,this,&Game::gameTick);
+    startNewGame();
 }
-void Game::reset(){
-    m_bench.clear();
-    int playerPos=0;
-    const QPoint initialPositions[]{
-        QPoint (0,m_rows),
-        QPoint (1,m_rows),
-        QPoint (2,m_rows)
-    };
+void Game::startNewGame() {
 
-    for(int i=0;i<m_units.size();++i){
-        if(m_units[i]->getOwner()==Owner::PlayerCtrl){
-            m_bench.addUnit(m_units[i],initialPositions[playerPos++]);
-        }
+    m_scene->clear();
+    qDeleteAll(m_units);
+    m_units.clear();
+    m_unitItems.clear();
+    m_unitItemById.clear();
+
+    m_player->setHp(100);
+    m_player->setGold(1000);
+    m_player->setLevel(1);
+    m_player->initialStage();
+    m_board.clear();
+    m_bench.clear();
+
+    m_units.push_back(new Sidon("卓拉守卫-辛顿",Owner::PlayerCtrl,1));
+    m_units.push_back(new Luna("卓拉祭司-露娜",Owner::PlayerCtrl,1));
+    m_units.push_back(new Noah("卓拉战士-诺亚",Owner::PlayerCtrl,1));
+    const QPoint initialPositions[] = { QPoint(0,Board::ROWS), QPoint(1,Board::ROWS), QPoint(2,Board::ROWS) };
+    for (int i = 0; i < 3; ++i) {
+        m_bench.addUnit(m_units[i], initialPositions[i]);
     }
+
+    generateEnemy();
+
+    buildScene();
+
+    m_phase = GamePhase::Prep;
     syncFromBoardAndBench();
 }
 
@@ -270,7 +281,7 @@ void Game::buildScene(){
         equipmentSlotItem->setZValue(kZGrid);
         m_scene->addItem(equipmentSlotItem);
 
-        EquipmentItem *item=new EquipmentItem(Equipment::Sword,i);
+        EquipmentItem *item=new EquipmentItem(Equipment::None,i);
         m_equipmentByIndex[i]=item;
         item->setZValue(kZUnit);
         m_scene->addItem(item);
@@ -754,15 +765,6 @@ void Game::generateEnemy()
     syncFromBoardAndBench();
     m_scene->update();
 
-}
-
-void Game::initialUnits(){
-    if(!m_units.empty()){
-        return;
-    }
-    m_units.push_back(new Sidon("卓拉守卫-辛顿",Owner::PlayerCtrl,1));
-    m_units.push_back(new Luna("卓拉祭司-露娜",Owner::PlayerCtrl,1));
-    m_units.push_back(new Noah("卓拉战士-诺亚",Owner::PlayerCtrl,1));
 }
 
 //属性面板
@@ -1314,6 +1316,18 @@ void Game::upUnitStar(QString name, int star)
     }
 
     syncFromBoardAndBench();
+}
+
+void Game::pauseGame()
+{
+    m_timer->stop();
+}
+
+void Game::resumeGame()
+{
+    if(m_phase==GamePhase::Combat){
+        m_timer->start(FPS);
+    }
 }
 
 void Game::buyXp()

@@ -11,10 +11,33 @@ GameWindow::GameWindow(QWidget *parent)
     ,m_infoPanel(new InfoPanel(this))
     ,m_startBtn(new QPushButton("开始对战",this))
     ,m_shopBtn(new QPushButton("商店",this))
+    ,m_pauseBtn(new QPushButton("暂停游戏", this))
+    ,m_startMenu(new StartMenuWidget(this))
+    ,m_stackedWidget(new QStackedWidget(this))
 {
+    setCentralWidget(m_stackedWidget);
+
     m_shopPools=m_game->rollShop();
     setUI();
-    m_game->initialize();
+    m_stackedWidget->addWidget(m_startMenu);
+    m_stackedWidget->addWidget(m_centralWidget);
+
+    m_stackedWidget->setCurrentIndex(0);
+
+    connect(m_startMenu, &StartMenuWidget::clickStartBtn, this, [this](){
+        m_stackedWidget->setCurrentIndex(1);
+        m_game->initialize();
+        updatePlayerInfo();
+        m_shopPools=m_game->rollShop();
+        updateShopInfo();
+    });
+    connect(m_startMenu, &StartMenuWidget::clickLoadBtn, this, [this](){
+        // 下午我们要写的逻辑：
+        // bool loadSuccess = m_game->loadGame();
+        // if (loadSuccess) {
+        //     m_stackedWidget->setCurrentIndex(1);
+        // }
+    });
 }
 
 GameWindow::~GameWindow() = default;
@@ -44,10 +67,14 @@ void GameWindow::resizeEvent(QResizeEvent *event)
         int y = (m_centralWidget->height() - m_settlementPanel->height()) / 2;
         m_settlementPanel->move(x, y);
     }
+    if (m_centralWidget && m_pauseMenu) {
+        int x = (m_centralWidget->width() - m_pauseMenu->width()) / 2;
+        int y = (m_centralWidget->height() - m_pauseMenu->height()) / 2;
+        m_pauseMenu->move(x, y);
+    }
 }
 
 void GameWindow::setUI(){
-    setCentralWidget(m_centralWidget);
     m_centralWidget->setLayout(m_mainLayout);
 
     setStyleSheet(R"(
@@ -188,18 +215,24 @@ void GameWindow::setUI(){
     controlBar->setStyleSheet("background-color: #202020; border-top: 1px solid #444;");
     m_startBtn->setEnabled(false);
     m_shopBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
+    m_pauseBtn->setStyleSheet("background-color: #37474f; color: white; font-weight: bold; border-radius: 4px;");
 
     QHBoxLayout* controlLayout=new QHBoxLayout(controlBar);
     controlLayout->setContentsMargins(20,0,20,0);
     controlLayout->addStretch();
     controlLayout->addWidget(m_shopBtn);
     controlLayout->addWidget(m_startBtn);
+    controlLayout->addWidget(m_pauseBtn);
 
     m_mainLayout->addWidget(controlBar,1);
 
     //结算画面
     m_settlementPanel=new SettlementPanel(m_centralWidget);
     m_settlementPanel->hide();
+
+    //暂停界面
+    m_pauseMenu = new PauseMenuPanel(this);
+    m_pauseMenu->hide();
 
     //连接主界面
     m_view->setScene(m_game->getScene());
@@ -244,6 +277,12 @@ void GameWindow::setUI(){
     });
     connect(m_game,&Game::roundFinishend,this,[this](bool win,int gold,int hp){
         m_settlementPanel->updateInfo(win,gold,hp);
+        if (m_centralWidget && m_settlementPanel) {
+            int x = (m_centralWidget->width() - m_settlementPanel->width()) / 2;
+            int y = (m_centralWidget->height() - m_settlementPanel->height()) / 2;
+
+            m_settlementPanel->move(x, y);
+        }
         m_settlementPanel->show();
         m_settlementPanel->raise();
     });
@@ -291,6 +330,36 @@ void GameWindow::setUI(){
         m_startBtn->setEnabled(count>0);
         m_infoPanel->updateUnitInfo(m_infoPanel->getUnit());
         if(m_game->getPhase()==GamePhase::Prep)updateSynergyUI();
+    });
+    connect(m_pauseBtn, &QPushButton::clicked, this, [this](){
+        m_game->pauseGame();
+
+        m_centralWidget->setEnabled(false);
+
+        if (m_centralWidget) {
+            int x = (m_centralWidget->width() - m_pauseMenu->width()) / 2;
+            int y = (m_centralWidget->height() - m_pauseMenu->height()) / 2;
+            m_pauseMenu->move(x, y);
+        }
+        m_pauseMenu->show();
+        m_pauseMenu->raise();
+    });
+
+    connect(m_pauseMenu, &PauseMenuPanel::clickContinueBtn, this, [this](){
+        m_pauseMenu->hide();
+        m_centralWidget->setEnabled(true);
+        m_game->resumeGame();
+    });
+
+    connect(m_pauseMenu, &PauseMenuPanel::clickSaveBtn, this, [this](){
+        m_pauseMenu->hide();
+        m_infoPanel->updateUnitInfo(nullptr);
+        //m_game->saveGame();
+        m_centralWidget->setEnabled(true);
+        m_shopWidget->hide();
+        m_shopBtn->setText("商店");
+        m_shopBtn->setStyleSheet("background-color: #0288d1; color: white; font-weight: bold; border-radius: 4px;");
+        m_stackedWidget->setCurrentIndex(0);
     });
 
 
