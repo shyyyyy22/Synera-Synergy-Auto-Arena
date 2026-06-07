@@ -35,6 +35,7 @@ public:
     QString getProName(Profession pro)const;
     GamePhase getPhase()const;
     EquipmentItem* getEquipmentItem(int index)const;
+    bool getEquipmentSlotFull();
 
     void initialUnits();
 
@@ -102,6 +103,8 @@ private:
     std::unordered_map<int,EquipmentItem*>m_equipmentByIndex;
     std::vector<QPointF> m_equipmentSlotPos;
     std::vector<Equipment>m_EquipmentPools;
+
+    bool equipmentSlotFull;
 
     int m_playerUnitInBoard;
     std::vector<QString> m_heroPools;

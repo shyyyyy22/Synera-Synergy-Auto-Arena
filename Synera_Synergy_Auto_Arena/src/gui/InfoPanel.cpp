@@ -71,7 +71,8 @@ void InfoPanel::updateUnitInfo(Unit *unit)
     m_rangeLabel->setText(QString("攻击范围：%1").arg(unit->getRange()));
     m_starLabel->setText(QString("星级：%1").arg(unit->getStar()));
     int star=unit->getStar();
-    m_buyAndSellBtn->setText(unit->getIsShopHero()?"购买(3金币)":QString("出售(%1金币)").arg(2*star*star-3*star+3));
+    QString append=unit->getEquipment()==Equipment::None?"":"\n(若装备栏已满)\n装备(2金)";
+    m_buyAndSellBtn->setText(unit->getIsShopHero()?"购买(3金)":QString("出售(%1金)"+append).arg(2*star*star-3*star+3));
 
     if(unit->getOwner()==Owner::EnemyCtrl){
         m_buyAndSellBtn->setEnabled(false);

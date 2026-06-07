@@ -272,9 +272,10 @@ void Unit::resetWithStar()
 
 void Unit::restoreOriAtt()
 {
-    m_maxHp=m_oriMaxHp;
+    qreal scale=m_star==1?1:m_star==2?1.8:3.2;
+    m_maxHp=m_oriMaxHp*scale;
     m_hp=m_maxHp;
-    m_atk=m_oriAtk;
+    m_atk=m_oriAtk*scale;
     m_range=m_oriRange;
     m_maxMana=m_oriMaxMana;
     m_oriMoveCoolDown=20;

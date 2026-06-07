@@ -183,6 +183,18 @@ EquipmentItem *Game::getEquipmentItem(int index) const
     return it->second;
 }
 
+bool Game::getEquipmentSlotFull()
+{
+    int count=0;
+    for(int j=0;j<4;j++){
+        if(m_equipmentByIndex[j] && m_equipmentByIndex[j]->getType()!=Equipment::None){
+            count++;
+            break;
+        }
+    }
+    return count==4;
+}
+
 //画棋盘
 void Game::buildScene(){
     m_scene->clear();
@@ -1062,6 +1074,22 @@ void Game::sellHero(Unit *unit)
     }
     int star=unit->getStar();
     int gold=2*star*star-3*star+3;
+    Equipment equip=unit->getEquipment();
+    if(equip!=Equipment::None){
+        int find=-1;
+        for(int j=0;j<4;j++){
+            if(m_equipmentByIndex[j] && m_equipmentByIndex[j]->getType()==Equipment::None){
+                find=j;
+                break;
+            }
+        }
+        if(find!=-1){
+            m_equipmentByIndex[find]->setType(equip);
+        }
+        else {
+            gold+=2;
+        }
+    }
 
     m_player->changeGold(gold);
 
@@ -1207,7 +1235,12 @@ void Game::upUnitStar(QString name, int star)
         if(count==3)break;
     }
     if(count==3){
+        std::vector<Equipment> equipments;
         for(int i=0;i<count;i++){
+            Equipment equip=units[i]->getEquipment();
+            if(equip!=Equipment::None){
+                equipments.push_back(equip);
+            }
             UnitItem* item=getUnitItem(units[i]->getId());
             if(item){
                 if(item->getIsBoard()){
@@ -1234,6 +1267,25 @@ void Game::upUnitStar(QString name, int star)
             delete units[i];
         }
         Unit * unit=createHeroforPreview(name,star+1).release();
+        if(!equipments.empty()){
+            unit->addEquipment(equipments[0]);
+            for(int i=1;i<equipments.size();++i){
+                int find=-1;
+                for(int j=0;j<4;j++){
+                    if(m_equipmentByIndex[j] && m_equipmentByIndex[j]->getType()==Equipment::None){
+                        find=j;
+                        break;
+                    }
+                }
+                if(find!=-1){
+                    m_equipmentByIndex[find]->setType(equipments[i]);
+                }
+                else {
+                    m_player->changeGold(2);
+                }
+            }
+
+        }
         unit->setIsShop(false);
         m_units.push_back(unit);
         UnitItem* item=nullptr;
