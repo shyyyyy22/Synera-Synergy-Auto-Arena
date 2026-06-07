@@ -2,6 +2,9 @@
 #include"Heroes.h"
 #include"EquipmentSlotItem.h"
 #include<QRandomGenerator>
+#include<iostream>
+#include<fstream>
+
 namespace {
 constexpr qreal kZGrid = 0.0;
 constexpr qreal kZUnit = 1.0;
@@ -60,6 +63,9 @@ void Game::startNewGame() {
     m_player->setHp(100);
     m_player->setGold(1000);
     m_player->setLevel(1);
+    m_player->setMaxXP(2);
+    m_player->setXp(0);
+    m_player->setMaxUnit(3);
     m_player->initialStage();
     m_board.clear();
     m_bench.clear();
@@ -70,6 +76,7 @@ void Game::startNewGame() {
     const QPoint initialPositions[] = { QPoint(0,Board::ROWS), QPoint(1,Board::ROWS), QPoint(2,Board::ROWS) };
     for (int i = 0; i < 3; ++i) {
         m_bench.addUnit(m_units[i], initialPositions[i]);
+        m_units[i]->setStartPos(initialPositions[i]);
     }
 
     generateEnemy();
@@ -253,7 +260,8 @@ void Game::buildScene(){
     for(Unit *unit:m_units){
         UnitItem* item=nullptr;
         if(unit->getOwner()==Owner::PlayerCtrl){
-            item=new UnitItem(unit,false);
+            bool isBoard=unit->getPos().y()<Board::ROWS;
+            item=new UnitItem(unit,isBoard);
         }
         else {
             item=new UnitItem(unit,true);
@@ -281,7 +289,7 @@ void Game::buildScene(){
         equipmentSlotItem->setZValue(kZGrid);
         m_scene->addItem(equipmentSlotItem);
 
-        EquipmentItem *item=new EquipmentItem(Equipment::None,i);
+        EquipmentItem *item=new EquipmentItem(Equipment::Sword,i);
         m_equipmentByIndex[i]=item;
         item->setZValue(kZUnit);
         m_scene->addItem(item);
@@ -445,8 +453,13 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
                 m_bench.removeUnit(unit);
                 m_bench.addUnit(targetUnit,sourcePos);
                 m_bench.addUnit(unit,target);
+                unit->setStartPos(unit->getPos());
+                targetUnit->setStartPos(targetUnit->getPos());
             }
-            else {m_bench.moveUnit(unit,target);}
+            else {
+                m_bench.moveUnit(unit,target);
+                unit->setStartPos(unit->getPos());
+            }
         }
         else {
             Unit* targetUnit=m_board.getUnitAt(target);
@@ -459,11 +472,14 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
                 item->setIsBoard(true);
                 m_bench.addUnit(targetUnit,sourcePos);
                 targetItem->setIsBoard(false);
+                unit->setStartPos(unit->getPos());
+                targetUnit->setStartPos(targetUnit->getPos());
             }
             else{
                 m_bench.removeUnit(unit);
                 m_board.addUnit(unit,target);
                 item->setIsBoard(true);
+                unit->setStartPos(unit->getPos());
             }
         }
     }
@@ -479,11 +495,14 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
                 item->setIsBoard(false);
                 m_board.addUnit(targetUnit,sourcePos);
                 targetItem->setIsBoard(true);
+                unit->setStartPos(unit->getPos());
+                targetUnit->setStartPos(targetUnit->getPos());
             }
             else{
                 m_board.removeUnit(unit);
                 m_bench.addUnit(unit,target);
                 item->setIsBoard(false);
+                unit->setStartPos(unit->getPos());
             }
             unit->restoreOriAtt();
         }
@@ -494,9 +513,12 @@ void Game::applyDrop(int unitId, const QPoint &sourcePos, const QPoint &target)
                 m_board.removeUnit(unit);
                 m_board.addUnit(targetUnit,sourcePos);
                 m_board.addUnit(unit,target);
+                unit->setStartPos(unit->getPos());
+                targetUnit->setStartPos(targetUnit->getPos());
             }
             else{
                 m_board.moveUnit(unit,target);
+                unit->setStartPos(unit->getPos());
             }
         }
     }
@@ -1043,6 +1065,7 @@ bool Game::buyHero(int gold,QString name)
         unit->setIsShop(false);
         m_units.push_back(unit);
         m_bench.addUnit(unit,pos);
+        unit->setStartPos(pos);
         UnitItem* item=new UnitItem(unit,false);
         item->setZValue(kZUnit);
         m_scene->addItem(item);
@@ -1328,6 +1351,116 @@ void Game::resumeGame()
     if(m_phase==GamePhase::Combat){
         m_timer->start(FPS);
     }
+}
+
+void Game::saveGame()
+{
+    std::ofstream out("save.txt", std::ios::out);
+    if(!out.is_open())exit(1);
+
+    out<<m_player->getHp()<<"\n";
+    out<<m_player->getGold()<<"\n";
+    out<<m_player->getLevel()<<"\n";
+    out<<m_player->getMaxUnit()<<"\n";
+    out<<m_player->getXp()<<"\n";
+    out<<m_player->getMaxXP()<<"\n";
+    out<<m_player->getMajorStage()<<"\n";
+    out<<m_player->getMinorStage()<<"\n";
+
+    int unitCount=0;
+    for(Unit* unit:m_units){
+        if(!unit || unit->getOwner()==Owner::EnemyCtrl)continue;
+        unitCount++;
+    }
+
+    out<<unitCount<<"\n";
+
+    for(Unit* unit:m_units){
+        if(!unit || unit->getOwner()==Owner::EnemyCtrl)continue;
+
+        UnitItem* item=getUnitItem(unit->getId());
+        bool isBoard=item?item->getIsBoard():false;
+
+        out<<unit->getName().toStdString()<<" "
+            <<unit->getStar()<<" "
+            <<unit->getStartPos().x()<<" "
+            <<unit->getStartPos().y()<<" "
+            <<isBoard<<" "
+            <<static_cast<int>(unit->getEquipment())<<"\n";
+    }
+
+    for(int i=0;i<4;i++){
+        out<<static_cast<int>(m_equipmentByIndex[i]->getType())<<" ";
+    }
+    out<<"\n";
+    out.close();
+}
+
+bool Game::LoadGame()
+{
+    m_scene->clear();
+    qDeleteAll(m_units);
+    m_units.clear();
+    m_unitItems.clear();
+    m_unitItemById.clear();
+    m_board.clear();
+    m_bench.clear();
+
+    std::ifstream in("save.txt",std::ios::in);
+    if(!in)exit(1);
+
+    int hp,gold,level,maxUnit,xp,maxXp,majorStage,minorStage;
+    in>>hp>>gold>>level>>maxUnit>>xp>>maxXp>>majorStage>>minorStage;
+
+    m_player->setHp(hp);
+    m_player->setGold(gold);
+    m_player->setLevel(level);
+    m_player->setMaxUnit(maxUnit);
+    m_player->setXp(xp);
+    m_player->setMaxXP(maxXp);
+    m_player->setStage(majorStage,minorStage);
+
+    int unitCount;
+    in>>unitCount;
+    for(int i=0;i<unitCount;++i){
+        std::string name;
+        int star,x,y,isBoardInt,equipInt;
+
+        in>>name>>star>>x>>y>>isBoardInt>>equipInt;
+        bool isBoard=isBoardInt>0;
+        Equipment equip=static_cast<Equipment>(equipInt);
+
+        Unit* unit=createHeroforPreview(QString::fromStdString(name),star).release();
+        unit->setIsShop(false);
+        if(equip!=Equipment::None){
+            unit->addEquipment(equip);
+        }
+        m_units.push_back(unit);
+        if(isBoard){
+            m_board.addUnit(unit,QPoint(x,y));
+        }
+        else {
+            m_bench.addUnit(unit,QPoint(x,y));
+        }
+        unit->setStartPos(unit->getPos());
+    }
+
+    generateEnemy();
+
+    buildScene();
+    for(int i=0;i<4;i++){
+        int typeInt;
+        in>>typeInt;
+        Equipment type = static_cast<Equipment>(typeInt);
+        m_equipmentByIndex[i]->setType(type);
+    }
+
+    in.close();
+
+    m_phase = GamePhase::Prep;
+    syncFromBoardAndBench();
+
+    return true;
 }
 
 void Game::buyXp()

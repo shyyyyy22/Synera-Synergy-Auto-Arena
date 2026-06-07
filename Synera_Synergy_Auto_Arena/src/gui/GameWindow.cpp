@@ -32,11 +32,12 @@ GameWindow::GameWindow(QWidget *parent)
         updateShopInfo();
     });
     connect(m_startMenu, &StartMenuWidget::clickLoadBtn, this, [this](){
-        // 下午我们要写的逻辑：
-        // bool loadSuccess = m_game->loadGame();
-        // if (loadSuccess) {
-        //     m_stackedWidget->setCurrentIndex(1);
-        // }
+        bool loadSuccess = false;
+        loadSuccess=m_game->LoadGame();
+        if (loadSuccess) {
+            m_stackedWidget->setCurrentIndex(1);
+            updatePlayerInfo();
+        }
     });
 }
 
@@ -354,7 +355,7 @@ void GameWindow::setUI(){
     connect(m_pauseMenu, &PauseMenuPanel::clickSaveBtn, this, [this](){
         m_pauseMenu->hide();
         m_infoPanel->updateUnitInfo(nullptr);
-        //m_game->saveGame();
+        m_game->saveGame();
         m_centralWidget->setEnabled(true);
         m_shopWidget->hide();
         m_shopBtn->setText("商店");

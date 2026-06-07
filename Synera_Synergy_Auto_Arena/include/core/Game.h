@@ -46,6 +46,9 @@ public:
     void pauseGame();
     void resumeGame();
 
+    void saveGame();
+    bool LoadGame();
+
 
 public slots:
     //属性面板

@@ -64,9 +64,27 @@ void Player::setGold(int newGold)
 void Player::setLevel(int newLevel)
 {
     m_level=newLevel;
-    m_xp=0;
-    m_maxXP=2;
-    m_maxUnit=3;
+}
+
+void Player::setMaxUnit(int newUnit)
+{
+    m_maxUnit=newUnit;
+}
+
+void Player::setXp(int xp)
+{
+    m_xp=xp;
+}
+
+void Player::setMaxXP(int MaxXp)
+{
+    m_maxXP=MaxXp;
+}
+
+void Player::setStage(int maj, int min)
+{
+    m_majorStage=maj;
+    m_minorStage=min;
 }
 
 void Player::initialStage()

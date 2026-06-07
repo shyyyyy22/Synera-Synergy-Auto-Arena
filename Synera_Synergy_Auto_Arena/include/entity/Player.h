@@ -21,6 +21,10 @@ public:
     void setHp(int newHp);
     void setGold(int newGold);
     void setLevel(int newLevel);
+    void setMaxUnit(int newUnit);
+    void setXp(int xp);
+    void setMaxXP(int MaxXp);
+    void setStage(int maj,int min);
     void initialStage();
 
     void nxtStage();
