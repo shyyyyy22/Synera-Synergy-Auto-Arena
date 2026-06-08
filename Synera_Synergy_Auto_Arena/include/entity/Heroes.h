@@ -34,10 +34,15 @@ public:
     WaterblightGanon(const QString& name);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void takeDamage(int atk)override;
+    void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
 
 private:
     bool m_hasPhase2;
+    int m_skillTime;
+    bool m_inSkill;
 };
+
+//风
 class Revali:public Unit{
 public:
     Revali(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
@@ -52,6 +57,15 @@ class Evan:public Unit{
 public:
     Evan(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+class WindblightGanon:public Unit{
+public:
+    WindblightGanon(const QString& name);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+    void takeDamage(int atk)override;
+
+private:
+    bool m_hasPhase2;
 };
 
 //雷
@@ -76,6 +90,15 @@ class Shika:public Unit{
 public:
     Shika(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+class ThunderblightGanon:public Unit{
+public:
+    ThunderblightGanon(const QString& name);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+    void takeDamage(int atk)override;
+
+private:
+    bool m_hasPhase2;
 };
 
 //火
@@ -103,6 +126,15 @@ private:
     bool m_inSkill;
     QPoint m_burnCenter;
 };
+class FireblightGanon:public Unit{
+public:
+    FireblightGanon(const QString& name);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+    void takeDamage(int atk)override;
+
+private:
+    bool m_hasPhase2;
+};
 
 //海拉鲁
 class Leo:public Unit{
@@ -119,6 +151,20 @@ class Syndra:public Unit{
 public:
     Syndra(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+};
+class Ganondorf:public Unit{
+public:
+    Ganondorf(const QString& name);
+    void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
+    void takeDamage(int atk)override;
+    void setMoveCoolDown(int newCoolDown)override;
+    void setAtkCoolDown(int newCoolDown)override;
+    void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
+
+private:
+    bool m_hasPhase2;
+    bool m_hasPhase3;
+    int m_skillTime;
 };
 
 #endif // HEROES_H

@@ -50,8 +50,8 @@ public:
     void setPos(QPoint newPos);
     void setStartPos(QPoint pos);
     void setState(State state);
-    void setMoveCoolDown(int newCoolDown);
-    void setAtkCoolDown(int newCoolDown);
+    virtual void setMoveCoolDown(int newCoolDown);
+    virtual void setAtkCoolDown(int newCoolDown);
     void setOriAtkCoolDown(int newCooldown);
     void setMaxMana(int newMaxMana);
     void setMaxHp(int newMaxHp);

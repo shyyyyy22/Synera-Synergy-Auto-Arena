@@ -716,7 +716,7 @@ void Game::generateEnemy()
     case 1:{
         Unit* enemy1=new Noah("腐化-卓拉战士",Owner::EnemyCtrl,scale);
         m_units.push_back(enemy1);
-        m_board.addUnit(enemy1,QPoint(3,1));
+        m_board.addUnit(enemy1,QPoint(3,2));
         break;
     }
     case 2:{
@@ -726,8 +726,8 @@ void Game::generateEnemy()
         m_units.push_back(enemy1);
         m_units.push_back(enemy2);
 
-        m_board.addUnit(enemy1,QPoint(2,1));
-        m_board.addUnit(enemy2,QPoint(5,0));
+        m_board.addUnit(enemy1,QPoint(2,2));
+        m_board.addUnit(enemy2,QPoint(4,0));
         break;
     }
     case 3:{
@@ -739,8 +739,8 @@ void Game::generateEnemy()
         m_units.push_back(enemy2);
         m_units.push_back(enemy3);
 
-        m_board.addUnit(enemy1,QPoint(2,1));
-        m_board.addUnit(enemy2,QPoint(3,1));
+        m_board.addUnit(enemy1,QPoint(2,2));
+        m_board.addUnit(enemy2,QPoint(3,3));
         m_board.addUnit(enemy3,QPoint(4,0));
         break;
     }
@@ -756,6 +756,177 @@ void Game::generateEnemy()
         m_board.addUnit(enemy1,QPoint(3,1));
         m_board.addUnit(enemy2,QPoint(4,1));
         m_board.addUnit(boss,QPoint(4,0));
+        break;
+    }
+    case 5:{
+        Unit* enemy1=new Revali("腐化-利特射手",Owner::EnemyCtrl,scale);
+        Unit* enemy2=new Evan("腐化-利特风语者",Owner::EnemyCtrl,scale);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+
+        m_board.addUnit(enemy1,QPoint(2,0));
+        m_board.addUnit(enemy2,QPoint(5,0));
+        break;
+    }
+    case 6:{
+        Unit* enemy1=new Revali("腐化-利特射手",Owner::EnemyCtrl,scale);
+        Unit* enemy2=new Evan("腐化-利特风语者",Owner::EnemyCtrl,scale);
+        Unit* enemy3=new Kashi("腐化-利特舞者",Owner::EnemyCtrl,scale);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+
+        m_board.addUnit(enemy1,QPoint(3,0));
+        m_board.addUnit(enemy2,QPoint(5,0));
+        m_board.addUnit(enemy3,QPoint(2,3));
+        break;
+    }
+    case 7:{
+        Unit* enemy1=new Revali("腐化-利特射手",Owner::EnemyCtrl,scale);
+        Unit* enemy2=new Revali("腐化-利特射手",Owner::EnemyCtrl,scale);
+        Unit* enemy3=new Evan("腐化-利特风语者",Owner::EnemyCtrl,scale);
+        Unit* enemy4=new Kashi("腐化-利特舞者",Owner::EnemyCtrl,scale);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+        m_units.push_back(enemy4);
+
+        m_board.addUnit(enemy1,QPoint(2,0));
+        m_board.addUnit(enemy2,QPoint(4,0));
+        m_board.addUnit(enemy3,QPoint(3,1));
+        m_board.addUnit(enemy4,QPoint(5,3));
+        break;
+    }
+    case 8:{
+        Unit* boss=new WindblightGanon("风咒盖侬");
+        Unit* enemy1=new Kashi("腐化-利特舞者",Owner::EnemyCtrl,scale);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(boss);
+
+        m_board.addUnit(enemy1,QPoint(3,3));
+        m_board.addUnit(boss,QPoint(3,0));
+        break;
+    }
+    case 9:{
+        Unit* enemy1=new Ur("腐化-格鲁德队长",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Naji("腐化-格鲁德咒师",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+
+        m_board.addUnit(enemy1,QPoint(3,2));
+        m_board.addUnit(enemy2,QPoint(4,0));
+        break;
+    }
+    case 10:{
+        Unit* enemy1=new Ur("腐化-格鲁德队长",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Shika("腐化-格鲁德刺客",Owner::EnemyCtrl,scale,2);
+        Unit* enemy3=new Naji("腐化-格鲁德咒师",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+
+        m_board.addUnit(enemy1,QPoint(2,2));
+        m_board.addUnit(enemy2,QPoint(3,3));
+        m_board.addUnit(enemy3,QPoint(4,0));
+        break;
+    }
+    case 11:{
+        Unit* enemy1=new Ur("腐化-格鲁德队长",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Shika("腐化-格鲁德刺客",Owner::EnemyCtrl,scale,2);
+        Unit* enemy3=new Shika("腐化-格鲁德刺客",Owner::EnemyCtrl,scale,2);
+        Unit* enemy4=new Shika("腐化-格鲁德刺客",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+        m_units.push_back(enemy4);
+
+        m_board.addUnit(enemy1,QPoint(3,2));
+        m_board.addUnit(enemy2,QPoint(1,3));
+        m_board.addUnit(enemy3,QPoint(5,3));
+        m_board.addUnit(enemy4,QPoint(4,0));
+        break;
+    }
+    case 12:{
+        Unit* boss=new ThunderblightGanon("雷咒盖侬");
+        Unit* enemy1=new Ur("腐化-格鲁德队长",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Naji("腐化-格鲁德咒师",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(boss);
+
+        m_board.addUnit(enemy1,QPoint(3,2));
+        m_board.addUnit(enemy2,QPoint(4,0));
+        m_board.addUnit(boss,QPoint(3,0));
+        break;
+    }
+    case 13:{
+        Unit* enemy1=new Daruk("腐化-鼓隆铁卫",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Goma("腐化-鼓隆狂战士",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+
+        m_board.addUnit(enemy1,QPoint(3,3));
+        m_board.addUnit(enemy2,QPoint(4,2));
+        break;
+    }
+    case 14:{
+        Unit* enemy1=new Daruk("腐化-鼓隆铁卫",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Goma("腐化-鼓隆狂战士",Owner::EnemyCtrl,scale,2);
+        Unit* enemy3=new Mag("腐化-鼓隆火焰祭司",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+
+        m_board.addUnit(enemy1,QPoint(3,3));
+        m_board.addUnit(enemy2,QPoint(2,2));
+        m_board.addUnit(enemy3,QPoint(4,0));
+        break;
+    }
+    case 15:{
+        Unit* enemy1=new Daruk("腐化-鼓隆铁卫",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Daruk("腐化-鼓隆铁卫",Owner::EnemyCtrl,scale,2);
+        Unit* enemy3=new Goma("腐化-鼓隆狂战士",Owner::EnemyCtrl,scale,2);
+        Unit* enemy4=new Mag("腐化-鼓隆火焰祭司",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(enemy3);
+        m_units.push_back(enemy4);
+
+        m_board.addUnit(enemy1,QPoint(2,3));
+        m_board.addUnit(enemy2,QPoint(4,3));
+        m_board.addUnit(enemy3,QPoint(3,2));
+        m_board.addUnit(enemy4,QPoint(3,0));
+        break;
+    }
+    case 16:{
+        Unit* boss=new FireblightGanon("火咒盖侬");
+        Unit* enemy1=new Daruk("腐化-鼓隆铁卫",Owner::EnemyCtrl,scale,2);
+        Unit* enemy2=new Mag("腐化-鼓隆火焰祭司",Owner::EnemyCtrl,scale,2);
+
+        m_units.push_back(enemy1);
+        m_units.push_back(enemy2);
+        m_units.push_back(boss);
+
+        m_board.addUnit(enemy1,QPoint(3,2));
+        m_board.addUnit(enemy2,QPoint(4,0));
+        m_board.addUnit(boss,QPoint(3,0));
+        break;
+    }
+    case 17:{
+        Unit* boss=new Ganondorf("灾厄盖侬");
+        m_units.push_back(boss);
+        m_board.addUnit(boss,QPoint(3,0));
         break;
     }
 

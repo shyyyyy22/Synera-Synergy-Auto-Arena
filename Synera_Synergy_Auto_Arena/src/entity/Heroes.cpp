@@ -107,31 +107,48 @@ void Noah::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 WaterblightGanon::WaterblightGanon(const QString &name)
     :Unit(name,1300,45,3,90,Owner::EnemyCtrl,Profession::Mage)
     ,m_hasPhase2(false)
-{}
+    ,m_skillTime(0)
+{
+    setRace(Race::Boss);
+}
 void WaterblightGanon::castSkill(Board& board,const std::vector<Unit*> allUnits)
 {
-    for(Unit* unit:allUnits){
-        if(!unit){
-            continue;
-        }
-        else {
-            if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
-                unit->takeDamage(50);
-                unit->setMoveCoolDown(qMax(unit->getMoveCoolDown(),30));
-                unit->setAtkCoolDown(qMax(unit->getAtkCoolDown(),30));
-            }
-        }
-    }
+    m_inSkill=true;
+    m_skillTime=300;
 }
 void WaterblightGanon::takeDamage(int atk)
 {
     Unit::takeDamage(atk);
-    if(!m_hasPhase2 && getHp()<getMaxHp()/2 && getState()!=State::Dead){
+    if(!m_hasPhase2 && getHp()<getMaxHp()/2 && getHp()>0){
         m_hasPhase2=true;
 
+        setAtk(getAtk()*13/10);
         setMaxMana(45);
         setMana(0);
     }
+}
+void WaterblightGanon::updateUnit(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(m_skillTime){
+        if(m_skillTime%60==0){
+            for(Unit* unit:allUnits){
+                if(!unit){
+                    continue;
+                }
+                else {
+                    if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
+                        unit->takeDamage(25);
+                    }
+                }
+            }
+        }
+
+        m_skillTime--;
+    }
+    else if(m_inSkill){
+        m_inSkill=false;
+    }
+    Unit::updateUnit(board,allUnits);
 }
 
 //风
@@ -177,7 +194,6 @@ void Revali::castSkill(Board &board, const std::vector<Unit *> allUnits)
         target->setAtkCoolDown(90);
     }
 }
-
 
 Kashi::Kashi(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
     :Unit(name,490*scale,58*scale,1,50,owner,Profession::Assassin,star,isShopHero)
@@ -226,7 +242,6 @@ void Kashi::castSkill(Board &board, const std::vector<Unit *> allUnits)
         this->setState(State::Idle);
     }
 }
-
 
 Evan::Evan(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
     :Unit(name,420*scale,42*scale,3,65,owner,Profession::Mage,star,isShopHero)
@@ -291,6 +306,43 @@ void Evan::castSkill(Board &board, const std::vector<Unit*> allUnits) {
 
             furthestEnemy->takeDamage(getAtk());
         }
+    }
+}
+
+WindblightGanon::WindblightGanon(const QString &name)
+    :Unit(name,1600,60,3,80,Owner::EnemyCtrl,Profession::Archer)
+    ,m_hasPhase2(false)
+{
+    setRace(Race::Boss);
+}
+void WindblightGanon::castSkill(Board& board,const std::vector<Unit*> allUnits){
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk()*3/2);
+        getTarget()->setState(State::Idle);
+        getTarget()->setMoveCoolDown(180);
+        getTarget()->setAtkCoolDown(180);
+    }
+    else {
+        for(Unit* unit:allUnits){
+            if(!unit){
+                continue;
+            }
+            else {
+                if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
+                    unit->takeDamage(20);
+                }
+            }
+        }
+    }
+}
+void WindblightGanon::takeDamage(int atk)
+{
+    Unit::takeDamage(atk);
+    if(!m_hasPhase2 && getHp()<getMaxHp()/2 && getHp()>0){
+        m_hasPhase2=true;
+
+        setOriAtkCoolDown(40);
+        setRange(4);
     }
 }
 
@@ -379,6 +431,46 @@ void Shika::castSkill(Board &board, const std::vector<Unit *> allUnits)
         }
         target->takeDamage(9*getAtk()/5);
         this->setState(State::Idle);
+    }
+}
+
+ThunderblightGanon::ThunderblightGanon(const QString &name)
+    :Unit(name,2000,75,2,80,Owner::EnemyCtrl,Profession::Warrior)
+    ,m_hasPhase2(false)
+{
+    setRace(Race::Boss);
+}
+void ThunderblightGanon::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk()*3/2);
+        getTarget()->setState(State::Idle);
+        getTarget()->setMoveCoolDown(180);
+        getTarget()->setAtkCoolDown(180);
+        getTarget()->setMana(qMax(0,getTarget()->getMana()-30));
+    }
+    else {
+        for(Unit* unit:allUnits){
+            if(!unit){
+                continue;
+            }
+            else {
+                if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
+                    unit->takeDamage(30);
+                    unit->setMana(qMax(0,unit->getMana()-15));
+                }
+            }
+        }
+    }
+}
+void ThunderblightGanon::takeDamage(int atk)
+{
+    Unit::takeDamage(atk);
+    if(!m_hasPhase2 && getHp()<getMaxHp()/2 && getHp()>0){
+        m_hasPhase2=true;
+
+        setOriAtkCoolDown(40);
+        setAtk(getAtk()*13/10);
     }
 }
 
@@ -472,7 +564,49 @@ void Mag::updateUnit(Board &board, const std::vector<Unit *> allUnits)
     }
     Unit::updateUnit(board,allUnits);
 }
+FireblightGanon::FireblightGanon(const QString &name)
+    :Unit(name,2500,90,1,90,Owner::EnemyCtrl,Profession::Guardian)
+    ,m_hasPhase2(false)
+{
+    setRace(Race::Boss);
+}
+void FireblightGanon::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(getTarget()){
+        getTarget()->takeDamage(getAtk()*3/2);
+        std::vector<QPoint> neighbor=board.getNeighborGrid(getTarget()->getPos());
+        for(QPoint pos:neighbor){
+            Unit* unit=board.getUnitAt(pos);
+            if(!unit || unit->getOwner()==Owner::EnemyCtrl)continue;
+            unit->takeDamage(40);
+        }
+    }
+    else {
+        for(Unit* unit:allUnits){
+            if(!unit){
+                continue;
+            }
+            else {
+                if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
+                    unit->takeDamage(50);
+                    unit->setMoveCoolDown(unit->getMoveCoolDown()+30);
+                    unit->setAtkCoolDown(unit->getAtkCoolDown()+30);
+                }
+            }
+        }
+    }
+}
+void FireblightGanon::takeDamage(int atk)
+{
+    Unit::takeDamage(atk);
+    if(!m_hasPhase2 && getHp()<getMaxHp()/2 && getHp()>0){
+        m_hasPhase2=true;
+        setAtk(getAtk()*6/5);
+        setHp(qMin(getMaxHp(),getHp()+300));
+    }
+}
 
+//海拉鲁
 Leo::Leo(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
     :Unit(name,720*scale,35*scale,1,60,owner,Profession::Guardian,star,isShopHero)
 {
@@ -546,4 +680,86 @@ void Syndra::castSkill(Board &board, const std::vector<Unit *> allUnits)
     if(getTarget()){
         getTarget()->takeDamage(getAtk()*3);
     }
+}
+
+Ganondorf::Ganondorf(const QString &name)
+    :Unit(name,4000,100,3,120,Owner::EnemyCtrl,Profession::Guardian)
+    ,m_hasPhase2(false)
+    ,m_hasPhase3(false)
+    ,m_skillTime(0)
+{
+    setRace(Race::Boss);
+}
+void Ganondorf::castSkill(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(!m_hasPhase3){
+        if(getTarget() && getTarget()->getHp()>0){
+            getTarget()->takeDamage(getAtk()*5/2);
+        }
+        else {
+            for(Unit* unit:allUnits){
+                if(!unit){
+                    continue;
+                }
+                else {
+                    if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
+                        unit->takeDamage(60);
+                    }
+                }
+            }
+        }
+    }
+    else {
+        for(Unit* unit:allUnits){
+            if(!unit){
+                continue;
+            }
+            else {
+                if(unit->getOwner()==Owner::PlayerCtrl && unit->getState()!=State::Dead && unit->getPos().y()<Board::ROWS){
+                    unit->takeDamage(100);
+                }
+            }
+        }
+    }
+
+}
+void Ganondorf::takeDamage(int atk)
+{
+    if(!m_hasPhase3){
+        Unit::takeDamage(atk);
+    }
+    else {
+        Unit::takeDamage(atk/2);
+    }
+    if(!m_hasPhase2 && getHp()<getMaxHp()*7/10 && getHp()>0){
+        m_hasPhase2=true;
+        setAtk(getAtk()*13/10);
+        setOriAtkCoolDown(40);
+    }
+    if(!m_hasPhase3 && getHp()<getMaxHp()*3/10 && getHp()>0){
+        m_hasPhase3=true;
+        setAtk(0);
+        m_skillTime=300;
+    }
+}
+void Ganondorf::setMoveCoolDown(int newCoolDown)
+{
+    if(m_hasPhase2)return;
+    Unit::setMoveCoolDown(newCoolDown);
+}
+void Ganondorf::setAtkCoolDown(int newCoolDown)
+{
+    if(m_hasPhase2)return;
+    Unit::setAtkCoolDown(newCoolDown);
+}
+void Ganondorf::updateUnit(Board &board, const std::vector<Unit *> allUnits)
+{
+    if(m_hasPhase3 && m_skillTime==0){
+        setHp(qMin(getHp()+400,getMaxHp()));
+        m_skillTime=300;
+    }
+    if(m_hasPhase3 && m_skillTime>0){
+        m_skillTime--;
+    }
+    Unit::updateUnit(board,allUnits);
 }
