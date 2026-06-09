@@ -37,6 +37,8 @@ private:
     QLabel *m_raceLabel;
     QLabel *m_proLabel;
 
+    QLabel *m_skillLabel;
+
     QPushButton* m_buyAndSellBtn;
 };
 

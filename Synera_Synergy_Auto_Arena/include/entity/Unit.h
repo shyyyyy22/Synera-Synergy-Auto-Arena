@@ -42,6 +42,7 @@ public:
     QString getRaceName()const;
     QString getProName()const;
     Equipment getEquipment()const;
+    virtual QString getSkillDes()const=0;
 
     void setHp(int newHp);
     void setAtk(int newAtk);
@@ -119,6 +120,8 @@ private:
     int m_atkCount;
 
     Equipment m_equipment;
+
+    QString m_skillDes;
 };
 
 #endif // UNIT_H

@@ -595,7 +595,7 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
     bool guardianSyn=guardianCount>=3?true:false;
 
     for(Unit* unit:m_units){
-        if(!unit || unit->getState()==State::Dead || unit->getPos().y()==Board::ROWS || unit->getOwner()!=owner){
+        if(!unit || unit->getState()==State::Dead || unit->getPos().y()==Board::ROWS || unit->getOwner()!=owner || unit->getRace()==Race::Boss){
             continue;
         }
         unit->restoreOriAtt();

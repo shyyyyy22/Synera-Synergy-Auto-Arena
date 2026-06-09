@@ -13,6 +13,7 @@ InfoPanel::InfoPanel(QWidget *parent):QWidget(parent)
     m_starLabel=new QLabel("",this);
     m_raceLabel=new QLabel("",this);
     m_proLabel=new QLabel("",this);
+    m_skillLabel=new QLabel("",this);
     m_buyAndSellBtn=new QPushButton("",this);
     m_unit=nullptr;
     m_isGameCombat=false;
@@ -25,6 +26,8 @@ InfoPanel::InfoPanel(QWidget *parent):QWidget(parent)
     layout->addWidget(m_manaLabel);
     layout->addWidget(m_rangeLabel);
     layout->addWidget(m_starLabel);
+    layout->addSpacing(30);
+    layout->addWidget(m_skillLabel);
     layout->addSpacing(30);
     layout->addWidget(m_buyAndSellBtn);
     layout->addStretch();
@@ -70,6 +73,8 @@ void InfoPanel::updateUnitInfo(Unit *unit)
     m_manaLabel->setText(QString("法力值：%1/%2").arg(unit->getMana()).arg(unit->getMaxMana()));
     m_rangeLabel->setText(QString("攻击范围：%1").arg(unit->getRange()));
     m_starLabel->setText(QString("星级：%1").arg(unit->getStar()));
+    m_skillLabel->setText(unit->getSkillDes());
+    m_skillLabel->setWordWrap(true);
     int star=unit->getStar();
     QString append=unit->getEquipment()==Equipment::None?"":"\n(若装备栏已满)\n装备(2金)";
     m_buyAndSellBtn->setText(unit->getIsShopHero()?"购买(3金)":QString("出售(%1金)"+append).arg(2*star*star-3*star+3));

@@ -186,11 +186,9 @@ void Unit::setHp(int newHp){
 }
 void Unit::setAtk(int newAtk){
     m_atk=newAtk;
-    m_oriAtk=newAtk;
 }
 void Unit::setRange(int newRange){
     m_range=newRange;
-    m_oriRange=newRange;
 }
 void Unit::setMana(int newMana){
     m_mana=newMana;
@@ -227,13 +225,11 @@ void Unit::setOriAtkCoolDown(int newCooldown)
 void Unit::setMaxMana(int newMaxMana)
 {
     m_maxMana=newMaxMana;
-    m_oriMaxMana=newMaxMana;
 }
 
 void Unit::setMaxHp(int newMaxHp)
 {
     m_maxHp=newMaxHp;
-    m_oriMaxHp=newMaxHp;
 }
 
 void Unit::setIsShop(bool isShop)
