@@ -36,6 +36,7 @@ public:
     GamePhase getPhase()const;
     EquipmentItem* getEquipmentItem(int index)const;
     bool getEquipmentSlotFull();
+    QString getSynergyDes(Race race,Profession pro);
 
 
     //游戏逻辑
@@ -135,7 +136,7 @@ signals:
     void unitSelected(Unit* unit);
     void unitInfoChanged(Unit* unit);
     void roundFinishend(bool win,int gold,int hp);
-    void gameOver();
+    void gameOver(bool win);
     void boardUpdate(int count);
     void gameIsCombat(bool isCombat);
     void unitSelled(Unit* unit);

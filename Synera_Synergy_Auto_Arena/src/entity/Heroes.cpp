@@ -116,7 +116,7 @@ QString Noah::getSkillDes() const
 
 
 WaterblightGanon::WaterblightGanon(const QString &name)
-    :Unit(name,1300,45,3,90,Owner::EnemyCtrl,Profession::Mage)
+    :Unit(name,1300,45,3,90,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
     ,m_skillTime(0)
 {
@@ -342,7 +342,7 @@ QString Evan::getSkillDes() const
 }
 
 WindblightGanon::WindblightGanon(const QString &name)
-    :Unit(name,1600,60,3,80,Owner::EnemyCtrl,Profession::Archer)
+    :Unit(name,1600,60,3,80,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
 {
     setRace(Race::Boss);
@@ -486,7 +486,7 @@ QString Shika::getSkillDes() const
 }
 
 ThunderblightGanon::ThunderblightGanon(const QString &name)
-    :Unit(name,2000,75,2,80,Owner::EnemyCtrl,Profession::Warrior)
+    :Unit(name,2000,75,2,80,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
 {
     setRace(Race::Boss);
@@ -639,7 +639,7 @@ QString Mag::getSkillDes() const
 }
 
 FireblightGanon::FireblightGanon(const QString &name)
-    :Unit(name,2500,90,1,90,Owner::EnemyCtrl,Profession::Guardian)
+    :Unit(name,2500,90,1,90,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
 {
     setRace(Race::Boss);
@@ -777,7 +777,7 @@ QString Syndra::getSkillDes() const
 }
 
 Ganondorf::Ganondorf(const QString &name)
-    :Unit(name,4000,100,3,120,Owner::EnemyCtrl,Profession::Guardian)
+    :Unit(name,4000,100,3,120,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
     ,m_hasPhase3(false)
     ,m_skillTime(0)

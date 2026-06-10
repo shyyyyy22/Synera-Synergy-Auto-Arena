@@ -213,6 +213,47 @@ bool Game::getEquipmentSlotFull()
     return count==4;
 }
 
+QString Game::getSynergyDes(Race race, Profession pro)
+{
+    switch(race){
+    case Race::Hyrulean:
+        return "全体生命+150/300";
+        break;
+    case Race::Zora:
+        return "战斗前全体获得20/40法力";
+        break;
+    case Race::Goron:
+        return "全体最大生命值+10%/20%";
+        break;
+    case Race::Gerudo:
+        return "全体攻击力+10/20";
+        break;
+    case Race::Rito:
+        return "全体攻击冷却减少10%/20%";
+        break;
+    default:
+        switch(pro){
+        case Profession::Warrior:
+            return "全体攻击力+5/战士生命值低于50%时，造成的伤害提高 30%";
+            break;
+        case Profession::Archer:
+            return "全体攻击距离+1/射手每攻击3次，下一次攻击造成150%伤害";
+            break;
+        case Profession::Mage:
+            return "全体最大法力值减少20（至少保留20）/法师每次施放技能后，使目标眩晕0.5秒";
+            break;
+        case Profession::Assassin:
+            return "全体攻击速度+15%/刺客的首次攻击必定造成200%伤害";
+            break;
+        case Profession::Guardian:
+            return "全体生命+100/守卫在战斗开始时获得一次伤害免疫";
+            break;
+        default:
+            return "";
+        }
+    }
+}
+
 //画棋盘
 void Game::buildScene(){
     m_scene->clear();
@@ -569,7 +610,7 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
     int goron=goronCount<2?10:(goronCount>=4?12:11);
 
     int ritoCount=raceCount[Race::Rito];
-    int rito=ritoCount<2?60:(ritoCount>=4?50:54);
+    int rito=ritoCount<2?60:(ritoCount>=4?48:54);
 
     int zoraCount=raceCount[Race::Zora];
     int zora=zoraCount<2?0:(zoraCount>=4?40:20);
@@ -643,6 +684,8 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
             unit->setMaxHp(unit->getMaxHp()+guardian);
             unit->setHp(unit->getMaxHp());
             unit->m_guardianSyn=guardianSyn;
+            break;
+        default:
             break;
         }
     }
@@ -1176,8 +1219,8 @@ void Game::handleStageResolve(bool win)
         m_player->changeGold(2);
         m_player->addXp(1);
     }
-    if(m_player->getHp()<=0){
-        emit gameOver();
+    if(m_player->getHp()<=0 || m_player->getMajorStage()==5){
+        emit gameOver(win);
     }
     else{
         generateRandomEquip();
@@ -1384,7 +1427,8 @@ void Game::calculateSynergies()
             QString name=getRaceName(racePair.first);
             int target=racePair.second>=2?4:2;
             QString text=racePair.second>=2?QString("(已激活第%1级)").arg(racePair.second>=4?2:1):"";
-            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(racePair.second).arg(target).arg(text));
+            QString append=getSynergyDes(racePair.first,Profession::None);
+            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4\n%5").arg(name).arg(racePair.second).arg(target).arg(text).arg(append));
         }
     }
     for(const auto& ProPair:m_professionCount){
@@ -1392,7 +1436,8 @@ void Game::calculateSynergies()
             QString name=getProName(ProPair.first);
             int target=ProPair.second>=2?3:2;
             QString text=ProPair.second>=2?QString("(已激活第%1级)").arg(ProPair.second>=3?2:1):"";
-            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4").arg(name).arg(ProPair.second).arg(target).arg(text));
+            QString append=getSynergyDes(Race::Boss,ProPair.first);
+            m_activateSynergyList.push_back(QString("%1 : %2/%3 %4\n%5").arg(name).arg(ProPair.second).arg(target).arg(text).arg(append));
         }
     }
     applySynergyBuffs(m_raceCount,m_professionCount,Owner::PlayerCtrl);

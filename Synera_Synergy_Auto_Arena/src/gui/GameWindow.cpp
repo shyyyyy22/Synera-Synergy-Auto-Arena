@@ -287,6 +287,17 @@ void GameWindow::setUI(){
         m_settlementPanel->show();
         m_settlementPanel->raise();
     });
+    connect(m_game,&Game::gameOver,this,[this](bool win){
+        m_settlementPanel->onGameOver(win);
+        if (m_centralWidget && m_settlementPanel) {
+            int x = (m_centralWidget->width() - m_settlementPanel->width()) / 2;
+            int y = (m_centralWidget->height() - m_settlementPanel->height()) / 2;
+
+            m_settlementPanel->move(x, y);
+        }
+        m_settlementPanel->show();
+        m_settlementPanel->raise();
+    });
     connect(m_game,&Game::gameOver,m_settlementPanel,&SettlementPanel::onGameOver);
     connect(m_game,&Game::boardUpdate,this,[this](int count){
         m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(m_game->getPlayerUnitInBoard()).arg(m_game->getPlayer()->getMaxUnit()));
@@ -445,6 +456,7 @@ void GameWindow::updateSynergyUI()
 
     for (const QString& text : list) {
         QLabel* label = new QLabel(text, m_synergySidebar);
+        label->setWordWrap(true);
 
         if (text.contains("已激活")) {
             label->setStyleSheet("background-color: rgba(212, 175, 55, 30); border: 1px solid #D4AF37; color: #D4AF37; padding: 5px; border-radius: 4px; font-weight: bold;");

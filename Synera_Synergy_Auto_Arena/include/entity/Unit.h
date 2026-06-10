@@ -8,7 +8,7 @@ class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
 enum class Race{Hyrulean,Zora,Rito,Gerudo,Goron,Boss};
-enum class Profession{Warrior,Archer,Mage,Guardian,Assassin};
+enum class Profession{Warrior,Archer,Mage,Guardian,Assassin,None};
 enum class State{Idle,Moving,Attacking,Casting,Dead};
 
 class Unit:public QObject

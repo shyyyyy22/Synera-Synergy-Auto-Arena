@@ -14,7 +14,7 @@ public:
 
 public slots:
     void updateInfo(bool win,int gold,int hp);
-    void onGameOver();
+    void onGameOver(bool win);
 signals:
     void nxtRoundClicked();
 
@@ -22,6 +22,7 @@ private:
     QLabel* m_titleLabel;
     QLabel* m_detailLabel;
     QPushButton* m_nxtRountBtn;
+    QPushButton* m_exitBtn;
 };
 
 #endif // SETTLEMENTPANEL_H
