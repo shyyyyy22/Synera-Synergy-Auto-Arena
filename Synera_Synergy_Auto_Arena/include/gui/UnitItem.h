@@ -23,6 +23,7 @@ public:
 
 public slots:
     void unitInfoChanged(Unit* unit);
+    void onDamaged(int dmg);
 signals:
     void clicked(Unit* unit);
     void dragStarted(int unitId,const QPoint &gridPos,const QPointF &worldPos);
@@ -44,6 +45,17 @@ private:
     QColor m_color;
     bool m_dragging;
     bool m_isSelected;
+
+    struct FloatingText {
+        QString text;
+        QColor color;
+        qreal xOffset;
+        qreal yOffset;
+        int alpha;
+    };
+    std::vector<FloatingText> m_floatingTexts;
+
+    qreal m_auraPulse = 0.0;
 };
 
 #endif // UNITITEM_H

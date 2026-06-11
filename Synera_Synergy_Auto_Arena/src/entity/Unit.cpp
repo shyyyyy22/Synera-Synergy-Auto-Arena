@@ -309,8 +309,9 @@ void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
             m_state=State::Dead;
             return;
         }
-        if(m_mana==m_maxMana && m_state!=State::Dead){
+        if(m_mana==m_maxMana && m_state!=State::Dead && m_state!=State::Casting){
             m_state=State::Casting;
+            m_atkCoolDown=30;
         }
         switch(m_state){
             case State::Idle:
@@ -324,6 +325,8 @@ void Unit::updateUnit(Board &board, const std::vector<Unit *> allUnits)
                 break;
             case State::Casting:
                 handleCasting(board,allUnits);
+                break;
+            default:
                 break;
         }
     }
@@ -447,6 +450,10 @@ void Unit::handleAttking()
 
 void Unit::handleCasting(Board& board,const std::vector<Unit*> allUnits)
 {
+    if(m_atkCoolDown>0){
+        m_atkCoolDown--;
+        return;
+    }
     castSkill(board,allUnits);
     if(m_mageSyn && m_target && m_target->getState()!=State::Dead){
         m_target->setAtkCoolDown(30);
@@ -454,6 +461,7 @@ void Unit::handleCasting(Board& board,const std::vector<Unit*> allUnits)
     }
     m_mana=0;
     m_state=State::Idle;
+    m_atkCoolDown=m_oriAtkCoolDown;
 }
 
 std::vector<QPoint> Unit::breadFirstSearch(Board &board)
@@ -501,6 +509,7 @@ void Unit::takeDamage(int atk)
     }
     else {
         m_hp=qMax(m_hp-atk,0);
+        emit damaged(atk);
     }
 
     emit infoChanged(this);

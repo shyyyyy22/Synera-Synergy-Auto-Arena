@@ -56,21 +56,29 @@ void EquipmentItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         painter->setBrush(QColor(110, 80, 50));
         painter->drawRect(-6, 8, 12, 3);
         painter->drawRect(-1, 11, 2, 4);
+        painter->setPen(Qt::white);
+        painter->drawText(QRectF(36,-18,60,30), Qt::AlignCenter, "攻击力+15");
     }
     else if (m_type == Equipment::Mail) {
         QPolygonF armor;
         armor << QPointF(-10, -10) << QPointF(10, -10) << QPointF(12, 2)
               << QPointF(0, 14) << QPointF(-12, 2);
         painter->drawPolygon(armor);
+        painter->setPen(Qt::white);
+        painter->drawText(QRectF(36,-18,70,30), Qt::AlignCenter, "生命值+150");
     }
     else if (m_type == Equipment::Gloves) {
         painter->drawEllipse(-10, -8, 20, 18);
         painter->drawRect(-7, 4, 14, 6);
+        painter->setPen(Qt::white);
+        painter->drawText(QRectF(36,-18,100,30), Qt::AlignCenter, "攻击速度提升20%");
     }
     else if (m_type == Equipment::Crystal) {
         QPolygonF gem;
         gem << QPointF(0, -14) << QPointF(10, 0) << QPointF(0, 14) << QPointF(-10, 0);
         painter->drawPolygon(gem);
+        painter->setPen(Qt::white);
+        painter->drawText(QRectF(36,-18,80,30), Qt::AlignCenter, "最大法力值-30");
     }
 
     painter->setPen(Qt::white);

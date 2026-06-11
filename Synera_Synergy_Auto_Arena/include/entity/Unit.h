@@ -84,6 +84,7 @@ public:
 signals:
     void isDead(Unit* unit);
     void infoChanged(Unit* unit);
+    void damaged(int dmg);
 
 private:
 

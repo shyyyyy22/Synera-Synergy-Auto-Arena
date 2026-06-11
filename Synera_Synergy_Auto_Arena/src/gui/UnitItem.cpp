@@ -2,6 +2,7 @@
 #include <QPainter>
 #include"Unit.h"
 #include<QGraphicsSceneMouseEvent>
+#include<QRandomGenerator>
 UnitItem::UnitItem(Unit* unit, bool isBoard,QGraphicsItem* parent)
     :QGraphicsObject(parent)
     ,m_unit(unit)
@@ -33,6 +34,20 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
     painter->setPen(QPen(QColor(18, 18, 18), 1.5));
     painter->setBrush(m_color);
     painter->drawPolygon(badge);
+
+    //技能释放
+    if (m_unit && m_unit->getState() == State::Casting) {
+        m_auraPulse += 0.15;
+
+        qreal waveRadius = 42.0 + 6.0 * qSin(m_auraPulse);
+
+        painter->setPen(QPen(QColor(212, 175, 55, 120), 2, Qt::DashLine));
+        painter->setBrush(Qt::NoBrush);
+        painter->drawEllipse(QPointF(0, 0), waveRadius, waveRadius);
+
+        painter->setPen(QPen(QColor(212, 175, 55, 200), 1.5));
+        painter->drawEllipse(QPointF(0, 0), 44, 44);
+    }
 
     if (m_unit) {
         painter->setPen(Qt::white);
@@ -69,6 +84,29 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         int startY = 22;
         QPointF miniIconPos(startX, startY);
         drawMiniItem(painter, miniIconPos, items);
+
+        //受击
+        if (!m_floatingTexts.empty()) {
+            QFont font = painter->font();
+            font.setPointSize(10);
+            font.setBold(true);
+            painter->setFont(font);
+
+            for (auto it = m_floatingTexts.begin(); it != m_floatingTexts.end(); ) {
+                painter->setPen(QColor(it->color.red(), it->color.green(), it->color.blue(), it->alpha));
+
+                painter->drawText(QRectF(-40+it->xOffset, it->yOffset, 80, 20), Qt::AlignCenter, it->text);
+
+                it->yOffset -= 1.0;
+                it->alpha -= 6;
+
+                if (it->alpha <= 0) {
+                    it = m_floatingTexts.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        }
     }
 }
 
@@ -105,6 +143,19 @@ void UnitItem::unitInfoChanged(Unit *unit)
     }
 }
 
+void UnitItem::onDamaged(int dmg)
+{
+    if (dmg <= 0) return;
+    qreal randomX = QRandomGenerator::global()->bounded(-15, 15);
+    FloatingText ft;
+    ft.text = QString("-%1").arg(dmg);
+    ft.color = QColor(220, 40, 40);
+    ft.xOffset=randomX;
+    ft.yOffset = -30;
+    ft.alpha = 255;
+    m_floatingTexts.push_back(ft);
+    update();
+}
 
 //拖拽
 void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

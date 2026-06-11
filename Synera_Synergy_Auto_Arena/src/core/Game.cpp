@@ -322,6 +322,7 @@ void Game::buildScene(){
         connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
         connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
         connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+        connect(unit, &Unit::damaged, item, &UnitItem::onDamaged);
     }
 
     //装备栏
@@ -994,6 +995,7 @@ void Game::generateEnemy()
                 connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
                 connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
                 connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+                connect(unit, &Unit::damaged, item, &UnitItem::onDamaged);
             }
         }
     }
@@ -1294,6 +1296,7 @@ bool Game::buyHero(int gold,QString name)
         connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
         connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
         connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+        connect(unit, &Unit::damaged, item, &UnitItem::onDamaged);
 
         if(m_phase==GamePhase::Prep){
             upUnitStar(name,1);
@@ -1552,6 +1555,7 @@ void Game::upUnitStar(QString name, int star)
         connect(unit,&Unit::infoChanged,item,&UnitItem::unitInfoChanged);
         connect(item,&UnitItem::unitInfoReflash,this,&Game::unitInfoChanged);
         connect(unit,&Unit::isDead,this,&Game::onUnitDead);
+        connect(unit, &Unit::damaged, item, &UnitItem::onDamaged);
     }
 
     syncFromBoardAndBench();
