@@ -10,7 +10,7 @@ class GridItem : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    GridItem(int row, int col, qreal radius, GridShape shape, QGraphicsItem* parent = nullptr);
+    GridItem(int row, int col, qreal radius, GridShape shape,int stage, QGraphicsItem* parent = nullptr);
     ~GridItem()=default;
 
     //基础功能
@@ -39,6 +39,8 @@ private:
     bool m_hoverActive;
     bool m_pointerHover;
     bool m_rangeActive;
+
+    QPixmap m_tileTexture;
 };
 
 #endif // GRIDITEM_H

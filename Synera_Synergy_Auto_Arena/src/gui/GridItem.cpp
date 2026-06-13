@@ -2,7 +2,7 @@
 #include <QPainter>
 #include <QtMath>
 
-GridItem::GridItem(int row, int col, qreal radius, GridShape shape, QGraphicsItem* parent)
+GridItem::GridItem(int row, int col, qreal radius, GridShape shape,int stage, QGraphicsItem* parent)
     :QGraphicsObject(parent)
     ,m_rows(row)
     ,m_cols(col)
@@ -33,7 +33,7 @@ QRectF GridItem::boundingRect() const {
         return QRectF(-side/2.0, -side/2.0, side, side);
     }
 };
-void GridItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*){    
+void GridItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*){
     if(m_shape==GridShape::Hexagon){
         QColor fill = m_baseColor;
         QColor border = QColor(40, 40, 40);

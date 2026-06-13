@@ -32,6 +32,10 @@ QString Sidon::getSkillDes() const
 {
     return QString("技能：【守卫之誓】\n自身获得一个 50% 的伤害减免 Buff，持续 3 秒。");
 }
+QString Sidon::getClassName() const
+{
+    return QString("Sidon");
+}
 
 
 Luna::Luna(const QString& name,Owner owner,qreal scale,int star,bool isShopHero)
@@ -71,6 +75,10 @@ void Luna::castSkill(Board& board,const std::vector<Unit*> allUnits)
 QString Luna::getSkillDes() const
 {
     return QString("技能：【卓拉的祈福】\n治愈之歌，为生命值百分比最低的 2 个队友回复 25%最大生命值。。");
+}
+QString Luna::getClassName() const
+{
+    return QString("Luna");
 }
 
 Noah::Noah(const QString& name,Owner owner,qreal scale,int star,bool isShopHero)
@@ -113,10 +121,13 @@ QString Noah::getSkillDes() const
 {
     return QString("技能：【潮汐重击】\n重击目标造成 ATK * 1.5 伤害，并在 3 秒内使其攻击力降低 20%。");
 }
-
+QString Noah::getClassName() const
+{
+    return QString("Noah");
+}
 
 WaterblightGanon::WaterblightGanon(const QString &name)
-    :Unit(name,1300,45,3,90,Owner::EnemyCtrl,Profession::None)
+    :Unit(name,1500,45,3,90,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
     ,m_skillTime(0)
 {
@@ -168,6 +179,10 @@ QString WaterblightGanon::getSkillDes() const
                    "半血被动【狂暴激流】：\n"
                    "当血量跌破 50%时，它进入狂暴状态:最大蓝量永久减半，攻击力永久提升 30%");
 }
+QString WaterblightGanon::getClassName() const
+{
+    return QString("WaterblightGanon");
+}
 
 //风
 Revali::Revali(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -217,6 +232,10 @@ QString Revali::getSkillDes() const
     return QString("技能：【狙击】\n"
                    "对当前攻击范围内最远的敌人射出一支强力箭矢，造成 200% 攻击力 的物理伤害，并眩晕1.5 秒。\n"
                    "如果该敌人距离 ≥ 3 格，则伤害提升至 250%。");
+}
+QString Revali::getClassName() const
+{
+    return QString("Revali");
 }
 
 Kashi::Kashi(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -269,6 +288,10 @@ void Kashi::castSkill(Board &board, const std::vector<Unit *> allUnits)
 QString Kashi::getSkillDes() const
 {
     return QString("技能：【风之探戈】\n瞬移到最远敌人身后，造成 ATK * 2.2物理爆发伤害。");
+}
+QString Kashi::getClassName() const
+{
+    return QString("Kashi");
 }
 
 Evan::Evan(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -340,9 +363,13 @@ QString Evan::getSkillDes() const
 {
     return QString("技能：【风之牵引】\n将敌方最远的敌人牵引至我方战士相邻的格子内，并使其眩晕1秒");
 }
+QString Evan::getClassName() const
+{
+    return QString("Evan");
+}
 
 WindblightGanon::WindblightGanon(const QString &name)
-    :Unit(name,1600,60,3,80,Owner::EnemyCtrl,Profession::None)
+    :Unit(name,1800,60,3,80,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
 {
     setRace(Race::Boss);
@@ -384,6 +411,10 @@ QString WindblightGanon::getSkillDes() const
                    "半血被动【飞空高度】：\n"
                    "当血量跌破 50%时，它永久提升自己的攻速并且射程 +1");
 }
+QString WindblightGanon::getClassName() const
+{
+    return QString("WindblightGanon");
+}
 
 //雷
 Ur::Ur(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -403,6 +434,10 @@ void Ur::castSkill(Board &board, const std::vector<Unit *> allUnits)
 QString Ur::getSkillDes() const
 {
     return QString("技能：【双重打击】\n连续攻击 2 次（各 100% 伤害），并让目标麻痹 1 秒。");
+}
+QString Ur::getClassName() const
+{
+    return QString("Ur");
 }
 
 Naji::Naji(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -442,6 +477,10 @@ void Naji::updateUnit(Board &board, const std::vector<Unit *> allUnits)
 QString Naji::getSkillDes() const
 {
     return QString("技能：【黄沙遮天】\n召唤沙尘暴使当前目标致盲 4 秒，致盲期间其普攻伤害变为 0。");
+}
+QString Naji::getClassName() const
+{
+    return QString("Naji");
 }
 
 Shika::Shika(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -484,9 +523,13 @@ QString Shika::getSkillDes() const
 {
     return QString("技能：【暗影突袭】\n瞬移到血量最低敌人身后，造成 ATK * 1.8伤害。");
 }
+QString Shika::getClassName() const
+{
+    return QString("Shika");
+}
 
 ThunderblightGanon::ThunderblightGanon(const QString &name)
-    :Unit(name,2000,75,2,80,Owner::EnemyCtrl,Profession::None)
+    :Unit(name,2200,75,2,80,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
 {
     setRace(Race::Boss);
@@ -533,6 +576,10 @@ QString ThunderblightGanon::getSkillDes() const
                    "基础攻击力永久提升 30%\n"
                    "基础普攻冷却降低。");
 }
+QString ThunderblightGanon::getClassName() const
+{
+    return QString("ThunderblightGanon");
+}
 
 //火
 Daruk::Daruk(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -574,6 +621,10 @@ QString Daruk::getSkillDes() const
 {
     return QString("技能：【达鲁克的守护】\n强制嘲讽周围一圈敌人攻击自己，同时自身4秒内每秒恢复30血量。");
 }
+QString Daruk::getClassName() const
+{
+    return QString("Daruk");
+}
 
 Goma::Goma(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
     :Unit(name,650*scale,62*scale,1,60,owner,Profession::Warrior,star,isShopHero)
@@ -591,6 +642,10 @@ void Goma::castSkill(Board &board, const std::vector<Unit *> allUnits)
 QString Goma::getSkillDes() const
 {
     return QString("技能：【碎岩猛击】\n大锤猛砸造成2倍伤害，并让目标眩晕 1 秒。");
+}
+QString Goma::getClassName() const
+{
+    return QString("Goma");
 }
 
 Mag::Mag(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
@@ -637,9 +692,13 @@ QString Mag::getSkillDes() const
     return QString("技能【地热熔岩】:\n轰击目标所在的格子，对其造成1.5倍伤害。\n"
                    "同时使其相邻格子内的敌方单位每秒收到20点灼烧伤害，持续4秒。");
 }
+QString Mag::getClassName() const
+{
+    return QString("Mag");
+}
 
 FireblightGanon::FireblightGanon(const QString &name)
-    :Unit(name,2500,90,1,90,Owner::EnemyCtrl,Profession::None)
+    :Unit(name,2700,90,1,90,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
 {
     setRace(Race::Boss);
@@ -686,6 +745,10 @@ QString FireblightGanon::getSkillDes() const
                    "同时对目标周围一圈邻居格子的所有玩家英雄造成 40 点固定真实伤害。\n"
                    "半血被动【烈焰斗篷】：\n"
                    "立刻回复自己 300 滴血！并且攻击力提升 20%\n");
+}
+QString FireblightGanon::getClassName() const
+{
+    return QString("FireblightGanon");
 }
 
 //海拉鲁
@@ -735,6 +798,10 @@ QString Leo::getSkillDes() const
 {
     return QString("技能【皇家庇护】:\n传送到血量百分比最少的我方单位身边，并为其回复250血量。");
 }
+QString Leo::getClassName() const
+{
+    return QString("Leo");
+}
 
 Alan::Alan(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
     :Unit(name,600*scale,55*scale,1,60,owner,Profession::Warrior,star,isShopHero)
@@ -759,6 +826,10 @@ QString Alan::getSkillDes() const
 {
     return QString("技能【横扫千军】:\n对周围格子内敌人群攻造成1.5倍伤害并使其眩晕0.5秒。");
 }
+QString Alan::getClassName() const
+{
+    return QString("Alan");
+}
 
 Syndra::Syndra(const QString &name, Owner owner, qreal scale, int star, bool isShopHero)
     :Unit(name,450*scale,45*scale,3,70,owner,Profession::Mage,star,isShopHero)
@@ -775,9 +846,13 @@ QString Syndra::getSkillDes() const
 {
     return QString("技能【能量倾泻】:\n对目标造成2.5倍的单体魔法爆发伤害。");
 }
+QString Syndra::getClassName() const
+{
+    return QString("Syndra");
+}
 
 Ganondorf::Ganondorf(const QString &name)
-    :Unit(name,4000,100,3,120,Owner::EnemyCtrl,Profession::None)
+    :Unit(name,5000,100,3,120,Owner::EnemyCtrl,Profession::None)
     ,m_hasPhase2(false)
     ,m_hasPhase3(false)
     ,m_skillTime(0)
@@ -869,4 +944,8 @@ QString Ganondorf::getSkillDes() const
                    "被动效果 A：【灾厄壁垒】永久获得 50% 的伤害减免。\n"
                    "被动效果 B：【深渊自愈】他不再进行普通攻击。每隔 5 秒，他会自动疯狂回复自己最大生命值的 10%。\n"
                    "大招【大灾厄】：对全场玩家单位造成 100 点 的毁灭性真实伤害。");
+}
+QString Ganondorf::getClassName() const
+{
+    return QString("Ganondorf");
 }

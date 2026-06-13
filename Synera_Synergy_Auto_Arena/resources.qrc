@@ -1,0 +1,24 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>assets/units/Sidon.png</file>
+    <file>assets/units/Luna.png</file>
+    <file>assets/units/Noah.png</file>
+    <file>assets/units/WaterblightGanon.png</file>
+    <file>assets/units/Revali.png</file>
+    <file>assets/units/Kashi.png</file>
+    <file>assets/units/Evan.png</file>
+    <file>assets/units/WindblightGanon.png</file>
+    <file>assets/units/Ur.png</file>
+    <file>assets/units/Naji.png</file>
+    <file>assets/units/Shika.png</file>
+    <file>assets/units/ThunderblightGanon.png</file>
+    <file>assets/units/Daruk.png</file>
+    <file>assets/units/Goma.png</file>
+    <file>assets/units/Mag.png</file>
+    <file>assets/units/FireblightGanon.png</file>
+    <file>assets/units/Leo.png</file>
+    <file>assets/units/Alan.png</file>
+    <file>assets/units/Syndra.png</file>
+    <file>assets/units/Ganondorf.png</file>
+</qresource>
+</RCC>

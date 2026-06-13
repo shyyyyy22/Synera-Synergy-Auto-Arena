@@ -70,9 +70,12 @@ void Game::startNewGame() {
     m_board.clear();
     m_bench.clear();
 
-    m_units.push_back(new Sidon("卓拉守卫-辛顿",Owner::PlayerCtrl,1));
-    m_units.push_back(new Luna("卓拉祭司-露娜",Owner::PlayerCtrl,1));
-    m_units.push_back(new Noah("卓拉战士-诺亚",Owner::PlayerCtrl,1));
+    std::vector<QString> iniList=rollShop();
+    for(int i=0;i<3;i++){
+       Unit* unit=createHeroforPreview(iniList[i]).release();
+        unit->setIsShop(false);
+       m_units.push_back(unit);
+    }
     const QPoint initialPositions[] = { QPoint(0,Board::ROWS), QPoint(1,Board::ROWS), QPoint(2,Board::ROWS) };
     for (int i = 0; i < 3; ++i) {
         m_bench.addUnit(m_units[i], initialPositions[i]);
@@ -263,11 +266,12 @@ void Game::buildScene(){
 
     QRectF totalBounds;
     bool first=true;
+    int curStage=m_player->getMajorStage();
 
     //棋盘
     for(int i=0;i<m_rows;++i){
         for(int j=0;j<m_cols;++j){
-            GridItem* gridItem=new GridItem(i,j,m_radius,GridShape::Hexagon);
+            GridItem* gridItem=new GridItem(i,j,m_radius,GridShape::Hexagon,curStage);
             gridItem->setZValue(kZGrid);
             gridItem->setBaseColor(i < m_rows / 2 ? QColor(80, 60, 60) : QColor(60, 60, 80));
             gridItem->setPos(gridToWorld(i,j,true));
@@ -283,7 +287,7 @@ void Game::buildScene(){
 
     //备战区
     for(int j=0;j<m_cols;++j){
-        GridItem *benchItem=new GridItem(m_rows,j,m_radius,GridShape::Square);
+        GridItem *benchItem=new GridItem(m_rows,j,m_radius,GridShape::Square,curStage);
         benchItem->setZValue(kZGrid);
         benchItem->setBaseColor(QColor(50, 50, 50));
         QPointF pos=gridToWorld(m_rows,j,false);
@@ -331,7 +335,7 @@ void Game::buildScene(){
         equipmentSlotItem->setZValue(kZGrid);
         m_scene->addItem(equipmentSlotItem);
 
-        EquipmentItem *item=new EquipmentItem(Equipment::Sword,i);
+        EquipmentItem *item=new EquipmentItem(Equipment::None,i);
         m_equipmentByIndex[i]=item;
         item->setZValue(kZUnit);
         m_scene->addItem(item);

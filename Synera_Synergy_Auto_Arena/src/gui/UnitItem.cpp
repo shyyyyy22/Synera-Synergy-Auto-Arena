@@ -10,6 +10,20 @@ UnitItem::UnitItem(Unit* unit, bool isBoard,QGraphicsItem* parent)
     ,m_dragging(false)
     ,m_isSelected(false)
 {
+    QString imagePath = QString(":/assets/units/%1.png").arg(m_unit->getClassName());
+
+    QImage tempImage(imagePath);
+
+    if (m_unit->getOwner() == Owner::EnemyCtrl && !tempImage.isNull()) {
+        QPainter p(&tempImage);
+
+        p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+
+        p.fillRect(tempImage.rect(), QColor(130, 0, 150, 100));
+    }
+
+    m_sprite = QPixmap::fromImage(tempImage);
+
     m_color=m_unit->getOwner()==Owner::PlayerCtrl?QColor(100, 150, 200):QColor(200,150,100);
     setAcceptedMouseButtons(Qt::LeftButton);
 
@@ -22,18 +36,42 @@ QRectF UnitItem::boundingRect() const {
 void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*){
     painter->setRenderHint(QPainter::Antialiasing);
 
-    //画占位符
-    QPolygonF badge;
-    badge << QPointF(0, -15)
-          << QPointF(13, -7)
-          << QPointF(13, 7)
-          << QPointF(0, 15)
-          << QPointF(-13, 7)
-          << QPointF(-13, -7);
+    painter->setPen(QPen(QColor(20, 20, 20, 150), 1.5));
 
-    painter->setPen(QPen(QColor(18, 18, 18), 1.5));
-    painter->setBrush(m_color);
-    painter->drawPolygon(badge);
+    QColor pedestalColor = (m_unit->getOwner() == Owner::PlayerCtrl) ? QColor(0, 150, 255, 80) : QColor(220, 50, 50, 80);
+    painter->setBrush(pedestalColor);
+
+
+    painter->drawEllipse(QPointF(0, 12), 24, 8);
+
+    if (!m_sprite.isNull()) {
+        if(m_unit->getRace()==Race::Boss){
+            painter->drawPixmap(-50, -55, 100, 95, m_sprite);
+        }
+        else {
+            painter->drawPixmap(-25, -35, 50, 60, m_sprite);
+        }
+    }
+    else {
+        //画占位符
+        QPolygonF badge;
+        badge << QPointF(0, -15)
+              << QPointF(13, -7)
+              << QPointF(13, 7)
+              << QPointF(0, 15)
+              << QPointF(-13, 7)
+              << QPointF(-13, -7);
+
+        painter->setPen(QPen(QColor(18, 18, 18), 1.5));
+        painter->setBrush(m_color);
+        painter->drawPolygon(badge);
+        painter->setPen(Qt::white);
+        QFont font = painter->font();
+        font.setPointSize(12);
+        font.setBold(true);
+        painter->setFont(font);
+        painter->drawText(QRectF(-13, -13, 26, 26), Qt::AlignCenter, m_unit->getName().left(1));
+    }
 
     //技能释放
     if (m_unit && m_unit->getState() == State::Casting) {
@@ -50,27 +88,20 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
     }
 
     if (m_unit) {
-        painter->setPen(Qt::white);
-        QFont font = painter->font();
-        font.setPointSize(12);
-        font.setBold(true);
-        painter->setFont(font);
-        painter->drawText(QRectF(-13, -13, 26, 26), Qt::AlignCenter, m_unit->getName().left(1));
-
         //血条
         qreal hpPercent=qreal(m_unit->getHp())/m_unit->getMaxHp();
         painter->setPen(Qt::NoPen);
         painter->setBrush(QColor(100, 0, 0));
-        painter->drawRect(-15,-25,30,5);
+        painter->drawRect(-15,30,30,5);
         painter->setBrush(Qt::green);
-        painter->drawRect(-15,-25,30*hpPercent,5);
+        painter->drawRect(-15,30,30*hpPercent,5);
         //蓝条
         qreal manaPercent=qreal(m_unit->getMana())/m_unit->getMaxMana();
         painter->setPen(Qt::NoPen);
         painter->setBrush(QColor(100, 0, 0));
-        painter->drawRect(-15,20,30,5);
+        painter->drawRect(-15,40,30,5);
         painter->setBrush(QColor(80,130,200));
-        painter->drawRect(-15,20,30*manaPercent,5);
+        painter->drawRect(-15,40,30*manaPercent,5);
         //高亮
         if (m_isSelected) {
             painter->setPen(QPen(Qt::yellow, 4));

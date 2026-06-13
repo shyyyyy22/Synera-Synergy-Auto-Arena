@@ -3,11 +3,13 @@
 
 #include <QGraphicsObject>
 #include"Unit.h"
+#include<QPixmap>
 class UnitItem : public QGraphicsObject
 {
     Q_OBJECT
 public:
     UnitItem(Unit* unit, bool isBoard,QGraphicsItem* parent = nullptr);
+    ~UnitItem()=default;
 
     //基础功能
     QRectF boundingRect() const override;
@@ -56,6 +58,8 @@ private:
     std::vector<FloatingText> m_floatingTexts;
 
     qreal m_auraPulse = 0.0;
+
+    QPixmap m_sprite;
 };
 
 #endif // UNITITEM_H

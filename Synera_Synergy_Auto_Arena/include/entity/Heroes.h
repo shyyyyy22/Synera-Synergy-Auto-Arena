@@ -11,6 +11,7 @@ public:
     void takeDamage(int atk)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 private:
     int m_skillTime;
 };
@@ -19,6 +20,7 @@ public:
     Luna(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Noah:public Unit{
 public:
@@ -26,6 +28,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 private:
     int m_skillTime;
     bool m_inSkill;
@@ -39,6 +42,7 @@ public:
     void takeDamage(int atk)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 
 private:
     bool m_hasPhase2;
@@ -52,18 +56,21 @@ public:
     Revali(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Kashi:public Unit{
 public:
     Kashi(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Evan:public Unit{
 public:
     Evan(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class WindblightGanon:public Unit{
 public:
@@ -71,6 +78,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void takeDamage(int atk)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 
 private:
     bool m_hasPhase2;
@@ -82,6 +90,7 @@ public:
     Ur(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Naji:public Unit{
 public:
@@ -89,6 +98,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 
 private:
     bool m_inSkill;
@@ -101,6 +111,7 @@ public:
     Shika(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class ThunderblightGanon:public Unit{
 public:
@@ -108,6 +119,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void takeDamage(int atk)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 
 private:
     bool m_hasPhase2;
@@ -120,6 +132,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 private:
     int m_skillTime;
     bool m_inSkill;
@@ -129,6 +142,7 @@ public:
     Goma(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Mag:public Unit{
 public:
@@ -136,6 +150,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 private:
     int m_skillTime;
     bool m_inSkill;
@@ -147,6 +162,7 @@ public:
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     void takeDamage(int atk)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 
 private:
     bool m_hasPhase2;
@@ -158,18 +174,21 @@ public:
     Leo(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Alan:public Unit{
 public:
     Alan(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Syndra:public Unit{
 public:
     Syndra(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);
     void castSkill(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 };
 class Ganondorf:public Unit{
 public:
@@ -180,6 +199,7 @@ public:
     void setAtkCoolDown(int newCoolDown)override;
     void updateUnit(Board& board,const std::vector<Unit*> allUnits)override;
     QString getSkillDes()const override;
+    QString getClassName()const override;
 
 private:
     bool m_hasPhase2;

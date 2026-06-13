@@ -270,6 +270,7 @@ void GameWindow::setUI(){
         updatePlayerInfo();
     });
     connect(m_settlementPanel,&SettlementPanel::nxtRoundClicked,this,[this](){
+        m_infoPanel->updateUnitInfo(nullptr);
         updatePlayerInfo();
         m_settlementPanel->hide();
         m_shopPools=m_game->rollShop();
