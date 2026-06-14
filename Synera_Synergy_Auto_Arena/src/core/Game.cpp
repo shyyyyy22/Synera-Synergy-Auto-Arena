@@ -615,7 +615,7 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
     int goron=goronCount<2?10:(goronCount>=4?12:11);
 
     int ritoCount=raceCount[Race::Rito];
-    int rito=ritoCount<2?60:(ritoCount>=4?48:54);
+    int rito=ritoCount<2?10:(ritoCount>=4?8:9);
 
     int zoraCount=raceCount[Race::Zora];
     int zora=zoraCount<2?0:(zoraCount>=4?40:20);
@@ -633,7 +633,7 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
     bool mageSyn=mageCount>=3?true:false;
 
     int assassinCount=proCount[Profession::Assassin];
-    int assassin=assassinCount>=2?52:60;
+    int assassin=assassinCount>=2?115:100;
     bool assassinSyn=assassinCount>=3?true:false;
 
     int guardianCount=proCount[Profession::Guardian];
@@ -647,6 +647,21 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
         unit->restoreOriAtt();
         Race race=unit->getRace();
         Profession pro=unit->getProfession();
+
+        if(m_player->hasWaterBless()){
+            unit->setMaxHp(unit->getMaxHp()+60);
+            unit->setHp(unit->getMaxHp());
+        }
+        if(m_player->hasWindBless()){
+            unit->setOriAtkCoolDown(unit->getOriATkCoolDown()*9/10);
+        }
+        if(m_player->hasThunderBless()){
+            unit->setMaxMana(qMax(unit->getMaxMana()-10,30));
+        }
+        if(m_player->hasFireBless()){
+            unit->setAtk(unit->getAtk()+10);
+        }
+
         switch(race){
         case Race::Hyrulean:
             unit->setMaxHp(unit->getMaxHp()+hyrulean);
@@ -660,7 +675,7 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
             unit->setHp(unit->getMaxHp());
             break;
         case Race::Rito:
-            unit->setOriAtkCoolDown(rito);
+            unit->setOriAtkCoolDown(unit->getOriATkCoolDown()*rito/10);
             break;
         case Race::Zora:
             unit->setMana(zora);
@@ -678,11 +693,11 @@ void Game::applySynergyBuffs(std::map<Race, int> raceCount, std::map<Profession,
             unit->m_archerSyn=archerSyn;
             break;
         case Profession::Mage:
-            unit->setMaxMana(qMax(unit->getMaxMana()-mage,20));
+            unit->setMaxMana(qMax(unit->getMaxMana()-mage,30));
             unit->m_mageSyn=mageSyn;
             break;
         case Profession::Assassin:
-            unit->setOriAtkCoolDown(assassin);
+            unit->setOriAtkCoolDown(unit->getOriATkCoolDown()*100/assassin);
             unit->m_assassinSyn=assassinSyn;
             break;
         case Profession::Guardian:
@@ -1212,6 +1227,9 @@ void Game::handleStageResolve(bool win)
     if(win){
         m_player->changeGold(4);
         m_player->addXp(3);
+        if(m_player->getMinorStage()==4){
+            m_player->activateBless(m_player->getMajorStage());
+        }
     }
     else {
         int total=0;
@@ -1590,7 +1608,10 @@ void Game::saveGame()
     out<<m_player->getMaxXP()<<"\n";
     out<<m_player->getMajorStage()<<"\n";
     out<<m_player->getMinorStage()<<"\n";
-
+    out<<static_cast<int>(m_player->hasWaterBless())<<"\n";
+    out<<static_cast<int>(m_player->hasFireBless())<<"\n";
+    out<<static_cast<int>(m_player->hasThunderBless())<<"\n";
+    out<<static_cast<int>(m_player->hasFireBless())<<"\n";
     int unitCount=0;
     for(Unit* unit:m_units){
         if(!unit || unit->getOwner()==Owner::EnemyCtrl)continue;
@@ -1633,8 +1654,8 @@ bool Game::LoadGame()
     std::ifstream in("save.txt",std::ios::in);
     if(!in)exit(1);
 
-    int hp,gold,level,maxUnit,xp,maxXp,majorStage,minorStage;
-    in>>hp>>gold>>level>>maxUnit>>xp>>maxXp>>majorStage>>minorStage;
+    int hp,gold,level,maxUnit,xp,maxXp,majorStage,minorStage,waterBless,windBless,thunderBless,fireBless;
+    in>>hp>>gold>>level>>maxUnit>>xp>>maxXp>>majorStage>>minorStage>>waterBless>>windBless>>thunderBless>>fireBless;
 
     m_player->setHp(hp);
     m_player->setGold(gold);
@@ -1643,6 +1664,10 @@ bool Game::LoadGame()
     m_player->setXp(xp);
     m_player->setMaxXP(maxXp);
     m_player->setStage(majorStage,minorStage);
+    if(waterBless)m_player->activateBless(1);
+    if(windBless)m_player->activateBless(2);
+    if(thunderBless)m_player->activateBless(3);
+    if(fireBless)m_player->activateBless(4);
 
     int unitCount;
     in>>unitCount;

@@ -16,6 +16,10 @@ public:
     unsigned short getMinorStage()const;
     unsigned short getXp()const;
     unsigned short getMaxXP()const;
+    bool hasWaterBless()const;
+    bool hasWindBless()const;
+    bool hasThunderBless()const;
+    bool hasFireBless()const;
 
     void changeGold(int addGold);
     void setHp(int newHp);
@@ -25,6 +29,7 @@ public:
     void setXp(int xp);
     void setMaxXP(int MaxXp);
     void setStage(int maj,int min);
+    void activateBless(int stage);
     void initialStage();
 
     void nxtStage();
@@ -40,6 +45,11 @@ private:
     unsigned short m_minorStage;
     unsigned short m_xp;
     unsigned short m_maxXP;
+
+    bool m_waterBless;
+    bool m_windBless;
+    bool m_thunderBless;
+    bool m_fireBless;
 };
 
 #endif // PLAYER_H

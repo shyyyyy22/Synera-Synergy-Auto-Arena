@@ -55,6 +55,7 @@ private:
     QLabel *m_pLevelLabel;
     QLabel *m_pUnitNumsLabel;
     QLabel *m_pStageLabel;
+    QLabel *m_pBlessLabel;
 
     SettlementPanel* m_settlementPanel;
 

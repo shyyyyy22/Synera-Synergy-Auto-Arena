@@ -181,6 +181,11 @@ Equipment Unit::getEquipment() const
 {
     return m_equipment;
 }
+
+int Unit::getOriATkCoolDown() const
+{
+    return m_oriAtkCoolDown;
+}
 void Unit::setHp(int newHp){
     m_hp=newHp;
 }
@@ -539,7 +544,7 @@ void Unit::addEquipment(Equipment type)
         m_oriAtkCoolDown=50;
         break;
     case Equipment::Crystal:
-        m_maxMana=qMax(m_maxMana-30,20);
+        m_maxMana=qMax(m_maxMana-20,30);
         break;
     default:
         break;

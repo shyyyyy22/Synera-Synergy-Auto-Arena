@@ -130,12 +130,16 @@ void GameWindow::setUI(){
     m_pLevelLabel=new QLabel("等级：-",this);
     m_pUnitNumsLabel=new QLabel("人口：-",this);
     m_pStageLabel=new QLabel("关卡：-",this);
+    m_pBlessLabel = new QLabel("神兽祝福: [水] [风] [雷] [火]", this);
+    m_pBlessLabel->setStyleSheet("font-size: 14px;");
 
     topLayout->addWidget(m_pHpLabel);
     topLayout->addSpacing(20);
     topLayout->addWidget(m_pGoldLabel);
     topLayout->addStretch();
     topLayout->addWidget(m_pStageLabel);
+    topLayout->addSpacing(10);
+    topLayout->addWidget(m_pBlessLabel);
     topLayout->addStretch();
     topLayout->addSpacing(20);
     topLayout->addWidget(m_pLevelLabel);
@@ -408,6 +412,24 @@ void GameWindow::updatePlayerInfo()
         else m_pLevelLabel->setText(QString("等级：Lv.%1(最大等级)").arg(p->getLevel()));
         m_pUnitNumsLabel->setText(QString("人口：%1/%2").arg(m_game->getPlayerUnitInBoard()).arg(p->getMaxUnit()));
         m_pStageLabel->setText(QString("关卡：%1-%2").arg(p->getMajorStage()).arg(p->getMinorStage()));
+        QString waterStr = p->hasWaterBless() ? "<font color='#00BFFF'>[水]</font>" : "<font color='#555555'>[水]</font>";
+        QString windStr = p->hasWindBless() ? "<font color='#4CAF50'>[风]</font>" : "<font color='#555555'>[风]</font>";
+        QString thunderStr = p->hasThunderBless() ? "<font color='#FFEB3B'>[雷]</font>" : "<font color='#555555'>[雷]</font>";
+        QString fireStr = p->hasFireBless() ? "<font color='#FF5722'>[火]</font>" : "<font color='#555555'>[火]</font>";
+
+        m_pBlessLabel->setText(QString("神兽祝福: %1 %2 %3 %4").arg(waterStr).arg(windStr).arg(thunderStr).arg(fireStr));
+        QString tooltipText = "<b>【神兽祝福效果】</b><br><br>";
+
+        tooltipText += p->hasWaterBless() ? "<font color='#00BFFF'>● [神兽瓦·露塔的祝福]</font> 全体生命 +60 (已激活)<br>"
+                                               : "<font color='#555555'>○ [神兽瓦·露塔的祝福]</font> 全体生命 +60 (未获得)<br>";
+        tooltipText += p->hasWindBless() ? "<font color='#4CAF50'>● [神兽瓦·梅德的祝福]</font> 全体攻速 +10% (已激活)<br>"
+                                         : "<font color='#555555'>○ [神兽瓦·梅德的祝福]</font> 全体攻速 +10% (未获得)<br>";
+        tooltipText += p->hasThunderBless() ? "<font color='#FFEB3B'>● [神兽瓦·娜波力斯的祝福]</font> 全体最大法力值 -10 (已激活)<br>"
+                                                 : "<font color='#555555'>○ [神兽瓦·娜波力斯的祝福]</font> 全体最大法力值 -10 (未获得)<br>";
+        tooltipText += p->hasFireBless() ? "<font color='#FF5722'>● [神兽瓦·鲁达尼亚的祝福]</font> 全体攻击力 +10 (已激活)<br>"
+                                          : "<font color='#555555'>○ [神兽瓦·鲁达尼亚的祝福]</font> 全体攻击力 +10 (未获得)<br>";
+
+        m_pBlessLabel->setToolTip(tooltipText);
     }
 
 }

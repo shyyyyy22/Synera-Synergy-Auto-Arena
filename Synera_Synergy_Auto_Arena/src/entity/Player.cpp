@@ -2,7 +2,7 @@
 
 Player::Player()
     :m_hp(100)
-    ,m_gold(1000)
+    ,m_gold(10)
     ,m_level(1)
     ,m_maxLevel(6)
     ,m_maxUnit(3)
@@ -10,6 +10,10 @@ Player::Player()
     ,m_minorStage(1)
     ,m_xp(0)
     ,m_maxXP(2)
+    ,m_waterBless(false)
+    ,m_windBless(false)
+    ,m_thunderBless(false)
+    ,m_fireBless(false)
 {}
 
 //基础功能
@@ -44,6 +48,26 @@ unsigned short Player::getXp() const
 unsigned short Player::getMaxXP() const
 {
     return m_maxXP;
+}
+
+bool Player::hasWaterBless() const
+{
+    return m_waterBless;
+}
+
+bool Player::hasWindBless() const
+{
+    return m_windBless;
+}
+
+bool Player::hasThunderBless() const
+{
+    return m_thunderBless;
+}
+
+bool Player::hasFireBless() const
+{
+    return m_fireBless;
 }
 
 void Player::changeGold(int addGold)
@@ -85,6 +109,14 @@ void Player::setStage(int maj, int min)
 {
     m_majorStage=maj;
     m_minorStage=min;
+}
+
+void Player::activateBless(int stage)
+{
+    if(stage==1)m_waterBless=true;
+    if(stage==2)m_windBless=true;
+    if(stage==3)m_thunderBless=true;
+    if(stage==4)m_fireBless=true;
 }
 
 void Player::initialStage()

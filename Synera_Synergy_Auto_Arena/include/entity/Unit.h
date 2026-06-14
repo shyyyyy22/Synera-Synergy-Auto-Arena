@@ -42,6 +42,7 @@ public:
     QString getRaceName()const;
     QString getProName()const;
     Equipment getEquipment()const;
+    int getOriATkCoolDown()const;
     virtual QString getSkillDes()const=0;
     virtual QString getClassName()const=0;
 
