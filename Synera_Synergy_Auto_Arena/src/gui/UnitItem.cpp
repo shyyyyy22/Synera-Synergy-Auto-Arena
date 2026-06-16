@@ -3,6 +3,8 @@
 #include"Unit.h"
 #include<QGraphicsSceneMouseEvent>
 #include<QRandomGenerator>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
 UnitItem::UnitItem(Unit* unit, bool isBoard,QGraphicsItem* parent)
     :QGraphicsObject(parent)
     ,m_unit(unit)
@@ -109,6 +111,36 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
             painter->drawEllipse(QPoint(m_gridPos.x()-3,m_gridPos.y()-10),30,35);
         }
 
+        //星
+        int starLevel = m_unit->getStar();
+
+        QColor starColor;
+        if (starLevel == 1) {
+            starColor = QColor(205, 127, 50);
+        } else if (starLevel == 2) {
+            starColor = QColor(192, 192, 192);
+        } else {
+            starColor = QColor(245, 205, 45);
+        }
+        QPointF starCenter(-24, -24);
+        qreal R = 8.5;
+        qreal r = 3.3;
+
+        QPolygonF starPolygon;
+        for (int i = 0; i < 10; ++i) {
+
+            qreal curR = (i % 2 == 0) ? R : r;
+
+            qreal angleRad = qDegreesToRadians(36.0 * i - 90.0);
+
+            starPolygon << QPointF(starCenter.x() + curR * qCos(angleRad),
+                                   starCenter.y() + curR * qSin(angleRad));
+        }
+
+        painter->setPen(QPen(QColor(18, 18, 18), 1.2));
+        painter->setBrush(starColor);
+        painter->drawPolygon(starPolygon);
+
         //装备
         Equipment items = m_unit->getEquipment();
         int startX = 14;
@@ -165,6 +197,20 @@ void UnitItem::setIsSelected(bool selected)
 bool UnitItem::getIsSelected() const
 {
     return m_isSelected;
+}
+
+void UnitItem::slidePosTo(const QPointF &newPos)
+{
+    QPropertyAnimation* anim = new QPropertyAnimation(this, "pos");
+
+    anim->setDuration(320);
+
+    anim->setStartValue(this->pos());
+    anim->setEndValue(newPos);
+
+    anim->setEasingCurve(QEasingCurve::Linear);
+
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void UnitItem::unitInfoChanged(Unit *unit)

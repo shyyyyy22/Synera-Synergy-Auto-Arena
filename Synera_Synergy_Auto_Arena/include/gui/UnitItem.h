@@ -23,6 +23,8 @@ public:
     void setIsSelected(bool selected);
     bool getIsSelected()const;
 
+    void slidePosTo(const QPointF& newPos);
+
 public slots:
     void unitInfoChanged(Unit* unit);
     void onDamaged(int dmg);

@@ -8,7 +8,7 @@ StartMenuWidget::StartMenuWidget(QWidget *parent)
     mainLayout->setContentsMargins(50, 80, 50, 50);
     mainLayout->setSpacing(20);
 
-    m_logoLabel = new QLabel("Legend of Auto Arena", this);
+    m_logoLabel = new QLabel("Legend of Hyrule Auto Arena", this);
     m_logoLabel->setAlignment(Qt::AlignCenter);
 
     m_startBtn = new QPushButton("新建游戏", this);
@@ -25,7 +25,7 @@ StartMenuWidget::StartMenuWidget(QWidget *parent)
 
     mainLayout->addStretch();
 
-    QLabel* footer = new QLabel("© 2026 NJU高级程序设计PA,developed by 251880536 shy.", this);
+    QLabel* footer = new QLabel("© 2026 NJU高级程序设计PA,developed by 251880536.", this);
     footer->setAlignment(Qt::AlignCenter);
     footer->setStyleSheet("color: #555555; font-size: 11px;");
     mainLayout->addWidget(footer);

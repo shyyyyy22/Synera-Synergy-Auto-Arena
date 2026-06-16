@@ -78,7 +78,7 @@ void EquipmentItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         gem << QPointF(0, -14) << QPointF(10, 0) << QPointF(0, 14) << QPointF(-10, 0);
         painter->drawPolygon(gem);
         painter->setPen(Qt::white);
-        painter->drawText(QRectF(36,-18,80,30), Qt::AlignCenter, "最大法力值-30");
+        painter->drawText(QRectF(36,-18,80,30), Qt::AlignCenter, "最大法力值-20");
     }
 
     painter->setPen(Qt::white);

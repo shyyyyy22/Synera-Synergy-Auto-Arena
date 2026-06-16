@@ -30,6 +30,7 @@ public:
     void setMaxXP(int MaxXp);
     void setStage(int maj,int min);
     void activateBless(int stage);
+    void clearBless();
     void initialStage();
 
     void nxtStage();

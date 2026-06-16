@@ -119,6 +119,11 @@ void Player::activateBless(int stage)
     if(stage==4)m_fireBless=true;
 }
 
+void Player::clearBless()
+{
+    m_waterBless=m_windBless=m_thunderBless=m_fireBless=false;
+}
+
 void Player::initialStage()
 {
     m_minorStage=1;

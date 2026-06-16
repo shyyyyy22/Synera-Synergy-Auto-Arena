@@ -61,12 +61,13 @@ void Game::startNewGame() {
     m_unitItemById.clear();
 
     m_player->setHp(100);
-    m_player->setGold(1000);
+    m_player->setGold(10);
     m_player->setLevel(1);
     m_player->setMaxXP(2);
     m_player->setXp(0);
     m_player->setMaxUnit(3);
     m_player->initialStage();
+    m_player->clearBless();
     m_board.clear();
     m_bench.clear();
 
@@ -397,13 +398,15 @@ void Game::syncFromBoardAndBench(){
         item->setVisible(true);
         item->setZValue(kZUnit);
         QPointF worldPos=item->getIsBoard()?gridToWorld(pos.y(),pos.x(),true):gridToWorld(pos.y(),pos.x(),false);
-        if(!item->getIsBoard()){
-            item->setPos(worldPos);
-            item->setGridPos(QPoint(pos.x(),pos.y()));
-        }
-        else{
-            item->setPos(worldPos);
-            item->setGridPos(pos);
+
+        if (item->pos() != worldPos) {
+            item->slidePosTo(worldPos);
+            if(!item->getIsBoard()){
+                item->setGridPos(QPoint(pos.x(),pos.y()));
+            }
+            else{
+                item->setGridPos(pos);
+            }
         }
     }
     if(m_phase==GamePhase::Prep)calculateSynergies();

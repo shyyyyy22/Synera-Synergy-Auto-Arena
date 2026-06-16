@@ -7,6 +7,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    app.setWindowIcon(QIcon(":/assets/logo.png"));
     app.setApplicationName("Synera: Synergy Auto-Arena");
     app.setApplicationVersion("1.0");
 

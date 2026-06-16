@@ -20,5 +20,6 @@
     <file>assets/units/Alan.png</file>
     <file>assets/units/Syndra.png</file>
     <file>assets/units/Ganondorf.png</file>
+     <file>assets/logo.png</file>
 </qresource>
 </RCC>
