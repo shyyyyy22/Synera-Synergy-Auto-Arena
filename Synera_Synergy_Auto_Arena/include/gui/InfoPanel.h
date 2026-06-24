@@ -2,7 +2,6 @@
 #define INFOPANEL_H
 
 #include <QWidget>
-#include<QVBoxLayout>
 #include<QLabel>
 #include<QPushButton>
 class Unit;
@@ -12,9 +11,9 @@ class InfoPanel : public QWidget
     Q_OBJECT
 public:
     explicit InfoPanel(QWidget *parent = nullptr);
-
     void updateUnitInfo(Unit* unit);
 
+    //获取单位
     Unit* getUnit()const;
 
 public slots:
@@ -24,7 +23,6 @@ signals:
     void onBuyAndSellBtn(bool isShopHero);
 
 private:
-
     Unit* m_unit;
     bool m_isGameCombat;
 

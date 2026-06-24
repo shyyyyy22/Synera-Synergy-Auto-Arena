@@ -4,6 +4,7 @@
 #include<QString>
 #include<QPoint>
 #include"EquipmentItem.h"
+#include<vector>
 class Board;
 
 enum class Owner{PlayerCtrl,EnemyCtrl};
@@ -18,7 +19,7 @@ public:
     Unit(const QString &name,int maxHp,int atk,int range,int maxMana,Owner owner,Profession profession,int star=1,bool isShopHero=false,QObject *parent=nullptr);
     virtual ~Unit()=default;
 
-    //属性相关
+    //属性获取
     int getId()const;
     int getHp()const;
     int getMaxHp()const;
@@ -46,6 +47,7 @@ public:
     virtual QString getSkillDes()const=0;
     virtual QString getClassName()const=0;
 
+    //属性修改
     void setHp(int newHp);
     void setAtk(int newAtk);
     void setRange(int newRange);
@@ -65,20 +67,12 @@ public:
     void resetWithStar();
     void restoreOriAtt();
 
-    //状态机
+    //状态与战斗
     virtual void updateUnit(Board& board,const std::vector<Unit*> allUnits);
-    void handleIdle(Board& board,const std::vector<Unit*> allUnits);
-    void handleMoving(Board& board);
-    void handleAttking();
-    void handleCasting(Board& board,const std::vector<Unit*> allUnits);
-
-    //寻路
-    std::vector<QPoint> breadFirstSearch(Board& board);
-
-    //技能虚函数
     virtual void castSkill(Board& board,const std::vector<Unit*> allUnits)=0;
     virtual void takeDamage(int atk);
 
+    //羁绊
     bool m_warriorSyn,m_archerSyn,m_mageSyn,m_assassinSyn,m_guardianSyn;
 
     //装备
@@ -89,9 +83,18 @@ signals:
     void damaged(int dmg);
 
 private:
+    //状态处理
+    void handleIdle(Board& board,const std::vector<Unit*> allUnits);
+    void handleMoving(Board& board);
+    void handleAttking();
+    void handleCasting(Board& board,const std::vector<Unit*> allUnits);
+
+    //寻路
+    std::vector<QPoint> breadFirstSearch(Board& board);
 
     static int m_nxtUnitId;
 
+    //基本属性
     int m_id;
     int m_maxHp;
     int m_hp;
@@ -107,13 +110,13 @@ private:
     Unit* m_target;
     QPoint m_startPos;
     bool m_isShopHero;
-
-    int m_moveCoolDown;
-    int m_atkCoolDown;
-
     Profession m_profession;
     Race m_race;
+    int m_moveCoolDown;
+    int m_atkCoolDown;
+    Equipment m_equipment;
 
+    //用于逻辑控制
     int m_oriMaxHp;
     int m_oriAtk;
     int m_oriRange;
@@ -122,8 +125,7 @@ private:
     int m_oriAtkCoolDown;
     int m_atkCount;
 
-    Equipment m_equipment;
-
+    //技能描述
     QString m_skillDes;
 };
 

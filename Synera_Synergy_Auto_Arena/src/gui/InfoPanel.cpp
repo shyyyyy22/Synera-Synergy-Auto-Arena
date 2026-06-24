@@ -1,6 +1,7 @@
 #include "InfoPanel.h"
 #include"Unit.h"
 #include"Board.h"
+#include<QVBoxLayout>
 
 InfoPanel::InfoPanel(QWidget *parent):QWidget(parent)
 {

@@ -1,5 +1,4 @@
 #include "Board.h"
-#include"Game.h"
 Board::Board(int rows,int cols,bool isBoard)
     :m_rows(rows)
     ,m_cols(cols)

@@ -7,7 +7,7 @@ public:
     Player();
     ~Player()=default;
 
-    //基础功能
+    //属性获取
     int getHp()const;
     int getGold()const;
     unsigned short getLevel()const;
@@ -21,6 +21,7 @@ public:
     bool hasThunderBless()const;
     bool hasFireBless()const;
 
+    //属性设置
     void changeGold(int addGold);
     void setHp(int newHp);
     void setGold(int newGold);
@@ -32,9 +33,10 @@ public:
     void activateBless(int stage);
     void clearBless();
     void initialStage();
-
-    void nxtStage();
     void addXp(int addXp);
+
+    //逻辑函数
+    void nxtStage();
 
 private:
     int m_hp;

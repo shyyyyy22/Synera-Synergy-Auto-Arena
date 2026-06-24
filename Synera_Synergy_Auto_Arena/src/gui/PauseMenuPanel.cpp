@@ -1,4 +1,5 @@
 #include "PauseMenuPanel.h"
+#include<QVBoxLayout>
 
 PauseMenuPanel::PauseMenuPanel(QWidget *parent)
     : QWidget{parent}

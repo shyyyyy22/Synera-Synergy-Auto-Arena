@@ -2,8 +2,8 @@
 #define HEROES_H
 
 #include"Unit.h"
-#include<QDebug>
 
+//水
 class Sidon:public Unit{
 public:
     Sidon(const QString& name,Owner owner,qreal scale,int star=1,bool isShopHero=false);

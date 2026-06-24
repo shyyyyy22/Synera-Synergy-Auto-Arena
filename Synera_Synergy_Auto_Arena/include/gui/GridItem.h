@@ -17,7 +17,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
-    //属性相关
+    //属性设置
     void setBaseColor(const QColor& color);
     void setHoverActive(bool active);
     void setDropActive(bool active);
@@ -35,12 +35,11 @@ private:
     QPolygonF m_poly;
     QRectF m_bounds;
     GridShape m_shape;
+
     bool m_dropActive;
     bool m_hoverActive;
     bool m_pointerHover;
     bool m_rangeActive;
-
-    QPixmap m_tileTexture;
 };
 
 #endif // GRIDITEM_H

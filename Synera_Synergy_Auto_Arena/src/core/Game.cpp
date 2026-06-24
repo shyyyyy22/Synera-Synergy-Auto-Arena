@@ -2,7 +2,6 @@
 #include"Heroes.h"
 #include"EquipmentSlotItem.h"
 #include<QRandomGenerator>
-#include<iostream>
 #include<fstream>
 
 namespace {
@@ -1612,7 +1611,7 @@ void Game::saveGame()
     out<<m_player->getMajorStage()<<"\n";
     out<<m_player->getMinorStage()<<"\n";
     out<<static_cast<int>(m_player->hasWaterBless())<<"\n";
-    out<<static_cast<int>(m_player->hasFireBless())<<"\n";
+    out<<static_cast<int>(m_player->hasWindBless())<<"\n";
     out<<static_cast<int>(m_player->hasThunderBless())<<"\n";
     out<<static_cast<int>(m_player->hasFireBless())<<"\n";
     int unitCount=0;

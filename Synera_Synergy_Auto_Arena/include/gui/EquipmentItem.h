@@ -14,6 +14,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
+    //属性相关
     Equipment getType()const;
     void setType(Equipment newType);
 

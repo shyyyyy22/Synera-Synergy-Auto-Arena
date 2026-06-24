@@ -1,8 +1,5 @@
 #include "GameWindow.h"
 #include <QApplication>
-#include<QDebug>
-#include<QGraphicsScene>
-#include<QGraphicsView>
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);

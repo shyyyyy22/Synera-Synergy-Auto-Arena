@@ -1,5 +1,6 @@
 #include "SettlementPanel.h"
 #include<QApplication>
+#include<QVBoxLayout>
 SettlementPanel::SettlementPanel(QWidget *parent)
     : QWidget{parent}
 {

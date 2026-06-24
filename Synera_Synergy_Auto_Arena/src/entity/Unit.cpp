@@ -1,6 +1,5 @@
 #include "Unit.h"
 #include"Board.h"
-#include<QDebug>
 #include<QHash>
 #include<queue>
 int Unit::m_nxtUnitId=0;

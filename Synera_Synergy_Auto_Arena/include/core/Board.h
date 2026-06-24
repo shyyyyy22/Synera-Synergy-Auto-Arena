@@ -4,10 +4,12 @@
 #include<QPoint>
 #include"Unit.h"
 #include<QSet>
+#include<vector>
 
 class Board
 {
 public:
+    //常量
     static constexpr int ROWS = 8;
     static constexpr int COLS = 8;
 
@@ -20,14 +22,13 @@ public:
     void moveUnit(Unit* unit,const QPoint &pos);
     Unit* getUnitAt(const QPoint &pos)const;
     bool hasUnitAt(const QPoint &pos)const;
+    void clear();
+
+    //棋盘计算
     std::vector<QPoint> getNeighborGrid(const QPoint& pos)const;
     QSet<QPoint> getRangeGrid(const QPoint& pos,int range)const;
-
-    //工具函数
     bool isValidPosition(const QPoint &pos)const;
     bool isPlayerHalf(const QPoint &pos)const;
-
-    void clear();
 
 private:
     int indexOf(const QPoint &pos)const;

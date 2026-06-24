@@ -4,7 +4,6 @@
 #include <QWidget>
 #include<QLabel>
 #include<QPushButton>
-#include<QVBoxLayout>
 
 class SettlementPanel : public QWidget
 {

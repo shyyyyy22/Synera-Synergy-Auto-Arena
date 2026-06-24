@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <QObject>
-#include "board.h"
+#include "Board.h"
 #include<QGraphicsScene>
 #include"GridItem.h"
 #include"UnitItem.h"
@@ -10,6 +10,10 @@
 #include<QTimer>
 #include<QPushButton>
 #include<EquipmentItem.h>
+#include<map>
+#include<memory>
+#include<unordered_map>
+#include<vector>
 enum class GamePhase{Prep,Combat,Resolve};
 
 class Game : public QObject
@@ -38,24 +42,25 @@ public:
     bool getEquipmentSlotFull();
     QString getSynergyDes(Race race,Profession pro);
 
-
-    //游戏逻辑
+    //回合与经济逻辑
     void startNxtRound();
     void buyXp();
     std::vector<QString> rollShop();
     void upUnitStar(QString name,int star);
+    bool buyHero(int gold,QString name);
+    void sellHero(Unit* unit);
+
+    //暂停与存档
     void pauseGame();
     void resumeGame();
-
     void saveGame();
     bool LoadGame();
 
-
 public slots:
-    //属性面板
+    //选择与拖拽相关
     void onClicked(Unit* unit);
     void clearAllSelected();
-    //拖拽
+
     void onDragStarted(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragMoved(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
     void onDragDropped(int unitId,const QPoint& sourcePos,const QPointF &worldPos);
@@ -63,75 +68,78 @@ public slots:
     void onEquipMoved(int index,Equipment type,const QPointF &worldPos);
     void onEquipDropped(int index,Equipment type,const QPointF &worldPos);
 
-    //游戏逻辑
+    //战斗流程相关
     void gameTick();
     void onClickStartBtn();
     void onUnitDead(Unit* unit);
     void handleStageResolve(bool win);
     void clearEnemyBeforeRound();
-    bool buyHero(int gold,QString name);
-    void sellHero(Unit* unit);
     std::unique_ptr<Unit> createHeroforPreview(QString name,int star=1);
     void calculateSynergies();
 
 private:
+    //GUI相关
     void buildScene();
     void syncFromBoardAndBench();
     void clearGridHighLights();
-    bool canApplyDrop(int unitId,const QPoint& sourcePos,const QPoint& target);
-    void applyDrop(int unitId,const QPoint& sourcePos,const QPoint& target);
     QPointF gridToWorld(int row, int col,bool isBoard) const;
     QPoint worldToGrid(QPointF worldPos)const;
-    void applySynergyBuffs(std::map<Race,int> raceCount,std::map<Profession,int> proCount,Owner owner);
+
+    //拖拽逻辑
+    bool canApplyDrop(int unitId,const QPoint& sourcePos,const QPoint& target);
+    void applyDrop(int unitId,const QPoint& sourcePos,const QPoint& target);
     bool canApplyEquipDrop(int index,const QPoint& target);
     void applyEquipmentDrop(int index,const QPoint& target);
-    void generateRandomEquip();
 
-    //敌人生成
+    //游戏逻辑
+    void generateRandomEquip();
     void generateEnemy();
+    void applySynergyBuffs(std::map<Race,int> raceCount,std::map<Profession,int> proCount,Owner owner);
 
     //游戏数据
     int m_rows;
     int m_cols;
-    qreal m_radius;
 
     Board m_board;
     Board m_bench;
 
+    GamePhase m_phase;
+
+    //各类实体
     Player* m_player;
 
     std::vector<Unit*> m_units;
-    std::vector<GridItem*> m_gridItems;
-    std::vector<GridItem*> m_benchItems;
     std::vector<UnitItem*> m_unitItems;
     std::unordered_map<int ,UnitItem*>m_unitItemById;
     std::unordered_map<int,EquipmentItem*>m_equipmentByIndex;
-    std::vector<QPointF> m_equipmentSlotPos;
     std::vector<Equipment>m_EquipmentPools;
-
-    bool equipmentSlotFull;
-
-    int m_playerUnitInBoard;
+    std::vector<GridItem*> m_gridItems;
+    std::vector<GridItem*> m_benchItems;
     std::vector<QString> m_heroPools;
 
+    QTimer* m_timer;
+
+    //统计数据
+    int m_playerUnitInBoard;
+    bool equipmentSlotFull;
     std::map<Race,int> m_raceCount;
     std::map<Profession,int> m_professionCount;
-
-    //gui层面
-    QGraphicsScene *m_scene;
-    bool m_dragActive;
-    int m_activeUnitId;
-    QPoint m_sourcePos;
-    bool m_dragEquipActive;
-    int m_activeIndex;
-    QPointF m_dragEquipPos;
     std::vector<QString> m_activateSynergyList;
 
-    //逻辑控制层
-    QTimer* m_timer;
-    GamePhase m_phase;
+    //gui层面
+    qreal m_radius;
 
-    friend bool Board::isValidPosition(const QPoint &pos)const;
+    QGraphicsScene *m_scene;
+
+    bool m_dragActive;
+    int m_activeUnitId;
+    bool m_dragEquipActive;
+    int m_activeIndex;
+
+    QPoint m_sourcePos;
+    QPointF m_dragEquipPos;
+    std::vector<QPointF> m_equipmentSlotPos;
+
 signals:
     void unitSelected(Unit* unit);
     void unitInfoChanged(Unit* unit);
