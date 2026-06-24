@@ -1655,7 +1655,7 @@ bool Game::LoadGame()
     m_bench.clear();
 
     std::ifstream in("save.txt",std::ios::in);
-    if(!in)exit(1);
+    if(!in)return false;
 
     int hp,gold,level,maxUnit,xp,maxXp,majorStage,minorStage,waterBless,windBless,thunderBless,fireBless;
     in>>hp>>gold>>level>>maxUnit>>xp>>maxXp>>majorStage>>minorStage>>waterBless>>windBless>>thunderBless>>fireBless;

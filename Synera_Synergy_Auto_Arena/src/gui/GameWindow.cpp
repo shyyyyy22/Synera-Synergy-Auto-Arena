@@ -38,6 +38,13 @@ GameWindow::GameWindow(QWidget *parent)
             m_stackedWidget->setCurrentIndex(1);
             updatePlayerInfo();
         }
+        else {
+            m_stackedWidget->setCurrentIndex(1);
+            m_game->initialize();
+            updatePlayerInfo();
+            m_shopPools = m_game->rollShop();
+            updateShopInfo();
+        }
     });
 }
 
